@@ -1,0 +1,643 @@
+import math
+import json
+from pathlib import Path
+
+# Optional dependencies
+try:
+    import numpy as np
+except ImportError:
+    np = None
+
+from pyproj import Geod
+
+# I/O dependencies
+try:
+    import rasterio
+    from rasterio.mask import mask as rio_mask
+    import geopandas as gpd
+    import simplekml
+    from shapely.geometry import shape
+except ImportError:
+    rasterio = None
+    gpd = None
+    simplekml = None
+
+
+#===============================================================================
+# Constants and Unit Conversions
+#===============================================================================
+EARTH_RADIUS_MILES = 3958.7613
+EARTH_RADIUS_FEET = EARTH_RADIUS_MILES * 5280
+MILES_PER_FOOT = 1 / 5280.0
+MILES_PER_YARD = 3 / 5280.0
+MILES_PER_POLE = 16.5 / 5280.0  # 1 rod = 16.5 ft
+DEG2RAD = math.pi / 180.0
+RAD2DEG = 180.0 / math.pi
+
+#===============================================================================
+# Spherical Triangles
+#===============================================================================
+
+def spherical_triangle_properties(point_A, point_B, point_C):
+    """
+    Calculates the interior angles and side lengths of a spherical triangle
+    defined by three points on the Earth's surface.
+
+    Args:
+        point_A: Tuple (latitude, longitude) of point A (in degrees).
+        point_B: Tuple (latitude, longitude) of point B (in degrees).
+        point_C: Tuple (latitude, longitude) of point C (in degrees).
+
+    Returns:
+        A dictionary containing:
+        - angles: A dictionary of angles {A, B, C} (in degrees).
+        - side_lengths: A dictionary of side lengths {AB, BC, CA} (same units a R).
+    """
+
+    lat_A, lon_A = point_A
+    lat_B, lon_B = point_B
+    lat_C, lon_C = point_C
+
+    # Calculate side lengths using the Haversine formula
+    side_AB = haversine(lat_A, lon_A, lat_B, lon_B)
+    side_BC = haversine(lat_B, lon_B, lat_C, lon_C)
+    side_CA = haversine(lat_C, lon_C, lat_A, lon_A)
+
+    # Calculate angles using the Spherical Law of Cosines
+    angle_A, angle_B, angle_C = spherical_law_of_cosines_angles(side_BC, side_CA, side_AB)
+    
+    return {
+        "angles": {"A": angle_A, "B": angle_B, "C": angle_C},
+        "side_lengths": {"AB": side_AB, "BC": side_BC, "CA": side_CA},
+    }
+
+# ----------------------------------------
+# Vector and Spherical-Triangle Utilities
+# ----------------------------------------
+
+def latlon_to_xyz(phi_rad, lam_rad):
+    """Convert latitude, longitude in radians to 3D unit vector."""
+    cos_phi = math.cos(phi_rad)
+    return (
+        cos_phi * math.cos(lam_rad),
+        cos_phi * math.sin(lam_rad),
+        math.sin(phi_rad)
+    )
+
+def angle_between(u, v):
+    """Central angle in radians between two 3D unit vectors."""
+    dot = max(-1.0, min(1.0, u[0]*v[0] + u[1]*v[1] + u[2]*v[2]))
+    return math.acos(dot)
+
+def spherical_law_of_cosines_angles(a, b, c, radius=EARTH_RADIUS_MILES):
+    """Return interior angles (radians) of a spherical triangle from side lengths a,b,c."""
+    a_r, b_r, c_r = a/radius, b/radius, c/radius
+    def clamp(x): return max(-1.0, min(1.0, x))
+    cosA = clamp((math.cos(a_r) - math.cos(b_r)*math.cos(c_r)) /
+                  (math.sin(b_r)*math.sin(c_r)))
+    cosB = clamp((math.cos(b_r) - math.cos(a_r)*math.cos(c_r)) /
+                  (math.sin(a_r)*math.sin(c_r)))
+    cosC = clamp((math.cos(c_r) - math.cos(a_r)*math.cos(b_r)) /
+                  (math.sin(a_r)*math.sin(b_r)))
+    return math.acos(cosA), math.acos(cosB), math.acos(cosC)
+
+def spherical_triangle_area(radius, p1, p2, p3):
+    """
+    Compute area of spherical triangle on sphere of given radius.
+    Each p? is (phi_rad, lam_rad).
+    Uses Girard's theorem: E = A+B+C - pi, area = E*R^2.
+    """
+    # Convert vertices to unit vectors
+    u = latlon_to_xyz(p1[0], p1[1])
+    v = latlon_to_xyz(p2[0], p2[1])
+    w = latlon_to_xyz(p3[0], p3[1])
+    # Side central angles (radians)
+    a = angle_between(v, w)
+    b = angle_between(u, w)
+    c = angle_between(u, v)
+    # Interior angles
+    A, B, C = spherical_law_of_cosines_angles(a*radius, b*radius, c*radius, radius)
+    # Spherical excess
+    E = A + B + C - math.pi
+    return E * radius * radius
+
+# ----------------------------------------
+# Diamond Region Functions
+# ----------------------------------------
+# Taken from washdc_code/diamond.py
+# Consolidated functions for computing diamond-shaped regions on a sphere:
+#   - solve_diamond_approx: approximate half-extents from area
+#   - solve_diamond_exact: numerically solve half-extents for exact area
+#   - diamond_area_spherical: compute exact area via two spherical triangles
+#   - diamond_corners: corner coordinates in degrees
+
+# Also includes supporting spherical-triangle-area and vector utilities.
+
+def solve_diamond_approx(radius, area, phi_c_rad):
+    """
+    Approximate half-extents (dphi, dlam) in radians for a diamond region of given area.
+    Assumes small region and uses planar approximation adjusted by cos(phi).
+    """
+    cos_phi = math.cos(phi_c_rad)
+    dlam = math.sqrt(area / (2 * radius * radius * cos_phi * cos_phi))
+    dphi = cos_phi * dlam
+    return dphi, dlam
+
+def diamond_area_spherical(radius, phi_c_rad, dlam, lam_c_rad=0.0):
+    """
+    Exact area of diamond centered at (phi_c_rad, lam_c_rad) with half-extent dlam (radians).
+    Splits region into two spherical triangles.
+    """
+    dphi = math.cos(phi_c_rad) * dlam
+    N = (phi_c_rad + dphi, lam_c_rad)
+    S = (phi_c_rad - dphi, lam_c_rad)
+    E = (phi_c_rad, lam_c_rad + dlam)
+    W = (phi_c_rad, lam_c_rad - dlam)
+    area1 = spherical_triangle_area(radius, N, E, S)
+    area2 = spherical_triangle_area(radius, N, S, W)
+    return area1 + area2
+
+def solve_diamond_exact(radius, area, phi_c_rad, lam_c_rad=0.0, tol=1e-12):
+    """
+    Numerically solve for half-extents (dphi, dlam) so that diamond_area_spherical = area.
+    Uses binary search on dlam.
+    """
+    def f(dl): return diamond_area_spherical(radius, phi_c_rad, dl, lam_c_rad) - area
+    lo, hi = 0.0, math.pi
+    if f(hi) < 0:
+        raise ValueError("Requested area exceeds hemisphere")
+    for _ in range(60):
+        mid = 0.5 * (lo + hi)
+        if f(mid) > 0:
+            hi = mid
+        else:
+            lo = mid
+    dlam = 0.5 * (lo + hi)
+    dphi = math.cos(phi_c_rad) * dlam
+    return dphi, dlam
+
+def diamond_corners(phi_c_deg, lam_c_deg, dphi, dlam):
+    """
+    Return geographic corners of the diamond as list of (lat_deg, lon_deg):
+    North, East, South, West.
+    """
+    return [
+        (phi_c_deg + math.degrees(dphi), lam_c_deg),
+        (phi_c_deg, lam_c_deg + math.degrees(dlam)),
+        (phi_c_deg - math.degrees(dphi), lam_c_deg),
+        (phi_c_deg, lam_c_deg - math.degrees(dlam))
+    ]
+
+# End of diamond functions
+# ----------------------------------------
+
+#===============================================================================
+# Spherical Trigonometry Utilities
+#===============================================================================
+
+def haversine(phi1, lam1, phi2, lam2, unit='miles'):
+    """
+    phi, lam = lat, lon in degrees
+    Great-circle distance between two lat/lon (decimal degrees) via haversine.
+    Returns distance in miles or feet.
+    """
+    dphi = (phi2 - phi1) * DEG2RAD
+    dlam = (lam2 - lam1) * DEG2RAD
+    a = math.sin(dphi/2)**2 + math.cos(phi1*DEG2RAD)*math.cos(phi2*DEG2RAD)*math.sin(dlam/2)**2
+    c = 2 * math.asin(min(1, math.sqrt(a)))
+    dist = EARTH_RADIUS_MILES * c
+    return dist if unit=='miles' else dist * 5280
+
+
+def initial_bearing(phi1, lam1, phi2, lam2):
+    """
+    phi, lam = lat, lon in degrees
+    Returns initial bearing from point1 to point2 on a sphere,
+    in degrees clockwise from north.
+    """
+    phi1r, phi2r = phi1*DEG2RAD, phi2*DEG2RAD
+    dl = (lam2 - lam1)*DEG2RAD
+    x = math.sin(dl)*math.cos(phi2r)
+    y = math.cos(phi1r)*math.sin(phi2r) - math.sin(phi1r)*math.cos(phi2r)*math.cos(dl)
+    return (math.atan2(x, y)*RAD2DEG + 360) % 360
+
+
+def final_bearing(phi1, lam1, phi2, lam2):
+    """
+    phi, lam = lat, lon in degrees
+    Returns final bearing arriving at point2 from point1, in degrees.
+    """
+    return (initial_bearing(phi2, lam2, phi1, lam1) + 180) % 360
+
+#===============================================================================
+# Spherical Trigonometric Identities
+#===============================================================================
+
+def normalize_longitude(lon_deg):
+    """Normalize longitude to the range [-180, 180)."""
+    return (lon_deg + 180) % 360 - 180
+
+def cos_supplement(x):
+    """Cosine of (π - x) = -cos(x)."""
+    return -math.cos(x)
+
+def sin_supplement(x):
+    """Sine of (π - x) = sin(x)."""
+    return math.sin(x)
+
+def cot_a(a, b, c):
+    """Cotangent identity: cot(a) = [cos(b)cos(c) - cos(a)] / [sin(b)sin(c)]."""
+    return (math.cos(b)*math.cos(c) - math.cos(a)) / (math.sin(b)*math.sin(c))
+
+def tan_half_angle(a, b, c):
+    """tan(E/4) formula for sides a,b,c: L'Huilier's half-excess form."""
+    s = 0.5*(a + b + c)
+    t = math.tan(s/2)*math.tan((s-a)/2)*math.tan((s-b)/2)*math.tan((s-c)/2)
+    return math.sqrt(abs(t))
+
+def delambre(a, b, c, A, B, C):
+    """
+    Returns Delambre analogies:
+      tan((A+B)/2) = [cos((a-b)/2)/cos((a+b)/2)] * tan(C/2)
+      tan((a+b)/2) = [cos((A-B)/2)/cos((A+B)/2)] * tan(c/2)
+    """
+    return {
+        'tan_ab2': math.tan((A+B)/2),
+        'rhs1': (math.cos((a-b)/2)/math.cos((a+b)/2))*math.tan(C/2),
+        'tan_ab_half': math.tan((a+b)/2),
+        'rhs2': (math.cos((A-B)/2)/math.cos((A+B)/2))*math.tan(c/2)
+    }
+
+#===============================================================================
+# Geodetic Problems (Sphere & Ellipsoid)
+#===============================================================================
+_GEOID = Geod(ellps='WGS84')
+
+def direct_geodetic(phi1, lam1, az1, dist, unit='miles', ellipsoid=True):
+    if unit=='miles': dist_m = dist*1609.344
+    else: dist_m = dist*0.3048
+    if ellipsoid:
+        lon2, lat2, az2 = _GEOID.fwd(lam1, phi1, az1, dist_m)
+        return lat2, lon2, az2
+    sigma = dist / EARTH_RADIUS_MILES
+    phi1r, lam1r, az1r = phi1*DEG2RAD, lam1*DEG2RAD, az1*DEG2RAD
+    phi2 = math.asin(math.sin(phi1r)*math.cos(sigma) + math.cos(phi1r)*math.sin(sigma)*math.cos(az1r))
+    lam2 = lam1r + math.atan2(math.sin(az1r)*math.sin(sigma)*math.cos(phi1r),
+                               math.cos(sigma) - math.sin(phi1r)*math.sin(phi2))
+    az2 = math.atan2(math.sin(az1r)*math.cos(phi1r)*math.cos(sigma) - math.sin(phi1r)*math.sin(sigma),
+                     math.cos(az1r)*math.cos(sigma))
+    return phi2*RAD2DEG, lam2*RAD2DEG, az2*RAD2DEG
+
+
+def inverse_geodetic(phi1, lam1, phi2, lam2, unit='miles', ellipsoid=True):
+    if ellipsoid:
+        az1, az2, dist_m = _GEOID.inv(lam1, phi1, lam2, phi2)
+        dist = dist_m / (1609.344 if unit=='miles' else 0.3048)
+        return az1, az2, dist
+    phi1r, phi2r = phi1*DEG2RAD, phi2*DEG2RAD
+    dlam = (lam2-lam1)*DEG2RAD
+    cos_sigma = math.sin(phi1r)*math.sin(phi2r) + math.cos(phi1r)*math.cos(phi2r)*math.cos(dlam)
+    sigma = math.acos(max(-1, min(1, cos_sigma)))
+    az1 = math.atan2(math.sin(dlam)*math.cos(phi2r),
+                      math.cos(phi1r)*math.sin(phi2r) - math.sin(phi1r)*math.cos(phi2r)*math.cos(dlam))
+    az2 = math.atan2(math.sin(-dlam)*math.cos(phi1r),
+                      math.cos(phi2r)*math.sin(phi1r) - math.sin(phi2r)*math.cos(phi1r)*math.cos(dlam))
+    dist = EARTH_RADIUS_MILES * sigma
+    if unit!='miles': dist *= 5280
+    return az1*RAD2DEG % 360, az2*RAD2DEG % 360, dist
+
+
+def throw_endpoint(start_lat, start_lon, distance, bearing,
+                   units='miles', radius=EARTH_RADIUS_MILES,
+                   ellipsoid=False):
+    """
+    Compute destination lat/lon given a start point, distance, and initial bearing.
+    Supports miles, feet, yards, poles.
+    """
+    if ellipsoid:
+        return direct_geodetic(start_lat, start_lon, bearing, distance, unit=units)
+    
+    # Convert to miles
+    if units == 'feet':
+        d = distance * MILES_PER_FOOT
+    elif units == 'yards':
+        d = distance * MILES_PER_YARD
+    elif units == 'poles':
+        d = distance * MILES_PER_POLE
+    else:
+        d = distance  # default miles
+    # Convert central lat,lon degrees and initial bearing to radians
+    φ1 = math.radians(start_lat)
+    λ1 = math.radians(start_lon)
+    θ = math.radians(bearing)
+    δ = d / radius
+
+    φ2 = math.asin(math.sin(φ1)*math.cos(δ)
+                   + math.cos(φ1)*math.sin(δ)*math.cos(θ))
+    y = math.sin(θ)*math.sin(δ)*math.cos(φ1)
+    x = math.cos(δ) - math.sin(φ1)*math.sin(φ2)
+    λ2 = λ1 + math.atan2(y, x)
+
+    lat2 = math.degrees(φ2)
+    lon2 = math.degrees((λ2 + 3*math.pi) % (2*math.pi) - math.pi)
+    final_bearing = (math.degrees(math.atan2(y, x)) + 360) % 360
+    return lat2, lon2, final_bearing
+
+#===============================================================================
+# Find or Throw Points by Condition
+#===============================================================================
+
+def find_longitudes_for_known_latitude_and_distance(
+        lat1_deg, lon1_deg, distance_miles, lat2_target_deg, ellipsoid=True, tol=1e-9
+    ):
+    """
+    Finds the longitude(s) of a second point, given the first point (lat1, lon1),
+    the distance to the second point, and the latitude of the second point (lat2).
+
+    Args:
+        lat1_deg (float): Latitude of the first point in degrees.
+        lon1_deg (float): Longitude of the first point in degrees.
+        distance_miles (float): Distance from the first point to the second in miles.
+        lat2_target_deg (float): Latitude of the second point in degrees.
+        ellipsoid (bool): If True, use ellipsoidal calculations for refinement.
+                          If False, use purely spherical calculations.
+        tol (float): Tolerance for floating point comparisons.
+
+    Returns:
+        list: A list of possible longitudes (in degrees) for the second point.
+              Returns an empty list if no solution is found.
+              May return a special list like [float('nan')] if lat1 is a pole
+              and infinite solutions exist for lon2 in spherical case.
+    """
+    from scipy.optimize import fsolve
+
+    if distance_miles < 0:
+        raise ValueError("Distance cannot be negative.")
+
+    if abs(distance_miles) < tol: # Effectively zero distance
+        if abs(lat1_deg - lat2_target_deg) < tol:
+            return [normalize_longitude(lon1_deg)]
+        else:
+            return [] # Cannot be at lat2_target_deg if distance is zero and lats differ
+
+    lat1_rad = math.radians(lat1_deg)
+    lon1_rad = math.radians(lon1_deg)
+    lat2_target_rad = math.radians(lat2_target_deg)
+    
+    # Spherical calculation for initial guesses or direct spherical solution
+    sigma = distance_miles / EARTH_RADIUS_MILES # Angular distance
+
+    # Handle cases where lat1 or lat2 is a pole for spherical formula
+    if abs(math.cos(lat1_rad)) < tol: # lat1 is a pole
+        # All points at distance_miles are on a circle of latitude.
+        # For spherical case, if lat1 is North Pole, lat2_target_rad must be pi/2 - sigma.
+        # If so, any longitude is a solution. This is ill-defined for "the" longitude.
+        # Ellipsoidal solver below might handle this better if pyproj is robust.
+        # For now, let spherical part indicate this ambiguity for non-ellipsoidal.
+        if not ellipsoid: return [float('nan')] # Indicates infinite solutions
+        # If ellipsoidal, proceed, fsolve might work or fail gracefully.
+
+    if abs(math.cos(lat2_target_rad)) < tol: # lat2_target is a pole
+        # Distance from (lat1, lon1) to this pole must be distance_miles
+        _, _, dist_to_pole = inverse_geodetic(lat1_deg, lon1_deg, lat2_target_deg, lon1_deg, unit='miles', ellipsoid=ellipsoid)
+        if abs(dist_to_pole - distance_miles) < tol:
+            # The point is the pole. The longitude can be considered that of the geodesic.
+            # For a sphere, it's lon1_deg. For ellipsoid, direct_geodetic can find it.
+            if ellipsoid:
+                az_to_pole, _, _ = inverse_geodetic(lat1_deg, lon1_deg, lat2_target_deg, lon1_deg, unit='miles', ellipsoid=True)
+                _, lon_at_pole, _ = direct_geodetic(lat1_deg, lon1_deg, az_to_pole, distance_miles, unit='miles', ellipsoid=True)
+                return [normalize_longitude(lon_at_pole)]
+            else: # Spherical
+                return [normalize_longitude(lon1_deg)] # Longitude of meridian to pole
+        else:
+            return [] # Pole cannot be reached with this distance
+
+    # General spherical formula for delta_lambda
+    cos_lat1 = math.cos(lat1_rad)
+    sin_lat1 = math.sin(lat1_rad)
+    cos_lat2_target = math.cos(lat2_target_rad)
+    sin_lat2_target = math.sin(lat2_target_rad)
+
+    numerator = math.cos(sigma) - sin_lat1 * sin_lat2_target
+    denominator = cos_lat1 * cos_lat2_target
+    
+    if abs(denominator) < tol : # Should have been caught by pole checks, but as safeguard
+        return [] # Or handle as pole if appropriate
+
+    cos_delta_lambda = numerator / denominator
+
+    if cos_delta_lambda > 1.0 + tol or cos_delta_lambda < -1.0 - tol:
+        return [] # No solution
+    
+    cos_delta_lambda = max(-1.0, min(1.0, cos_delta_lambda)) # Clamp for acos
+    delta_lambda_rad = math.acos(cos_delta_lambda)
+
+    solutions = []
+    lon2_guess_rad_1 = lon1_rad + delta_lambda_rad
+    lon2_guess_rad_2 = lon1_rad - delta_lambda_rad
+
+    if not ellipsoid: # Purely spherical solution
+        solutions.append(normalize_longitude(math.degrees(lon2_guess_rad_1)))
+        if abs(delta_lambda_rad) > tol and abs(delta_lambda_rad - math.pi) > tol: # Avoid duplicate for 0 or pi
+            solutions.append(normalize_longitude(math.degrees(lon2_guess_rad_2)))
+        return sorted(list(set(solutions))) # Unique sorted solutions
+
+    # Ellipsoidal refinement using fsolve
+    def objective_func(lon2_arr_deg, lat1_d, lon1_d, lat2_target_d, dist_miles_target):
+        lon2_cand_deg = lon2_arr_deg[0]
+        _, _, calculated_dist = inverse_geodetic(
+            lat1_d, lon1_d, lat2_target_d, lon2_cand_deg, unit='miles', ellipsoid=True
+        )
+        return calculated_dist - dist_miles_target
+
+    # Refine first guess
+    lon2_guess_deg_1 = normalize_longitude(math.degrees(lon2_guess_rad_1))
+    lon2_sol1_arr, _, ier1, _ = fsolve(
+        objective_func, x0=[lon2_guess_deg_1], 
+        args=(lat1_deg, lon1_deg, lat2_target_deg, distance_miles),
+        full_output=True, xtol=1e-10 # Set tolerance for fsolve
+    )
+    if ier1 == 1: # Solution found
+        # Check if the solution is valid (distance matches closely)
+        final_check_dist_1 = objective_func(lon2_sol1_arr, lat1_deg, lon1_deg, lat2_target_deg, distance_miles) + distance_miles
+        if abs(final_check_dist_1 - distance_miles) < distance_miles * 1e-7: # Relative tolerance for distance match
+             solutions.append(normalize_longitude(lon2_sol1_arr[0]))
+
+    # Refine second guess (if distinct)
+    if abs(delta_lambda_rad) > tol and abs(delta_lambda_rad - math.pi) > tol:
+        lon2_guess_deg_2 = normalize_longitude(math.degrees(lon2_guess_rad_2))
+        # Only solve if guess2 is significantly different from guess1 to avoid redundant computation
+        # (fsolve might converge to the same root if initial guesses are too close)
+        is_different_guess = True
+        if solutions: # if first solution was found
+            if abs(normalize_longitude(lon2_guess_deg_2 - solutions[0])) < 1e-3 or \
+               abs(normalize_longitude(lon2_guess_deg_2 + solutions[0])) < 1e-3 : # check if it's same or antipodal to first solution's guess
+                  # Heuristic: if guesses are very close, fsolve might find same root or struggle
+                  pass # Potentially skip if too close, or let fsolve try
+
+        lon2_sol2_arr, _, ier2, _ = fsolve(
+            objective_func, x0=[lon2_guess_deg_2],
+            args=(lat1_deg, lon1_deg, lat2_target_deg, distance_miles),
+            full_output=True, xtol=1e-10
+        )
+        if ier2 == 1:
+            final_check_dist_2 = objective_func(lon2_sol2_arr, lat1_deg, lon1_deg, lat2_target_deg, distance_miles) + distance_miles
+            if abs(final_check_dist_2 - distance_miles) < distance_miles * 1e-7:
+                solutions.append(normalize_longitude(lon2_sol2_arr[0]))
+
+    return sorted(list(set(s for s in solutions if not math.isnan(s)))) # Unique, sorted, non-NaN solutions
+
+#===============================================================================
+# I/O Utilities
+#===============================================================================
+
+def read_geojson(path):
+    if isinstance(path, dict): return path
+    return gpd.read_file(path) if gpd else json.load(open(path))
+
+
+def read_raster(path):
+    if not rasterio: raise RuntimeError('rasterio needed')
+    return rasterio.open(path)
+
+
+def mask_raster_dataset(dataset, shapes, crop=True):
+    if not rasterio: raise RuntimeError('rasterio needed')
+    return rio_mask(dataset, shapes, crop=crop)
+
+
+def geojson_to_kml(geoobj, kml_path, color_field=None, default_color='ff0000ff'):
+    if not simplekml: raise RuntimeError('simplekml needed')
+    geo = read_geojson(geoobj) if isinstance(geoobj, str) else geoobj
+    kml = simplekml.Kml()
+    for feat in geo.get('features', []):
+        shp = shape(feat['geometry'])
+        if shp.geom_type == 'Polygon':
+            obj = kml.newpolygon()
+            obj.outerboundaryis = list(shp.exterior.coords)
+        elif shp.geom_type == 'LineString':
+            obj = kml.newlinestring()
+            obj.coords = list(shp.coords)
+        else:
+            continue
+        obj.style.linestyle.color = default_color
+    Path(kml_path).parent.mkdir(parents=True, exist_ok=True)
+    kml.save(kml_path)
+
+
+def print_triangles_csv(locs, triad_names):
+    """
+    Given locs dict mapping names to (lat, lon) and a list of triads,
+    prints CSV lines: 'A','B','C', angleA,angleB,angleC, sideAB,sideBC,sideCA
+    """
+    for (A, B, C) in triad_names:
+        props = spherical_triangle_properties(locs[A], locs[B], locs[C])
+        angles = props['angles']
+        sides = props['sides']
+        row = f"'{A}','{B}','{C}',{angles['A']:.3f},{angles['B']:.3f},{angles['C']:.3f},"
+        row += f"{sides['AB']:.8f},{sides['BC']:.8f},{sides['CA']:.8f}"
+        print(row)
+
+#===============================================================================
+# Pentagramma Mirificum: Gauss's Formulas
+#===============================================================================
+# Let α = tan^2(TP), β = tan^2(PQ), γ = tan^2(QR), δ = tan^2(RS), ε = tan^2(ST)
+# Then the five identities:
+#   1 + α = γ δ
+#   1 + β = δ ε
+#   1 + γ = α ε
+#   1 + δ = α β
+#   1 + ε = β γ
+# And the beautiful equality:
+#   αβγδε = 3 + α + β + γ + δ + ε = ∏_{x in (α..ε)} (1 + x)
+
+def gauss_pentagramma(alpha, beta, gamma, delta, epsilon):
+    """
+    Validate and relate the five tan^2 lengths of the pentagramma arcs.
+
+    Returns a dict with:
+      'identity_checks': list of booleans for 1+x = product relations,
+      'beautiful_equality': boolean for αβγδε == 3 + sum == ∏(1+xi),
+      'values': dict of input parameters.
+
+    Example:
+        # Example 'abcde' values:
+        α, β, γ, δ, ε = 9, 2/3, 2, 5, 1/3
+        # Product αβγδε = 9 * (2/3) * 2 * 5 * (1/3) = 20
+        result = gauss_pentagramma(9, 2/3, 2, 5, 1/3)
+        # result['beautiful_equality'] indicates whether Gauss's relations hold
+    """
+    checks = [
+        math.isclose(1+alpha, gamma*delta, rel_tol=1e-9),
+        math.isclose(1+beta, delta*epsilon, rel_tol=1e-9),
+        math.isclose(1+gamma, alpha*epsilon, rel_tol=1e-9),
+        math.isclose(1+delta, alpha*beta, rel_tol=1e-9),
+        math.isclose(1+epsilon, beta*gamma, rel_tol=1e-9)
+    ]
+    prod_all = alpha*beta*gamma*delta*epsilon
+    sum_all = alpha+beta+gamma+delta+epsilon
+    prod_ones = (1+alpha)*(1+beta)*(1+gamma)*(1+delta)*(1+epsilon)
+    beautiful = (math.isclose(prod_all, 3+sum_all, rel_tol=1e-9) and
+                 math.isclose(prod_all, prod_ones, rel_tol=1e-9))
+    return {
+        'identity_checks': checks,
+        'beautiful_equality': beautiful,
+        'values': dict(alpha=alpha, beta=beta, gamma=gamma, delta=delta, epsilon=epsilon)
+    }
+
+#===============================================================================
+# Pytest Test Suite
+#===============================================================================
+def test_gauss_pentagramma_valid():
+    # Validate Gauss relationships using example abcde
+    α, β, γ, δ, ε = 9, 2/3, 2, 5, 1/3
+    # product αβγδε = 9 * (2/3) * 2 * 5 * (1/3) = 20
+    print(f"αβγδε = 9 * (2/3) * 2 * 5 * (1/3) = {α*β*γ*δ*ε} (should equal 20)")
+    res = gauss_pentagramma(α, β, γ, δ, ε)
+    assert math.isclose(res['values']['alpha'] * res['values']['beta'] * res['values']['gamma'] * res['values']['delta'] * res['values']['epsilon'], 20, rel_tol=1e-9)
+    assert isinstance(res['beautiful_equality'], bool)
+    assert len(res['identity_checks']) == 5
+
+#===============================================================================
+# CLI
+#===============================================================================
+if __name__ == '__main__':
+    import argparse
+    p = argparse.ArgumentParser(description='Spherical Geometry Toolkit')
+    sub = p.add_subparsers(dest='cmd')
+    d = sub.add_parser('direct'); d.add_argument('lat1',type=float); d.add_argument('lon1',type=float); d.add_argument('az1',type=float); d.add_argument('dist',type=float); d.add_argument('--unit',choices=['miles','feet'],default='miles'); d.add_argument('--no-ellipsoid',action='store_true')
+    i = sub.add_parser('inverse'); i.add_argument('lat1',type=float); i.add_argument('lon1',type=float); i.add_argument('lat2',type=float); i.add_argument('lon2',type=float); i.add_argument('--unit',choices=['miles','feet'],default='miles'); i.add_argument('--no-ellipsoid',action='store_true')
+    g = sub.add_parser('gauss'); g.add_argument('alpha',type=float); g.add_argument('beta',type=float); g.add_argument('gamma',type=float); g.add_argument('delta',type=float); g.add_argument('epsilon',type=float)
+    t = sub.add_parser('test');
+    args = p.parse_args()
+    if args.cmd == 'direct':
+        print(direct_geodetic(args.lat1,args.lon1,args.az1,args.dist,unit=args.unit,ellipsoid=not args.no_ellipsoid))
+    elif args.cmd == 'inverse':
+        print(inverse_geodetic(args.lat1,args.lon1,args.lat2,args.lon2,unit=args.unit,ellipsoid=not args.no_ellipsoid))
+    elif args.cmd == 'gauss':
+        out = gauss_pentagramma(args.alpha,args.beta,args.gamma,args.delta,args.epsilon)
+        print(out)
+    elif args.cmd == 'test':
+        test_gauss_pentagramma_valid()
+
+    # Example for find_longitudes_for_known_latitude_and_distance
+    # print("\nExample for find_longitudes_for_known_latitude_and_distance:")
+    # lat1_ex, lon1_ex = 38.0, -77.0
+    # dist_ex_miles = 100.0
+    # lat2_target_ex = 38.5
+    # print(f"Finding lon2 for P1=({lat1_ex}, {lon1_ex}), dist={dist_ex_miles} mi, lat2={lat2_target_ex}")
+    # lon2_solutions = find_longitudes_for_known_latitude_and_distance(
+    #     lat1_ex, lon1_ex, dist_ex_miles, lat2_target_ex, ellipsoid=True
+    # )
+    # if lon2_solutions:
+    #     for lon2_sol in lon2_solutions:
+    #         print(f"  Solution lon2: {lon2_sol:.8f}")
+    #         # Verify
+    #         az1, az2, dist_calc = inverse_geodetic(lat1_ex, lon1_ex, lat2_target_ex, lon2_sol)
+    #         print(f"    Verification: calculated distance = {dist_calc:.8f} mi (target was {dist_ex_miles:.8f} mi)")
+    # else:
+    #     print("  No solution found.")
+
+    else:
+        p.print_help()
+

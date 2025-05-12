@@ -1,7 +1,9 @@
 # Large data files
-data/Roadway_SubBlock.geojson
-data/*.xlsx
-data/*.tif
+#data/Roadway_SubBlock.geojson
+#data/*.xlsx
+#data/*.tif
+# Entire Data folder:
+data/
 
 # dev folder contents
 dev/

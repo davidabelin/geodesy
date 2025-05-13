@@ -183,15 +183,15 @@ def main():
     p.add_argument('--plot', action='store_true', help='Plot output')
     args = p.parse_args()
 
-    verts, sr, mi2 = compute_pentagramma(args.lat, args.lon, args.bearing, args.side, args.regular)
+    verts, excess, area = compute_pentagramma(args.lat, args.lon, args.bearing, args.side, args.regular)
     
     if args.plot:
         # Example parameters
         lat0, lon0 = 38.892751, -77.051444
         bearing0 = 0.0
-        side0 = 71.565/360*2*math.pi * R_MILES
+        side0 = 10 #71.565/360*2*math.pi * R_MILES
         reg = False
-        verts = compute_pentagramma(lat0, lon0, bearing0, side0, regular=reg)
+        verts, excess, area = compute_pentagramma(lat0, lon0, bearing0, side0, regular=reg)
         lats = [v[0] for v in verts] + [verts[0][0]]
         lons = [v[1] for v in verts] + [verts[0][1]]
 
@@ -201,8 +201,8 @@ def main():
             fig = plt.figure(figsize=(8, 6))
             ax = fig.add_subplot(1, 1, 1, projection=proj)
             # draw land and ocean for context
-            ax.add_feature(cfeature.LAND.with_scale('50m'), facecolor='lightgray')
-            ax.add_feature(cfeature.OCEAN.with_scale('50m'), facecolor='azure')
+            ax.add_feature(cfeature.LAND.with_scale('10m'), facecolor='lightgray')
+            ax.add_feature(cfeature.OCEAN.with_scale('10m'), facecolor='azure')
             # draw gridlines
             gl = ax.gridlines(draw_labels=True, dms=True, x_inline=False, y_inline=False)
             gl.top_labels = gl.right_labels = False
@@ -232,12 +232,16 @@ def main():
 
     if args.csv:
         print('V,Lat,Lon')
-        for i, (la, lo) in enumerate(verts, 1): print(f'{i},{la:.6f},{lo:.6f}')
+        for i, (la, lo) in enumerate(verts, 1): 
+            print(f'pmNC{i},{la:.9f},{lo:.9f}')
+        print(f'excess:\t{excess:.9f}\narea:\t{area:.9f} mi^2')
     else:
         shape = 'Regular' if args.regular else 'Irregular'
         print(f"{shape} Pentagramma Vertices:")
-        for i,(la,lo) in enumerate(verts,1): print(f"  V{i}: {la:.6f}°, {lo:.6f}°")
-        print(f"Area: {sr:.6f} sr ({mi2:.2f} mi^2)")
+        for i,(la,lo) in enumerate(verts,1):
+            print(f"  V{i}: {la:.9f}°, {lo:.9f}°")
+        print(f'  Area:  {area:-.1f} mi^2')
+        print(f'  Excess:  2π - sum(sigma) = {excess:.9f}')
 
 if __name__ == '__main__':
     main()

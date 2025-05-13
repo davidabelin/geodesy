@@ -208,9 +208,8 @@ def delambre(a, b, c, A, B, C):
 
 _GEOID = Geod(ellps='WGS84')
 
-
 def direct_geodetic(phi1: float, lam1: float, az1: float, dist: float,
-                    unit: str='miles', ellipsoid: bool=True) -> Tuple[float, float, float]:
+                    unit: str='miles', ellipsoid: bool=False) -> Tuple[float, float, float]:
     """
     Forward geodetic: given lat1, lon1, azimuth, distance -> lat2, lon2, back azimuth.
     Supports ellipsoidal (pyproj) and spherical.
@@ -234,9 +233,8 @@ def direct_geodetic(phi1: float, lam1: float, az1: float, dist: float,
                      math.cos(az1r)*math.cos(sigma))
     return phi2*RAD2DEG, lam2*RAD2DEG, az2*RAD2DEG
 
-
 def inverse_geodetic(phi1: float, lam1: float, phi2: float, lam2: float,
-                      unit: str='miles', ellipsoid: bool=True) -> Tuple[float, float, float]:
+                      unit: str='miles', ellipsoid: bool=False) -> Tuple[float, float, float]:
     """
     Inverse geodetic: given two lat/lon points -> az1, az2, distance.
     """
@@ -315,7 +313,8 @@ def fsolve_root(func: Callable[..., float], x0: float, *args, **kwargs) -> float
 #===============================================================================
 
 def find_longitudes_for_known_latitude_and_distance(
-        lat1_deg, lon1_deg, distance_miles, lat2_target_deg, ellipsoid=True, tol=1e-9
+                            lat1_deg, lon1_deg, distance_miles, 
+                            lat2_target_deg, ellipsoid: bool=False, tol=1e-9
     ):
     """
     Finds the longitude(s) of a second point, given the first point (lat1, lon1),
@@ -410,10 +409,10 @@ def find_longitudes_for_known_latitude_and_distance(
         return sorted(list(set(solutions))) # Unique sorted solutions
 
     # Ellipsoidal refinement using fsolve
-    def objective_func(lon2_arr_deg, lat1_d, lon1_d, lat2_target_d, dist_miles_target):
+    def objective_func(lon2_arr_deg, lat1_d, lon1_d, lat2_target_d, dist_miles_target, ellipsoid_setting):
         lon2_cand_deg = lon2_arr_deg[0]
         _, _, calculated_dist = inverse_geodetic(
-            lat1_d, lon1_d, lat2_target_d, lon2_cand_deg, unit='miles', ellipsoid=True
+            lat1_d, lon1_d, lat2_target_d, lon2_cand_deg, unit='miles', ellipsoid=ellipsoid_setting
         )
         return calculated_dist - dist_miles_target
 
@@ -421,12 +420,12 @@ def find_longitudes_for_known_latitude_and_distance(
     lon2_guess_deg_1 = normalize_longitude(math.degrees(lon2_guess_rad_1))
     lon2_sol1_arr, _, ier1, _ = fsolve(
         objective_func, x0=[lon2_guess_deg_1], 
-        args=(lat1_deg, lon1_deg, lat2_target_deg, distance_miles),
+        args=(lat1_deg, lon1_deg, lat2_target_deg, distance_miles, ellipsoid),
         full_output=True, xtol=1e-10 # Set tolerance for fsolve
     )
     if ier1 == 1: # Solution found
         # Check if the solution is valid (distance matches closely)
-        final_check_dist_1 = objective_func(lon2_sol1_arr, lat1_deg, lon1_deg, lat2_target_deg, distance_miles) + distance_miles
+        final_check_dist_1 = objective_func(lon2_sol1_arr, lat1_deg, lon1_deg, lat2_target_deg, distance_miles, ellipsoid) + distance_miles
         if abs(final_check_dist_1 - distance_miles) < distance_miles * 1e-7: # Relative tolerance for distance match
              solutions.append(normalize_longitude(lon2_sol1_arr[0]))
 
@@ -444,21 +443,20 @@ def find_longitudes_for_known_latitude_and_distance(
 
         lon2_sol2_arr, _, ier2, _ = fsolve(
             objective_func, x0=[lon2_guess_deg_2],
-            args=(lat1_deg, lon1_deg, lat2_target_deg, distance_miles),
+            args=(lat1_deg, lon1_deg, lat2_target_deg, distance_miles, ellipsoid),
             full_output=True, xtol=1e-10
         )
         if ier2 == 1:
-            final_check_dist_2 = objective_func(lon2_sol2_arr, lat1_deg, lon1_deg, lat2_target_deg, distance_miles) + distance_miles
+            final_check_dist_2 = objective_func(lon2_sol2_arr, lat1_deg, lon1_deg, lat2_target_deg, distance_miles, ellipsoid) + distance_miles
             if abs(final_check_dist_2 - distance_miles) < distance_miles * 1e-7:
                 solutions.append(normalize_longitude(lon2_sol2_arr[0]))
 
     return sorted(list(set(s for s in solutions if not math.isnan(s)))) # Unique, sorted, non-NaN solutions
 
-
 def find_latitudes_for_known_longitude_and_distance(
-        lat1_deg: float, lon1_deg: float,
-        distance_miles: float, lon2_target_deg: float,
-        ellipsoid: bool=True, tol: float=1e-9
+                        lat1_deg: float, lon1_deg: float,
+                        distance_miles: float, lon2_target_deg: float,
+                        ellipsoid: bool=False, tol: float=1e-9
     ) -> List[float]:
     """
     Find latitude(s) lat2 such that distance(P1, P2)=distance and lon2=lon2_target.
@@ -560,16 +558,13 @@ def read_geojson(path):
     if isinstance(path, dict): return path
     return gpd.read_file(path) if gpd else json.load(open(path))
 
-
 def read_raster(path):
     if not rasterio: raise RuntimeError('rasterio needed')
     return rasterio.open(path)
 
-
 def mask_raster_dataset(dataset, shapes, crop=True):
     if not rasterio: raise RuntimeError('rasterio needed')
     return rio_mask(dataset, shapes, crop=crop)
-
 
 def geojson_to_kml(geoobj, kml_path, color_field=None, default_color='ff0000ff'):
     if not simplekml: raise RuntimeError('simplekml needed')
@@ -603,17 +598,54 @@ def print_triangles_csv(locs, triad_names):
         print(row)
 
 #===============================================================================
-# Golden Spiral Generator & Plotter
+# Spiral Generator & Plotter
 #===============================================================================
 
-def generate_golden_spiral(lat0: float, lon0: float,
-                           initial_bearing: float, base_dist: float,
-                           legs: int, phi: float=(1+math.sqrt(5))/2,
-                           ccw: bool=False, ellipsoid: bool=True
+def walk_angles(init_lat: float, init_lon: float,
+                init_bearing: float=0.0, num_turns: int=4,
+                turn_angle: float=90.0, walk_dist: float=10.0,
+                change_rate: float=1.0, ellipsoid: bool=False
     ) -> List[Tuple[float,float]]:
     """
-    Generate points of a spherical golden-ratio right-angle spiral.
+    Params
+    Generates a sequence of points by "walking" from a starting point.
+    Each step involves moving a certain distance along a bearing, then turning.
+    The distance can change with each step.
 
+    Args:
+        init_lat (float): Starting latitude in degrees.
+        init_lon (float): Starting longitude in degrees.
+        init_bearing (float, optional): Initial bearing in degrees clockwise from North. Defaults to 0.0.
+        num_turns (int, optional): Number of legs/steps to take. Defaults to 4.
+        turn_angle (float, optional): Angle to turn at each step, in degrees.
+                                      Positive for clockwise. Defaults to 90.0.
+        walk_dist (float, optional): Initial distance for the first leg, in miles. Defaults to 10.0.
+        change_rate (float, optional): Factor by which walk_dist changes for subsequent legs.
+                                       1.0 means constant distance. Defaults to 1.0.
+        ellipsoid (bool, optional): If True, use ellipsoidal calculations. Defaults to False (spherical).
+
+    Returns:
+        points: list a sequence of generated (lat, lon) walk-points
+    """
+    pts = [(init_lat, init_lon)]
+    lat, lon, bearing = init_lat, init_lon, init_bearing
+    current_walk_dist = walk_dist
+    for _ in range(num_turns):
+        lat, lon, fwd_az = direct_geodetic(lat, lon, bearing, current_walk_dist, unit='miles', ellipsoid=ellipsoid)
+        pts.append((lat, lon))
+        bearing = (fwd_az + turn_angle) % 360
+        current_walk_dist *= change_rate
+    return pts
+
+def golden_spiral_in(lat0: float, lon0: float,
+                           initial_bearing: float, base_dist: float,
+                           legs: int, phi: float=(1+math.sqrt(5))/2,
+                           ccw: bool=False, ellipsoid: bool=False
+    ) -> List[Tuple[float,float]]:
+    """
+    Generate points of a spherical right-angle golden-ratio spiral.
+    Spiral is INward: sides get progressively *smaller* from base_dist.
+    Turns are clockwise by default; or, set --ccw True.
     Returns list of (lat, lon) including starting point.
     """
     pts = [(lat0, lon0)]
@@ -627,12 +659,32 @@ def generate_golden_spiral(lat0: float, lon0: float,
         dist /= phi
     return pts
 
+def golden_spiral_out(lat0: float, lon0: float,
+                           initial_bearing: float, base_dist: float,
+                           legs: int, phi: float=(1+math.sqrt(5))/2,
+                           ccw: bool=False, ellipsoid: bool=False
+    ) -> List[Tuple[float,float]]:
+    """
+    Generate points of a spherical right-angle golden-ratio spiral.
+    Spiral is OUTward: sides get progressively *larger* from base_dist.
+    Turns are clockwise by default; or, set --ccw True.
+    Returns list of #{legs} (lat, lon) points (includes start).
+    """
+    pts = [(lat0, lon0)]
+    lat, lon, brng = lat0, lon0, initial_bearing
+    dist = base_dist
+    for _ in range(legs):
+        lat, lon, fwd = direct_geodetic(lat, lon, brng, dist,
+                                        unit='miles', ellipsoid=ellipsoid)
+        pts.append((lat, lon))
+        brng = (fwd + (90 if ccw else -90)) % 360
+        dist *= phi
+    return pts
 
-def plot_golden_spiral(pts: List[Tuple[float,float]],
+def golden_spiral_plot_in(pts: List[Tuple[float,float]],
                        projection: str='plate', pad: float=0.01) -> None:
     """
     Plot a golden spiral given list of (lat, lon) points.
-
     Uses cartopy if available, else matplotlib.
     """
     try:
@@ -681,65 +733,113 @@ def plot_golden_spiral(pts: List[Tuple[float,float]],
         plt.show()
 
 #===============================================================================
-# CLI
+# Start CLI
 #===============================================================================
 if __name__ == '__main__':
     import argparse
     p = argparse.ArgumentParser(description='Spherical Geometry Toolkit')
     sub = p.add_subparsers(dest='cmd')
-    d = sub.add_parser('direct'); d.add_argument('lat1',type=float); d.add_argument('lon1',type=float); d.add_argument('az1',type=float); d.add_argument('dist',type=float); d.add_argument('--unit',choices=['miles','feet'],default='miles'); d.add_argument('--no-ellipsoid',action='store_true')
-    i = sub.add_parser('inverse'); i.add_argument('lat1',type=float); i.add_argument('lon1',type=float); i.add_argument('lat2',type=float); i.add_argument('lon2',type=float); i.add_argument('--unit',choices=['miles','feet'],default='miles'); i.add_argument('--no-ellipsoid',action='store_true')
+    
+    d_help = 'Forward geodetic: lat1, lon1, az1, dist -> lat2, lon2, az2'
+    d = sub.add_parser('direct', help=d_help)
+    d.add_argument('lat1',type=float); d.add_argument('lon1',type=float)
+    d.add_argument('az1',type=float); d.add_argument('dist',type=float)
+    d.add_argument('--unit',choices=['miles','feet'],default='miles')
+    d.add_argument('--ellipsoid',action='store_true', help='Use WGS84 ellipsoid (default: spherical)')
+    
+    i_help = 'Inverse geodetic: lat1, lon1, lat2, lon2 -> az1, az2, dist'
+    i = sub.add_parser('inverse', help=i_help)
+    i.add_argument('lat1',type=float); i.add_argument('lon1',type=float)
+    i.add_argument('lat2',type=float); i.add_argument('lon2',type=float)
+    i.add_argument('--unit',choices=['miles','feet'],default='miles')
+    i.add_argument('--ellipsoid',action='store_true', help='Use WGS84 ellipsoid (default: spherical)')
+    
     g = sub.add_parser('gauss'); g.add_argument('alpha',type=float); g.add_argument('beta',type=float); g.add_argument('gamma',type=float); g.add_argument('delta',type=float); g.add_argument('epsilon',type=float)
     t = sub.add_parser('test')
-    # New commands:
-    sp = sub.add_parser('spiral', help='Generate golden spiral points')
-    sp.add_argument('--base', type=float, default=1.0, help='Base leg length (mi)')
-    sp.add_argument('--legs', type=int, default=5, help='Number of legs')
-    sp.add_argument('--lat0', type=float, required=True, help='Start latitude')
-    sp.add_argument('--lon0', type=float, required=True, help='Start longitude')
-    sp.add_argument('--bearing', type=float, default=90.0, help='Initial bearing')
+    
+# Developing CLI Functionality
+# Interfaces with every defined function centrally located here
+# Eventually all these functions will be in active use by a dynamic web app,
+# so having everything here in one place now will help with that migration later.
+#===============================================================================
+    
+    spw = sub.add_parser('walk', help='Find points on a progression of angles and side lengths')
+    spw.add_argument('lat0', type=float, help='Start latitude')
+    spw.add_argument('lon0', type=float, help='Start longitude')
+    spw.add_argument('init_bearing', type=float, default=90.0, help='Initial bearing (cw: N=0, E=90)')
+    spw.add_argument('turn_angle', type=float, default=90.0, help='Change in bearing each step (deg, cw)')
+    spw.add_argument('walk_dist', type=float, default=1.0, help='Initial side length (mi)')
+    spw.add_argument('num_turns', type=int, default=4, help='Number of steps to take')
+    spw.add_argument('change_rate', type=float, default=1.0, help='Ratio of side distance each step (1.0=same)')    
+    spw.add_argument('--ellipsoid', action='store_true', help='Use WGS84 ellipsoid for calculations (default: spherical)')
+    
+    sp = sub.add_parser('golden-spiral-in', help='Generate golden spiral points')
+    sp.add_argument('lat0', type=float, default=39.0, help='Start latitude')
+    sp.add_argument('lon0', type=float, default=-77.0, help='Start longitude')
+    sp.add_argument('base', type=float, default=10.0, help='Base leg length (mi)')
+    sp.add_argument('legs', type=int, default=5, help='Number of legs')
+    sp.add_argument('bearing', type=float, default=45.0, help='Initial bearing')
+    sp.add_argument('tag', type=str, default='', help='Point label (default=serial_num)')
     sp.add_argument('--ccw', action='store_true', help='Counter-clockwise spiral')
-    spp = sub.add_parser('spiral-plot', help='Plot golden spiral')
-    spp.add_argument('--base', type=float, default=1.0)
-    spp.add_argument('--legs', type=int, default=5)
+    
+    spp = sub.add_parser('golden-spiral-plot-in', help='Plot golden spiral')
     spp.add_argument('--lat0', type=float, required=True)
     spp.add_argument('--lon0', type=float, required=True)
+    spp.add_argument('--base', type=float, default=1.0)
+    spp.add_argument('--legs', type=int, default=5)
     spp.add_argument('--bearing', type=float, default=90.0)
     spp.add_argument('--ccw', action='store_true')
-    spp.add_argument('--projection', choices=['plate','ortho'], default='plate')
+    spp.add_argument('--projection', choices=['plate','ortho'], default='ortho')
     spp.add_argument('--pad', type=float, default=0.01)
-    f3 = sub.add_parser('find-lat3', help='Find latitudes for fixed lon and distance')
+        
+    sp = sub.add_parser('golden-spiral-out', help='Generate golden spiral points')
+    sp.add_argument('lat0', type=float, default=39.0, help='Start latitude')
+    sp.add_argument('lon0', type=float, default=-77.0, help='Start longitude')
+    sp.add_argument('base', type=float, default=10.0, help='Base leg length (mi)')
+    sp.add_argument('legs', type=int, default=5, help='Number of legs')
+    sp.add_argument('bearing', type=float, default=45.0, help='Initial bearing')
+    sp.add_argument('tag', type=str, default='', help='Point label (default=serial_num)')
+    sp.add_argument('--ccw', action='store_true', help='Counter-clockwise spiral')
+    
+    f3 = sub.add_parser('find-lat', help='Find latitudes for fixed lon and distance')
     f3.add_argument('lat1', type=float)
     f3.add_argument('lon1', type=float)
     f3.add_argument('lon2', type=float)
     f3.add_argument('dist', type=float)
-    f2 = sub.add_parser('find-lon2', help='Find longitudes for fixed lat and distance')
+    
+    f2 = sub.add_parser('find-lon', help='Find longitudes for fixed lat and distance')
     f2.add_argument('lat1', type=float)
     f2.add_argument('lon1', type=float)
     f2.add_argument('lat2', type=float)
     f2.add_argument('dist', type=float)
     args = p.parse_args()
+    
     if args.cmd == 'direct':
-        print(direct_geodetic(args.lat1,args.lon1,args.az1,args.dist,unit=args.unit,ellipsoid=not args.no_ellipsoid))
+        print(direct_geodetic(args.lat1,args.lon1,args.az1,args.dist,unit=args.unit,ellipsoid=args.ellipsoid))
     elif args.cmd == 'inverse':
-        print(inverse_geodetic(args.lat1,args.lon1,args.lat2,args.lon2,unit=args.unit,ellipsoid=not args.no_ellipsoid))
-    elif args.cmd == 'spiral':
-        pts = generate_golden_spiral(args.lat0, args.lon0,
+        print(inverse_geodetic(args.lat1,args.lon1,args.lat2,args.lon2,unit=args.unit,ellipsoid=args.ellipsoid))
+    elif args.cmd == 'golden-spiral-in':
+        pts = golden_spiral_in( args.lat0, args.lon0,
+                                args.bearing, args.base,
+                                args.legs, ccw=args.ccw,)
+        for i,(lat,lon) in enumerate(pts): print(f'{args.tag}{i}, {lat}, {lon}')
+    elif args.cmd == 'golden-spiral-plot-in':
+        pts = golden_spiral_in(args.lat0, args.lon0,
                                      args.bearing, args.base,
                                      args.legs, ccw=args.ccw)
-        for i,(lat,lon) in enumerate(pts): print(f'ANse75{i},{lat},{lon}')
-    elif args.cmd == 'spiral-plot':
-        pts = generate_golden_spiral(args.lat0, args.lon0,
-                                     args.bearing, args.base,
-                                     args.legs, ccw=args.ccw)
-        plot_golden_spiral(pts, projection=args.projection, pad=args.pad)
-    elif args.cmd == 'find-lat3':
+        golden_spiral_plot_in(pts, projection=args.projection, pad=args.pad)
+    elif args.cmd == 'find-lat':
         sols = find_latitudes_for_known_longitude_and_distance(
             args.lat1, args.lon1, args.dist, args.lon2)
         print(sols)
-    elif args.cmd == 'find-lon2':
+    elif args.cmd == 'find-lon':
         sols = find_longitudes_for_known_latitude_and_distance(
             args.lat1, args.lon1, args.dist, args.lat2)
         print(sols)
+    elif args.cmd == 'walk':
+        pts = walk_angles(args.lat0, args.lon0, args.init_bearing,
+                          args.num_turns, args.turn_angle, args.walk_dist,
+                          args.change_rate, ellipsoid=args.ellipsoid)
+        for i, (lat,lon) in enumerate(pts): print(f'{i}, {lat:.9f}, {lon:.9f}')
     else:
         p.print_help()

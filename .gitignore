@@ -169,3 +169,4 @@ cython_debug/
 
 # YAML
 .yaml
+data/vertices.csv

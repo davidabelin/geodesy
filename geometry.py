@@ -28,7 +28,7 @@ except ImportError:
 #===============================================================================
 # Constants and Unit Conversions
 #===============================================================================
-EARTH_RADIUS_MILES = 3958.7613
+EARTH_RADIUS_MILES = 3958
 EARTH_RADIUS_FEET = EARTH_RADIUS_MILES * 5280
 MILES_PER_FOOT = 1 / 5280.0
 MILES_PER_YARD = 3 / 5280.0
@@ -478,7 +478,6 @@ def find_latitudes_for_known_longitude_and_distance(
             continue
     return sorted(sols)
 
-
 # ----------------------------------------
 # Diamond Region Functions
 # ----------------------------------------
@@ -598,7 +597,7 @@ def print_triangles_csv(locs, triad_names):
         print(row)
 
 #===============================================================================
-# Spiral Generator & Plotter
+# Spiral Generators & Plotters
 #===============================================================================
 
 def walk_angles(init_lat: float, init_lon: float,
@@ -659,10 +658,10 @@ def golden_spiral_in(lat0: float, lon0: float,
         dist /= phi
     return pts
 
-def golden_spiral_out(lat0: float, lon0: float,
-                           initial_bearing: float, base_dist: float,
-                           legs: int, phi: float=(1+math.sqrt(5))/2,
-                           ccw: bool=False, ellipsoid: bool=False
+def golden_spiral_out(  lat0: float, lon0: float,
+                        initial_bearing: float, base_dist: float,
+                        legs: int, phi: float=(1+math.sqrt(5))/2,
+                        ccw: bool=False, ellipsoid: bool=False
     ) -> List[Tuple[float,float]]:
     """
     Generate points of a spherical right-angle golden-ratio spiral.
@@ -757,8 +756,7 @@ if __name__ == '__main__':
     g = sub.add_parser('gauss'); g.add_argument('alpha',type=float); g.add_argument('beta',type=float); g.add_argument('gamma',type=float); g.add_argument('delta',type=float); g.add_argument('epsilon',type=float)
     t = sub.add_parser('test')
     
-# Developing CLI Functionality
-# Interfaces with every defined function centrally located here
+# Developing CLI Interfaces with every defined function centrally located here
 # Eventually all these functions will be in active use by a dynamic web app,
 # so having everything here in one place now will help with that migration later.
 #===============================================================================
@@ -766,14 +764,15 @@ if __name__ == '__main__':
     spw = sub.add_parser('walk', help='Find points on a progression of angles and side lengths')
     spw.add_argument('lat0', type=float, help='Start latitude')
     spw.add_argument('lon0', type=float, help='Start longitude')
-    spw.add_argument('init_bearing', type=float, default=90.0, help='Initial bearing (cw: N=0, E=90)')
+    spw.add_argument('init_bearing', type=float, default=45.0, help='Initial bearing (cw: N=0, E=90)')
     spw.add_argument('turn_angle', type=float, default=90.0, help='Change in bearing each step (deg, cw)')
     spw.add_argument('walk_dist', type=float, default=1.0, help='Initial side length (mi)')
     spw.add_argument('num_turns', type=int, default=4, help='Number of steps to take')
     spw.add_argument('change_rate', type=float, default=1.0, help='Ratio of side distance each step (1.0=same)')    
+    spw.add_argument('tag', type=str, default='', help='Point label (default is digits in sequence)')
     spw.add_argument('--ellipsoid', action='store_true', help='Use WGS84 ellipsoid for calculations (default: spherical)')
     
-    sp = sub.add_parser('golden-spiral-in', help='Generate golden spiral points')
+    sp = sub.add_parser('golden-spiral-in', help='Generate inward-growing golden spiral points')
     sp.add_argument('lat0', type=float, default=39.0, help='Start latitude')
     sp.add_argument('lon0', type=float, default=-77.0, help='Start longitude')
     sp.add_argument('base', type=float, default=10.0, help='Base leg length (mi)')
@@ -781,6 +780,7 @@ if __name__ == '__main__':
     sp.add_argument('bearing', type=float, default=45.0, help='Initial bearing')
     sp.add_argument('tag', type=str, default='', help='Point label (default=serial_num)')
     sp.add_argument('--ccw', action='store_true', help='Counter-clockwise spiral')
+    sp.add_argument('--ellipsoid', action='store_true', help='Use WGS84 ellipsoid for calculations (default: spherical)')
     
     spp = sub.add_parser('golden-spiral-plot-in', help='Plot golden spiral')
     spp.add_argument('--lat0', type=float, required=True)
@@ -789,17 +789,20 @@ if __name__ == '__main__':
     spp.add_argument('--legs', type=int, default=5)
     spp.add_argument('--bearing', type=float, default=90.0)
     spp.add_argument('--ccw', action='store_true')
+    spp.add_argument('--ellipsoid', action='store_true', help='Use WGS84 ellipsoid for calculations (default: spherical)')
     spp.add_argument('--projection', choices=['plate','ortho'], default='ortho')
     spp.add_argument('--pad', type=float, default=0.01)
-        
-    sp = sub.add_parser('golden-spiral-out', help='Generate golden spiral points')
+    
+    # TO DO Combine -in/-out as an option for one param: gold-spiral --in default: out
+    sp = sub.add_parser('golden-spiral-out', help='Generate outward-growing golden spiral points')
     sp.add_argument('lat0', type=float, default=39.0, help='Start latitude')
     sp.add_argument('lon0', type=float, default=-77.0, help='Start longitude')
-    sp.add_argument('base', type=float, default=10.0, help='Base leg length (mi)')
+    sp.add_argument('base', type=float, default=1.0, help='Base leg length (mi)')
     sp.add_argument('legs', type=int, default=5, help='Number of legs')
     sp.add_argument('bearing', type=float, default=45.0, help='Initial bearing')
     sp.add_argument('tag', type=str, default='', help='Point label (default=serial_num)')
     sp.add_argument('--ccw', action='store_true', help='Counter-clockwise spiral')
+    sp.add_argument('--ellipsoid', action='store_true', help='Use WGS84 ellipsoid for calculations (default: spherical)')
     
     f3 = sub.add_parser('find-lat', help='Find latitudes for fixed lon and distance')
     f3.add_argument('lat1', type=float)
@@ -812,8 +815,8 @@ if __name__ == '__main__':
     f2.add_argument('lon1', type=float)
     f2.add_argument('lat2', type=float)
     f2.add_argument('dist', type=float)
-    args = p.parse_args()
     
+    args = p.parse_args()
     if args.cmd == 'direct':
         print(direct_geodetic(args.lat1,args.lon1,args.az1,args.dist,unit=args.unit,ellipsoid=args.ellipsoid))
     elif args.cmd == 'inverse':
@@ -821,13 +824,19 @@ if __name__ == '__main__':
     elif args.cmd == 'golden-spiral-in':
         pts = golden_spiral_in( args.lat0, args.lon0,
                                 args.bearing, args.base,
-                                args.legs, ccw=args.ccw,)
+                                args.legs, ccw=args.ccw, ellipsoid=args.ellipsoid)
         for i,(lat,lon) in enumerate(pts): print(f'{args.tag}{i}, {lat}, {lon}')
     elif args.cmd == 'golden-spiral-plot-in':
         pts = golden_spiral_in(args.lat0, args.lon0,
                                      args.bearing, args.base,
                                      args.legs, ccw=args.ccw)
         golden_spiral_plot_in(pts, projection=args.projection, pad=args.pad)
+    elif args.cmd == 'golden-spiral-out':
+        pts = golden_spiral_out(args.lat0, args.lon0,
+                                args.bearing, args.base,
+                                args.legs, ccw=args.ccw,
+                                ellipsoid=args.ellipsoid)
+        for i,(lat,lon) in enumerate(pts): print(f'{args.tag}{i}, {lat}, {lon}')
     elif args.cmd == 'find-lat':
         sols = find_latitudes_for_known_longitude_and_distance(
             args.lat1, args.lon1, args.dist, args.lon2)

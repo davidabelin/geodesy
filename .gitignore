@@ -10,6 +10,7 @@ dev/
 
 # image folder contents
 image/
+images/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -170,3 +171,4 @@ cython_debug/
 # YAML
 .yaml
 data/vertices.csv
+images/master_plan.tif

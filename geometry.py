@@ -545,10 +545,6 @@ def diamond_corners(phi_c_deg, lam_c_deg, dphi, dlam):
         (phi_c_deg, lam_c_deg - math.degrees(dlam))
     ]
 
-# End of diamond functions
-# ----------------------------------------
-
-
 #===============================================================================
 # I/O Utilities
 #===============================================================================
@@ -658,6 +654,7 @@ def golden_spiral_in(lat0: float, lon0: float,
         dist /= phi
     return pts
 
+# TO DO Combine -in/-out as an option for one param: gold-spiral --in default: out
 def golden_spiral_out(  lat0: float, lon0: float,
                         initial_bearing: float, base_dist: float,
                         legs: int, phi: float=(1+math.sqrt(5))/2,
@@ -732,8 +729,20 @@ def golden_spiral_plot_in(pts: List[Tuple[float,float]],
         plt.show()
 
 #===============================================================================
-# Start CLI
+# Placeholders for Street & Highpoint:
+# TODO: Integrate functions from streets.py (GPD operations, plotting)
+# TODO: Integrate functions from highpoints.py (DEM masking, peak extraction)
+
 #===============================================================================
+# CLI
+#===============================================================================
+# Developing CLI Interfaces for *every* defined geodesy function
+# all centrally located here.
+### TO DO
+### Eventually all these functions will be in active use by a dynamic web app.
+### Having everything here in one place now will help with that migration later.
+#===============================================================================
+
 if __name__ == '__main__':
     import argparse
     p = argparse.ArgumentParser(description='Spherical Geometry Toolkit')
@@ -755,12 +764,7 @@ if __name__ == '__main__':
     
     g = sub.add_parser('gauss'); g.add_argument('alpha',type=float); g.add_argument('beta',type=float); g.add_argument('gamma',type=float); g.add_argument('delta',type=float); g.add_argument('epsilon',type=float)
     t = sub.add_parser('test')
-    
-# Developing CLI Interfaces with every defined function centrally located here
-# Eventually all these functions will be in active use by a dynamic web app,
-# so having everything here in one place now will help with that migration later.
-#===============================================================================
-    
+
     spw = sub.add_parser('walk', help='Find points on a progression of angles and side lengths')
     spw.add_argument('lat0', type=float, help='Start latitude')
     spw.add_argument('lon0', type=float, help='Start longitude')
@@ -793,7 +797,6 @@ if __name__ == '__main__':
     spp.add_argument('--projection', choices=['plate','ortho'], default='ortho')
     spp.add_argument('--pad', type=float, default=0.01)
     
-    # TO DO Combine -in/-out as an option for one param: gold-spiral --in default: out
     sp = sub.add_parser('golden-spiral-out', help='Generate outward-growing golden spiral points')
     sp.add_argument('lat0', type=float, default=39.0, help='Start latitude')
     sp.add_argument('lon0', type=float, default=-77.0, help='Start longitude')

@@ -7,7 +7,7 @@ import geojson
 
 # --- Configuration ---
 # Absolute path to your input CSV file with point data
-CSV_FILE_PATH = r"data\points_of_interest.csv"
+CSV_FILE_PATH = r"data\start_points.csv"
 # Absolute path to your Digital Elevation Model (DEM) GeoTIFF file
 DEM_FILE_PATH = r"data\downloaded\dc_dem.tif"
 # Absolute path for the output GeoJSON file

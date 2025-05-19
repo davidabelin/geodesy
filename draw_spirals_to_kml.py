@@ -137,7 +137,6 @@ def generate_kml_from_csv(csv_filepath, kml_filepath, include_points):
         current_line_color = line_color_palette[current_color_idx]
         current_icon_color = icon_color_palette[current_color_idx]
 
-
         # Sort points by their numeric suffix to ensure correct line order
         sorted_points = sorted(points_list, key=lambda p: p['num'])
 
@@ -191,10 +190,10 @@ def generate_kml_from_csv(csv_filepath, kml_filepath, include_points):
 
 if __name__ == "__main__":
     # Default path to your input CSV file
-    input_csv_file = r"c:\Users\David\Documents\Local_Python\geodesy\data\vertices.csv"
+    input_csv_file = r"c:\Users\David\Documents\Local_Python\geodesy\data\spirals.csv"
     
     # Default output KML file path (saved in the same directory as the CSV)
-    output_kml_file = os.path.join(os.path.dirname(input_csv_file), "vertines.kml")
+    output_kml_file = os.path.join(os.path.dirname(input_csv_file), "spirals.kml")
 
     p = argparse.ArgumentParser(description='Geodetic Connect-the-Dots Utility')
     sub = p.add_subparsers(dest='cmd')

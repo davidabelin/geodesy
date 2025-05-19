@@ -1,15 +1,20 @@
+import csv
+import os
 import math
 import json
+import argparse
+from collections import defaultdict
 from pathlib import Path
 from typing import List, Tuple, Callable, Optional
+from pyproj import Geod
 
 # Optional dependencies
 try:
     import numpy as np
+    import re
 except ImportError:
     np = None
-
-from pyproj import Geod
+    re = None
 
 # I/O dependencies
 try:
@@ -257,8 +262,10 @@ def inverse_geodetic(phi1: float, lam1: float, phi2: float, lam2: float,
     return az1*RAD2DEG % 360, az2*RAD2DEG % 360, dist
 
 # shorthand endpoint throws
-def throw_endpoint(start_lat: float, start_lon: float,
-                   distance: float, bearing: float,
+def throw_point(start_lat: float,
+                   start_lon: float,
+                   bearing: float,
+                   distance: float,
                    units: str='miles', radius: float=EARTH_RADIUS_MILES,
                    ellipsoid: bool=False) -> Tuple[float,float,float]:
     """
@@ -461,8 +468,10 @@ def find_latitudes_for_known_longitude_and_distance(
     """
     Find latitude(s) lat2 such that distance(P1, P2)=distance and lon2=lon2_target.
     """
-    def obj(lat2_deg: float) -> float:
-        _, _, d = inverse_geodetic(lat1_deg, lon1_deg, lat2_deg,
+    def obj(lat2_param) -> float: # lat2_param is a 1-element numpy array from fsolve
+        # Extract the scalar float value from the numpy array passed by fsolve
+        current_lat2_deg = float(lat2_param[0])
+        _, _, d = inverse_geodetic(lat1_deg, lon1_deg, current_lat2_deg,
                                    lon2_target_deg, unit='miles', ellipsoid=ellipsoid)
         return d - distance_miles
     # initial guesses (approx deg lat per mile)
@@ -591,6 +600,7 @@ def print_triangles_csv(locs, triad_names):
         row = f"'{A}','{B}','{C}',{angles['A']:.3f},{angles['B']:.3f},{angles['C']:.3f},"
         row += f"{sides['AB']:.8f},{sides['BC']:.8f},{sides['CA']:.8f}"
         print(row)
+
 
 #===============================================================================
 # Spiral Generators & Plotters
@@ -732,6 +742,132 @@ def golden_spiral_plot_in(pts: List[Tuple[float,float]],
 # Placeholders for Street & Highpoint:
 # TODO: Integrate functions from streets.py (GPD operations, plotting)
 # TODO: Integrate functions from highpoints.py (DEM masking, peak extraction)
+# TODO: Integrate get_altitudes_for_points()
+def get_altitudes_for_points(csv_path, dem_path, input_points_epsg):
+    """
+    Reads points from a CSV, queries their elevations from a DEM,
+    converts elevations to feet, and returns a list of dictionaries.
+    """
+    # --- Configuration ---
+    import rasterio.warp
+    # Absolute path to your input CSV file with point data
+    CSV_FILE_PATH = r"data\start_points.csv"
+    # Absolute path to your Digital Elevation Model (DEM) GeoTIFF file
+    DEM_FILE_PATH = r"data\downloaded\dc_dem.tif"
+    # Absolute path for the output GeoJSON file
+    GEOJSON_OUTPUT_PATH = r"data\poi_alt.geojson"
+    # EPSG code for the coordinate system of your input LAT/LON points
+    # NAD83 geographic coordinates (latitude/longitude)
+    INPUT_POINTS_EPSG = 4269 # For NAD83
+    # If your points were WGS84, you would use:
+    # INPUT_POINTS_EPSG = 4326 # For WGS84
+    # Conversion factor
+    METERS_TO_FEET = 3.28084
+    # --- End Configuration ---
+
+    input_lon_lat_coords = []  # Stores (lon, lat) tuples from CSV
+    initial_point_data = []    # Stores original data like LOC, LAT, LON
+
+    print(f"Reading points from: {csv_path}")
+    try:
+        with open(csv_path, 'r', newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            if not reader.fieldnames or not all(col in reader.fieldnames for col in ['LOC', 'LAT', 'LON']):
+                print(f"Error: CSV file must contain 'LOC', 'LAT', 'LON' columns. Found: {reader.fieldnames}")
+                return []
+
+            for row_num, row in enumerate(reader, 1):
+                try:
+                    loc = row['LOC']
+                    lat = float(row['LAT'])
+                    lon = float(row['LON'])
+                    
+                    input_lon_lat_coords.append((lon, lat))
+                    initial_point_data.append({'LOC': loc, 'LAT': lat, 'LON': lon, 'OriginalRow': row_num})
+                except (KeyError, ValueError) as e:
+                    print(f"Skipping row {row_num} due to error: {row} - {e}")
+                    continue
+    except FileNotFoundError:
+        print(f"Error: CSV file not found at {csv_path}")
+        return []
+    except Exception as e:
+        print(f"An unexpected error occurred while reading {csv_path}: {e}")
+        return []
+    
+    if not input_lon_lat_coords:
+        print("No valid points found or read from CSV file.")
+        return []
+
+    print(f"Querying elevations from DEM: {dem_path}")
+    processed_points_with_alt = []
+
+    try:
+        with rasterio.open(dem_path) as src_dem:
+            # Define the CRS of the input points
+            points_crs_input = rasterio.crs.CRS.from_epsg(input_points_epsg)
+            print(f"Assuming input point coordinates are in CRS: {points_crs_input.to_string()} (EPSG:{input_points_epsg})")
+            print(f"DEM CRS is: {src_dem.crs.to_string()}")
+
+            coords_for_sampling = input_lon_lat_coords 
+
+            # Transform coordinates if DEM's CRS is different from the input points' CRS
+            if src_dem.crs != points_crs_input:
+                print(f"DEM CRS ({src_dem.crs}) differs from input points CRS ({points_crs_input}). Transforming points for DEM sampling...")
+                lons = [p[0] for p in input_lon_lat_coords]
+                lats = [p[1] for p in input_lon_lat_coords]
+                
+                transformed_coords = rasterio.warp.transform(
+                    points_crs_input,    # Source CRS (e.g., NAD83)
+                    src_dem.crs,         # Destination CRS (DEM's CRS)
+                    lons,                # List of longitudes
+                    lats                 # List of latitudes
+                )
+                # Re-zip into (x, y) tuples for sampling
+                coords_for_sampling = list(zip(transformed_coords[0], transformed_coords[1]))
+            
+            # Sample DEM for elevations (returns a generator)
+            # The values are typically in meters for DEMs
+            sampled_elevations_m_raw = src_dem.sample(coords_for_sampling)
+            
+            # Extract the first band value for each point
+            # and combine with original data
+            for i, base_data in enumerate(initial_point_data):
+                elevation_m_array = next(sampled_elevations_m_raw) # Get the numpy array for the point
+                elevation_m = elevation_m_array[0] # Get the first (and only) band value
+                
+                alt_ft = None
+                valid_elevation_m = None 
+
+                # Check if the sampled elevation is the NoData value for the DEM
+                if src_dem.nodata is not None and elevation_m == src_dem.nodata:
+                    print(f"Warning: Point {base_data['LOC']} (Lat: {base_data['LAT']}, Lon: {base_data['LON']}) is on a NoData pixel or outside DEM extent. Elevation set to N/A.")
+                elif elevation_m is None or elevation_m < -10000: # Arbitrary large negative for potential other NoData markers
+                    print(f"Warning: Point {base_data['LOC']} (Lat: {base_data['LAT']}, Lon: {base_data['LON']}) has an invalid elevation value ({elevation_m}). Elevation set to N/A.")
+                else:
+                    try:
+                        valid_elevation_m = float(elevation_m)
+                        alt_ft = valid_elevation_m * METERS_TO_FEET
+                    except (ValueError, TypeError):
+                         print(f"Warning: Point {base_data['LOC']} (Lat: {base_data['LAT']}, Lon: {base_data['LON']}) has a non-numeric elevation value ({elevation_m}). Elevation set to N/A.")
+
+
+                processed_points_with_alt.append({
+                    **base_data, 
+                    'ALT_M': valid_elevation_m, 
+                    'ALT_FT': alt_ft            
+                })
+                
+    except FileNotFoundError:
+        print(f"Error: DEM file not found at {dem_path}")
+        return []
+    except rasterio.errors.RasterioIOError as e:
+        print(f"Error opening or reading DEM file {dem_path}: {e}")
+        return []
+    except Exception as e:
+        print(f"An unexpected error occurred during DEM processing: {e}")
+        return []
+            
+    return processed_points_with_alt
 
 #===============================================================================
 # CLI
@@ -744,7 +880,6 @@ def golden_spiral_plot_in(pts: List[Tuple[float,float]],
 #===============================================================================
 
 if __name__ == '__main__':
-    import argparse
     p = argparse.ArgumentParser(description='Spherical Geometry Toolkit')
     sub = p.add_subparsers(dest='cmd')
     
@@ -762,9 +897,14 @@ if __name__ == '__main__':
     i.add_argument('--unit',choices=['miles','feet'],default='miles')
     i.add_argument('--ellipsoid',action='store_true', help='Use WGS84 ellipsoid (default: spherical)')
     
-    g = sub.add_parser('gauss'); g.add_argument('alpha',type=float); g.add_argument('beta',type=float); g.add_argument('gamma',type=float); g.add_argument('delta',type=float); g.add_argument('epsilon',type=float)
-    t = sub.add_parser('test')
-
+    t_help = 'Throw a point by a distance and bearing'
+    t = sub.add_parser('throw', help=t_help)
+    t.add_argument('lat0',type=float)
+    t.add_argument('lon0',type=float)
+    t.add_argument('az',type=float)
+    t.add_argument('dist',type=float)
+    t.add_argument('--ellipsoid',action='store_true', help='Use WGS84 ellipsoid (default: spherical)')
+    
     spw = sub.add_parser('walk', help='Find points on a progression of angles and side lengths')
     spw.add_argument('lat0', type=float, help='Start latitude')
     spw.add_argument('lon0', type=float, help='Start longitude')
@@ -780,8 +920,8 @@ if __name__ == '__main__':
     sp.add_argument('lat0', type=float, default=39.0, help='Start latitude')
     sp.add_argument('lon0', type=float, default=-77.0, help='Start longitude')
     sp.add_argument('base', type=float, default=10.0, help='Base leg length (mi)')
-    sp.add_argument('legs', type=int, default=5, help='Number of legs')
     sp.add_argument('bearing', type=float, default=45.0, help='Initial bearing')
+    sp.add_argument('legs', type=int, default=5, help='Number of legs')
     sp.add_argument('tag', type=str, default='', help='Point label (default=serial_num)')
     sp.add_argument('--ccw', action='store_true', help='Counter-clockwise spiral')
     sp.add_argument('--ellipsoid', action='store_true', help='Use WGS84 ellipsoid for calculations (default: spherical)')
@@ -790,8 +930,8 @@ if __name__ == '__main__':
     spp.add_argument('--lat0', type=float, required=True)
     spp.add_argument('--lon0', type=float, required=True)
     spp.add_argument('--base', type=float, default=1.0)
-    spp.add_argument('--legs', type=int, default=5)
     spp.add_argument('--bearing', type=float, default=90.0)
+    spp.add_argument('--legs', type=int, default=5)
     spp.add_argument('--ccw', action='store_true')
     spp.add_argument('--ellipsoid', action='store_true', help='Use WGS84 ellipsoid for calculations (default: spherical)')
     spp.add_argument('--projection', choices=['plate','ortho'], default='ortho')
@@ -801,8 +941,8 @@ if __name__ == '__main__':
     sp.add_argument('lat0', type=float, default=39.0, help='Start latitude')
     sp.add_argument('lon0', type=float, default=-77.0, help='Start longitude')
     sp.add_argument('base', type=float, default=1.0, help='Base leg length (mi)')
+    sp.add_argument('bearing', type=float, default=45.0, help='Initial bearing (deg)')
     sp.add_argument('legs', type=int, default=5, help='Number of legs')
-    sp.add_argument('bearing', type=float, default=45.0, help='Initial bearing')
     sp.add_argument('tag', type=str, default='', help='Point label (default=serial_num)')
     sp.add_argument('--ccw', action='store_true', help='Counter-clockwise spiral')
     sp.add_argument('--ellipsoid', action='store_true', help='Use WGS84 ellipsoid for calculations (default: spherical)')
@@ -819,6 +959,9 @@ if __name__ == '__main__':
     f2.add_argument('lat2', type=float)
     f2.add_argument('dist', type=float)
     
+    g = sub.add_parser('gauss'); g.add_argument('alpha',type=float); g.add_argument('beta',type=float); g.add_argument('gamma',type=float); g.add_argument('delta',type=float); g.add_argument('epsilon',type=float)
+    tg = sub.add_parser('testgauss')
+
     args = p.parse_args()
     if args.cmd == 'direct':
         print(direct_geodetic(args.lat1,args.lon1,args.az1,args.dist,unit=args.unit,ellipsoid=args.ellipsoid))
@@ -853,5 +996,7 @@ if __name__ == '__main__':
                           args.num_turns, args.turn_angle, args.walk_dist,
                           args.change_rate, ellipsoid=args.ellipsoid)
         for i, (lat,lon) in enumerate(pts): print(f'{i}, {lat:.9f}, {lon:.9f}')
+    elif args.cmd == 'throw':
+        print(throw_point(args.lat0, args.lon0, args.az, args.dist, ellipsoid=args.ellipsoid))
     else:
         p.print_help()

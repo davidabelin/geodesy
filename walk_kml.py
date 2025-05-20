@@ -4,7 +4,7 @@ import os
 
 # --- Configuration ---
 # Use a raw string (r'...') for Windows paths to handle backslashes correctly
-kml_file_path = 'data/newpnts.kml'
+kml_file_path = 'data/CapPnts.kml'
 #\centerpnts.kml'
 #\Triangle Tries.kml'
 # --- End Configuration ---

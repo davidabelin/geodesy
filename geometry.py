@@ -897,13 +897,13 @@ if __name__ == '__main__':
     i.add_argument('--unit',choices=['miles','feet'],default='miles')
     i.add_argument('--ellipsoid',action='store_true', help='Use WGS84 ellipsoid (default: spherical)')
     
-    t_help = 'Throw a point by a distance and bearing'
-    t = sub.add_parser('throw', help=t_help)
-    t.add_argument('lat0',type=float)
-    t.add_argument('lon0',type=float)
-    t.add_argument('az',type=float)
-    t.add_argument('dist',type=float)
-    t.add_argument('--ellipsoid',action='store_true', help='Use WGS84 ellipsoid (default: spherical)')
+    alt_help = 'Look Up Altitudes for Points'
+    alt = sub.add_parser('alt', help=alt_help)
+    alt.add_argument('lat0',type=float)
+    alt.add_argument('lon0',type=float)
+    alt.add_argument('az',type=float)
+    alt.add_argument('dist',type=float)
+    alt.add_argument('--ellipsoid',action='store_true', help='Use WGS84 ellipsoid (default: spherical)')
     
     spw = sub.add_parser('walk', help='Find points on a progression of angles and side lengths')
     spw.add_argument('lat0', type=float, help='Start latitude')
@@ -996,7 +996,7 @@ if __name__ == '__main__':
                           args.num_turns, args.turn_angle, args.walk_dist,
                           args.change_rate, ellipsoid=args.ellipsoid)
         for i, (lat,lon) in enumerate(pts): print(f'{i}, {lat:.9f}, {lon:.9f}')
-    elif args.cmd == 'throw':
+    elif args.cmd == 'alt':
         print(throw_point(args.lat0, args.lon0, args.az, args.dist, ellipsoid=args.ellipsoid))
     else:
         p.print_help()

@@ -305,7 +305,6 @@ def bracket_root(func: Callable[..., float], a: float, b: float, *args, **kwargs
     except Exception as e:
         raise ValueError(f"Brentq failed: {e}")
 
-
 def fsolve_root(func: Callable[..., float], x0: float, *args, **kwargs) -> float:
     """
     Find a root near x0 using fsolve; raises if no convergence.

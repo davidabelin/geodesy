@@ -11,12 +11,13 @@ try:
     import geopandas as gpd
     import simplekml
     from shapely.geometry import shape
-except ImportError:
+except ImportError as ie:
+    print("Input error: ", ie)
     rasterio = None
     gpd = None
     simplekml = None
 
-def generate_kml_from_csv(csv_filepath, kml_filepath, include_points):
+def generate_kml_from_csv(csv_filepath, kml_filepath, include_points=False):
     """
     Reads a CSV file with point data (V, Lat, Lon) and generates a KML file
     with lines connecting sequences of points.
@@ -59,16 +60,16 @@ def generate_kml_from_csv(csv_filepath, kml_filepath, include_points):
         with open(csv_filepath, mode='r', newline='', encoding='utf-8') as infile:
             reader = csv.DictReader(infile)
             # Check for required headers
-            if not reader.fieldnames or not all(f in reader.fieldnames for f in ['V', 'Lat', 'Lon']):
-                print(f"Error: CSV file {csv_filepath} must have 'V', 'Lat', 'Lon' columns.")
+            if not reader.fieldnames or not all(f in reader.fieldnames for f in ['LOC', 'LAT', 'LON']):
+                print(f"Error: CSV file {csv_filepath} must have 'LOC', 'LAT', 'LON' columns.")
                 print(f"Found headers: {reader.fieldnames}")
                 return
 
             for i, row in enumerate(reader):
                 # Using .get() for safer access in case of malformed rows
-                vertex_id = row.get('V')
-                lat_str = row.get('Lat')
-                lon_str = row.get('Lon')
+                vertex_id = row.get('LOC')
+                lat_str = row.get('LAT')
+                lon_str = row.get('LON')
 
                 if not all([vertex_id, lat_str, lon_str]):
                     print(f"Warning: Skipping row {i+2} in CSV due to missing V, Lat, or Lon data: {row}")
@@ -211,6 +212,6 @@ if __name__ == "__main__":
         generate_kml_from_csv(args.csv_path, args.kml_file, args.include_points)
     elif args.cmd is None:
         print(f"Trying defaults...\tInput: {input_csv_file}\tOutput: {output_kml_file}\tInclude Points: False")
-        generate_kml_from_csv(input_csv_file, output_kml_file, False) # Default to False for include_points
+        generate_kml_from_csv(input_csv_file, output_kml_file) # Default to False for include_points
     else:
         p.print_help()

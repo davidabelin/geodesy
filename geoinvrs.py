@@ -29,51 +29,55 @@ def open_file(csv_filepath):
                 except ValueError:
                     print(f"Warning: Skipping row {i+2} (ID: {loc}) due to invalid lat/lon: Lat='{lat_str}', Lon='{lon_str}'")
                     continue
-            pntdict.update( {'loc': loc,
-                            'lat': lat,
-                            'lon': lon})
-        for x in pntdict:
-            print(x)
+                # Store each point's data under its location identifier
+                pntdict[loc] = {'lat': lat, 'lon': lon}
+
     except FileNotFoundError:
         print(f"Error: The file {csv_filepath} was not found.")
-        return
+        return {} # Return an empty dictionary on error
     except Exception as e:
         print(f"An unexpected error occurred while reading {csv_filepath}: {e}")
-        return
+        return {} # Return an empty dictionary on error
     return pntdict
 
 if __name__ == '__main__':
-    p = argparse.ArgumentParser(description='Spherical Geometry Toolkit')
+    p = argparse.ArgumentParser(description='Inverse Geodetic Tool')
     sub = p.add_subparsers(dest='cmd')
     
-    c_help = 'Input file of points with required columns LOC, LAT, LON, returns azimuth and dist between them all.'
+    c_help = 'Input file of points with required columns LOC, LAT, LON; returns azimuth and dist between them all.'
     c = sub.add_parser('csv', help=c_help)
     c.add_argument('file',type=str, help='Required: csv file path')
+    c.add_argument('--ellipsoid',action='store_true', help='Use WGS84 ellipsoid (default: spherical)')
     
     args = p.parse_args()
     #TO DO: args for single pnt pair
     
     if args.cmd == 'csv':
         pntdict = open_file(args.file)
-        print(pntdict)
+        if not pntdict:
+            print("No data loaded from file. Exiting.")
+        #else:
+        #    print("Loaded points:", pntdict) # For verification
         refdict = {}
-        for pnt in pntdict:
-            lat1=pnt['lat']
-            lon1=pnt['lon']
+        # Iterate through each point as the reference point (pnt1)
+        for pnt1_loc, pnt1_data in pntdict.items():
+            lat1 = pnt1_data['lat']
+            lon1 = pnt1_data['lon']
             bddict = {}
-            for p in pntdict:
-                if p['loc'] != pnt['loc']:
-                    lat2=p['lat']
-                    lon2=p['lon']
-                    az, _, dist = inverse_geodetic(lat1,lon1,
+            # Iterate through each point as the target point (pnt2)
+            for pnt2_loc, pnt2_data in pntdict.items():
+                if pnt1_loc != pnt2_loc: # Don't compare a point to itself
+                    lat2 = pnt2_data['lat']
+                    lon2 = pnt2_data['lon']
+                    az, baz, dist = inverse_geodetic(lat1,lon1,
                                                     lat2,lon2,
-                                                    unit='miles')
-                    bddict.update({p['loc']: {'az':az, 'dist':dist}})
-            refdict.update({pnt['loc']: bddict})
-        print("Refpnt, Pnt, Az, Dist")
-        for refpnt in refdict:
-            for pnt in refpnt:
-                print(f"{refpnt}, {pnt}, {refdict[refpnt][pnt]['az']}, {refdict[refpnt][pnt]['dist']}")
-    #elif: lat lon lat lon  TO DO
+                                                    unit='miles',
+                                                    ellipsoid=args.ellipsoid)
+                    bddict[pnt2_loc] = {'az':az, 'baz':baz, 'dist':dist}
+            refdict[pnt1_loc] = bddict
+        print("Refpnt, Pnt, Az, Back, Dist")
+        for refpnt_loc, connections in refdict.items():
+            for pnt_loc, data in connections.items():
+                print(f"{refpnt_loc}, {pnt_loc}, {data['az']:.2f}, {data['baz']:.2f}, {data['dist']:.6f}")
     else:
         p.print_help()

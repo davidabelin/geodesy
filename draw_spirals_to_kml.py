@@ -203,7 +203,7 @@ if __name__ == "__main__":
     k = sub.add_parser('kml', help=k_help)
     k.add_argument('csv_path', type=str, default='input_csv_file', help='Input CSV file path')
     k.add_argument('kml_file', type=str, default='output_kml_file', help='Output KML file path')
-    k.add_argument('--line_alpha',type=hex, required=False, default=0xAA, help='Line opacity; FF = 100% opaque')
+    k.add_argument('--line_alpha',type=hex, required=False, default=0x99, help='Line opacity; FF = 100% opaque')
     k.add_argument('--include_points',action='store_true', help='True if set, False if not (default); save (lat,lon) points with their connecting lines')
     
     args = p.parse_args()

@@ -2,15 +2,24 @@
 #data/Roadway_SubBlock.geojson
 #data/*.xlsx
 #data/*.tif
-# Entire Data folder:
-data/
 
-# dev folder contents
-dev/
+# Both project Data folders but keep kml
+data/*.csv
+data/*.xlsx
+data/downloaded/
+data/docs/
+data/FirstTries/
+
+dev/data/*.csv
+dev/data/*.xlsx
+
+#and other non-python dev folder contents too
+dev/*.bat
 
 # image folder contents
 image/
 images/
+images/master_plan.tif
 
 # sandbox folder contents
 sandbox/
@@ -173,5 +182,3 @@ cython_debug/
 
 # YAML
 .yaml
-data/vertices.csv
-images/master_plan.tif

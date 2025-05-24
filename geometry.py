@@ -600,7 +600,46 @@ def print_triangles_csv(locs, triad_names):
         row += f"{sides['AB']:.8f},{sides['BC']:.8f},{sides['CA']:.8f}"
         print(row)
 
+#TO DO CLI
+def load_coords_from_csv(filepath, coords_dict):
+    """
+    Loads LOC, LAT, LON from a CSV file into a dictionary.
+    The dictionary is updated in place.
+    Assumes header row with 'LOC', 'LAT', 'LON' columns.
+    """
+    try:
+        with open(filepath, 'r', newline='', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            try:
+                header = next(reader)
+            except StopIteration:
+                print(f"Warning: File {filepath} is empty or has no header.")
+                return
 
+            try:
+                loc_col_idx = header.index('LOC')
+                lat_col_idx = header.index('LAT')
+                lon_col_idx = header.index('LON')
+            except ValueError as e:
+                print(f"Warning: Missing expected column in {filepath}. Error: {e}. Skipping this file.")
+                return
+
+            for row_num, row in enumerate(reader, start=2): # start=2 for 1-based data row numbering
+                if not row or len(row) <= max(loc_col_idx, lat_col_idx, lon_col_idx):
+                    print(f"Warning: Skipping malformed or short row {row_num} in {filepath}: {row}")
+                    continue
+                try:
+                    loc = row[loc_col_idx]
+                    lat = row[lat_col_idx]
+                    lon = row[lon_col_idx]
+                    coords_dict[loc] = (lat, lon)
+                except IndexError:
+                    print(f"Warning: Skipping row {row_num} in {filepath} due to insufficient columns: {row}")
+    except FileNotFoundError:
+        print(f"Warning: Data file not found: {filepath}. It will be skipped.")
+    except Exception as e:
+        print(f"An unexpected error occurred while reading {filepath}: {e}")
+        
 #===============================================================================
 # Spiral Generators & Plotters
 #===============================================================================
@@ -741,6 +780,7 @@ def golden_spiral_plot_in(pts: List[Tuple[float,float]],
 # Placeholders for Street & Highpoint:
 # TODO: Integrate functions from streets.py (GPD operations, plotting)
 # TODO: Integrate functions from highpoints.py (DEM masking, peak extraction)
+
 # TODO: Integrate get_altitudes_for_points()
 def get_altitudes_for_points(csv_path, dem_path, input_points_epsg):
     """
@@ -896,13 +936,11 @@ if __name__ == '__main__':
     i.add_argument('--unit',choices=['miles','feet'],default='miles')
     i.add_argument('--ellipsoid',action='store_true', help='Use WGS84 ellipsoid (default: spherical)')
     
-    alt_help = 'Look Up Altitudes for Points'
-    alt = sub.add_parser('alt', help=alt_help)
-    alt.add_argument('lat0',type=float)
-    alt.add_argument('lon0',type=float)
-    alt.add_argument('az',type=float)
-    alt.add_argument('dist',type=float)
-    alt.add_argument('--ellipsoid',action='store_true', help='Use WGS84 ellipsoid (default: spherical)')
+    # TO DO FIX THIS
+    #alt_help = 'Look Up Altitudes for Points'
+    #alt = sub.add_parser('alt', help=alt_help)
+    #alt.add_argument('lat0',type=float)
+    #alt.add_argument('lon0',type=float)
     
     spw = sub.add_parser('walk', help='Find points on a progression of angles and side lengths')
     spw.add_argument('lat0', type=float, help='Start latitude')
@@ -995,7 +1033,8 @@ if __name__ == '__main__':
                           args.num_turns, args.turn_angle, args.walk_dist,
                           args.change_rate, ellipsoid=args.ellipsoid)
         for i, (lat,lon) in enumerate(pts): print(f'{i}, {lat:.9f}, {lon:.9f}')
-    elif args.cmd == 'alt':
-        print(throw_point(args.lat0, args.lon0, args.az, args.dist, ellipsoid=args.ellipsoid))
+    #TO DO
+    #elif args.cmd == 'alt':
+    #    print(get_altitudes_for_points(args.lat0, args.lon0))
     else:
         p.print_help()

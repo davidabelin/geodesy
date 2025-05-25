@@ -2,14 +2,14 @@
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
 <Document>
 	<name>SquarePnts.kml</name>
-	<StyleMap id="msn_placemark_square">
+	<StyleMap id="msn_placemark_square0">
 		<Pair>
 			<key>normal</key>
 			<styleUrl>#sn_placemark_square</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_placemark_square_highlight</styleUrl>
+			<styleUrl>#sh_placemark_square_highlight1</styleUrl>
 		</Pair>
 	</StyleMap>
 	<StyleMap id="msn_placemark_square7">
@@ -22,7 +22,7 @@
 			<styleUrl>#sh_placemark_square_highlight6</styleUrl>
 		</Pair>
 	</StyleMap>
-	<Style id="sh_placemark_square_highlight">
+	<Style id="sh_placemark_square_highlight1">
 		<IconStyle>
 			<color>990000aa</color>
 			<scale>0.590909</scale>
@@ -34,8 +34,6 @@
 			<color>99ffffff</color>
 			<scale>0.5</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
 	</Style>
 	<Style id="sh_placemark_square_highlight6">
 		<IconStyle>
@@ -62,8 +60,6 @@
 			<color>99ffffff</color>
 			<scale>0.5</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
 	</Style>
 	<Style id="sn_placemark_square1">
 		<IconStyle>
@@ -80,10 +76,8 @@
 	</Style>
 	<Folder>
 		<name>SquarePnts</name>
-		<visibility>0</visibility>
 		<Placemark>
 			<name>LP1</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.99112287859867</longitude>
 				<latitude>38.8892665928345</latitude>
@@ -101,7 +95,6 @@
 		</Placemark>
 		<Placemark>
 			<name>LP2</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.99122994691808</longitude>
 				<latitude>38.89040454904693</latitude>
@@ -119,7 +112,6 @@
 		</Placemark>
 		<Placemark>
 			<name>LP3</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.99044095119508</longitude>
 				<latitude>38.89033755626279</latitude>
@@ -137,7 +129,6 @@
 		</Placemark>
 		<Placemark>
 			<name>LP4</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.98957478352267</longitude>
 				<latitude>38.88956725724915</latitude>
@@ -155,7 +146,6 @@
 		</Placemark>
 		<Placemark>
 			<name>LP5</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.99003204472587</longitude>
 				<latitude>38.88924085449988</latitude>
@@ -173,7 +163,6 @@
 		</Placemark>
 		<Placemark>
 			<name>LPj</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.99041296889465</longitude>
 				<latitude>38.89688979588094</latitude>
@@ -191,7 +180,6 @@
 		</Placemark>
 		<Placemark>
 			<name>LPh</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.00574366039257</longitude>
 				<latitude>38.88333961955934</latitude>
@@ -209,7 +197,6 @@
 		</Placemark>
 		<Placemark>
 			<name>LPf</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.99061444474543</longitude>
 				<latitude>38.87769425144292</latitude>
@@ -227,7 +214,6 @@
 		</Placemark>
 		<Placemark>
 			<name>LPc</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.97841973258348</longitude>
 				<latitude>38.89308491772684</latitude>
@@ -245,7 +231,6 @@
 		</Placemark>
 		<Placemark>
 			<name>LPb</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.98065179056556</longitude>
 				<latitude>38.89336503321223</latitude>
@@ -263,7 +248,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner001</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.00054161177812</longitude>
 				<latitude>38.89401254173959</latitude>
@@ -281,7 +265,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner002</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.00077721582846</longitude>
 				<latitude>38.89317987416024</latitude>
@@ -299,7 +282,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner003</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.9990534997646</longitude>
 				<latitude>38.89386153306609</latitude>
@@ -317,7 +299,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner004</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.9989505081525</longitude>
 				<latitude>38.89336984448327</latitude>
@@ -335,7 +316,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner005</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.02143404792662</longitude>
 				<latitude>38.90249014996714</latitude>
@@ -353,7 +333,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner006</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.00586992938307</longitude>
 				<latitude>38.89182112331527</latitude>
@@ -371,7 +350,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner030</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.03820813714285</longitude>
 				<latitude>38.90798586606174</latitude>
@@ -389,7 +367,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner031</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.02366122302298</longitude>
 				<latitude>38.90311256415463</latitude>
@@ -407,7 +384,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner032</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.03354705352814</longitude>
 				<latitude>38.89882295634693</latitude>
@@ -425,7 +401,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner033</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.02278011751206</longitude>
 				<latitude>38.90329770015408</latitude>
@@ -443,7 +418,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner034</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.03565140883833</longitude>
 				<latitude>38.89661957247412</latitude>
@@ -461,7 +435,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner035</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.00030979832215</longitude>
 				<latitude>38.8860483163673</latitude>
@@ -479,7 +452,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner036</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.9987869919937</longitude>
 				<latitude>38.88576055758055</latitude>
@@ -497,7 +469,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner037</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.00068209876579</longitude>
 				<latitude>38.88577091069842</latitude>
@@ -515,7 +486,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner038</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.9987386348859</longitude>
 				<latitude>38.88560040814578</latitude>
@@ -533,7 +503,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner0039</name>
-			<visibility>0</visibility>
 			<open>1</open>
 			<LookAt>
 				<longitude>-77.00557362347267</longitude>
@@ -544,7 +513,7 @@
 				<range>245.7152778582052</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_placemark_square</styleUrl>
+			<styleUrl>#msn_placemark_square0</styleUrl>
 			<Point>
 				<gx:drawOrder>1</gx:drawOrder>
 				<coordinates>-77.00595013324998,38.88760736348051,0</coordinates>
@@ -552,7 +521,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner0040</name>
-			<visibility>0</visibility>
 			<open>1</open>
 			<LookAt>
 				<longitude>-77.01085849955258</longitude>
@@ -563,7 +531,7 @@
 				<range>409.0694922407619</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_placemark_square</styleUrl>
+			<styleUrl>#msn_placemark_square0</styleUrl>
 			<Point>
 				<gx:drawOrder>1</gx:drawOrder>
 				<coordinates>-77.01218363619725,38.89206306055534,0</coordinates>
@@ -571,7 +539,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner0041</name>
-			<visibility>0</visibility>
 			<open>1</open>
 			<LookAt>
 				<longitude>-77.01102153209899</longitude>
@@ -582,7 +549,7 @@
 				<range>355.2794392662303</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_placemark_square</styleUrl>
+			<styleUrl>#msn_placemark_square0</styleUrl>
 			<Point>
 				<gx:drawOrder>1</gx:drawOrder>
 				<coordinates>-77.01218602826414,38.88756110809855,0</coordinates>
@@ -590,7 +557,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Corner0042</name>
-			<visibility>0</visibility>
 			<open>1</open>
 			<LookAt>
 				<longitude>-77.00302813226914</longitude>
@@ -601,7 +567,7 @@
 				<range>272.3703256795011</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_placemark_square</styleUrl>
+			<styleUrl>#msn_placemark_square0</styleUrl>
 			<Point>
 				<gx:drawOrder>1</gx:drawOrder>
 				<coordinates>-77.00355201883274,38.88760859046827,0</coordinates>

@@ -5,34 +5,203 @@
 	<StyleMap id="m_ylw-pushpin">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#s_ylw-pushpin0</styleUrl>
+			<styleUrl>#s_ylw-pushpin00</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#s_ylw-pushpin_hl0</styleUrl>
+			<styleUrl>#s_ylw-pushpin_hl00</styleUrl>
 		</Pair>
 	</StyleMap>
-	<Style id="s_ylw-pushpin0">
+	<StyleMap id="msn_star">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_star</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_star</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="s_ylw-pushpin00">
 		<IconStyle>
-			<color>ff19aa47</color>
-			<scale>0.7</scale>
+			<color>cc005500</color>
+			<scale>0.5</scale>
 			<Icon>
 				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
 			</Icon>
 		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.5</scale>
+		</LabelStyle>
 	</Style>
-	<Style id="s_ylw-pushpin_hl0">
+	<Style id="s_ylw-pushpin_hl00">
 		<IconStyle>
-			<color>ff19aa47</color>
+			<color>cc005500</color>
+			<scale>0.590909</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.5</scale>
+		</LabelStyle>
+	</Style>
+	<Style id="sh_star">
+		<IconStyle>
+			<color>cc00ff00</color>
 			<scale>0.827273</scale>
 			<Icon>
 				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
 			</Icon>
 		</IconStyle>
+		<LabelStyle>
+			<color>ccffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+	</Style>
+	<Style id="sn_star">
+		<IconStyle>
+			<color>cc00ff00</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>ccffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<BalloonStyle>
+		</BalloonStyle>
 	</Style>
 	<Folder>
 		<name>PenPnts</name>
-		<visibility>0</visibility>
+		<open>1</open>
+		<Placemark>
+			<name>PenA</name>
+			<LookAt>
+				<longitude>-77.05734143759395</longitude>
+				<latitude>38.87239733512456</latitude>
+				<altitude>0</altitude>
+				<heading>-0.02275359557892797</heading>
+				<tilt>0</tilt>
+				<range>173.4572102928906</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#msn_star</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-77.05786528091933,38.87262722628098,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>PenD</name>
+			<LookAt>
+				<longitude>-77.05807008460445</longitude>
+				<latitude>38.87007085903708</latitude>
+				<altitude>0</altitude>
+				<heading>-0.02321082542517045</heading>
+				<tilt>0</tilt>
+				<range>158.1508926378977</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#msn_star</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-77.05841808191346,38.87014746169203,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>PenE</name>
+			<LookAt>
+				<longitude>-77.05362227031316</longitude>
+				<latitude>38.87072868085453</latitude>
+				<altitude>0</altitude>
+				<heading>-0.008076625907632012</heading>
+				<tilt>0</tilt>
+				<range>98.28342044977292</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#msn_star</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-77.05324434344904,38.87072872172274,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>PenF</name>
+			<LookAt>
+				<longitude>-77.05580753398471</longitude>
+				<latitude>38.86907066220041</latitude>
+				<altitude>0</altitude>
+				<heading>-0.02179096704225352</heading>
+				<tilt>0</tilt>
+				<range>97.87794870118847</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#msn_star</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-77.05556655805725,38.8689747836158,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>PenG</name>
+			<LookAt>
+				<longitude>-77.05511716585596</longitude>
+				<latitude>38.87224138202482</latitude>
+				<altitude>0</altitude>
+				<heading>-0.02135768129425947</heading>
+				<tilt>0</tilt>
+				<range>323.4183599820038</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#msn_star</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-77.05466801451274,38.87298421406125,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>PenB</name>
+			<visibility>0</visibility>
+			<LookAt>
+				<longitude>-77.05650936450725</longitude>
+				<latitude>38.87242167780397</latitude>
+				<altitude>0</altitude>
+				<heading>-0.02223145486778925</heading>
+				<tilt>0</tilt>
+				<range>294.5165158177159</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#msn_star</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-77.05630296948044,38.87281834763942,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>PenC</name>
+			<visibility>0</visibility>
+			<LookAt>
+				<longitude>-77.05415553781546</longitude>
+				<latitude>38.87498540172819</latitude>
+				<altitude>0</altitude>
+				<heading>-0.0207541171190058</heading>
+				<tilt>0</tilt>
+				<range>1581.391034769656</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#msn_star</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-77.05715373472489,38.87684588415627,0</coordinates>
+			</Point>
+		</Placemark>
 		<Placemark>
 			<name>P01</name>
 			<visibility>0</visibility>

@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>brdrcntr_output.kml</name>
+	<Schema name="trypoints" id="S_trypoints_SDDD">
+		<SimpleField type="string" name="LOC"><displayName>&lt;b&gt;LOC&lt;/b&gt;</displayName>
+</SimpleField>
+		<SimpleField type="double" name="LAT"><displayName>&lt;b&gt;LAT&lt;/b&gt;</displayName>
+</SimpleField>
+		<SimpleField type="double" name="LON"><displayName>&lt;b&gt;LON&lt;/b&gt;</displayName>
+</SimpleField>
+		<SimpleField type="double" name="ALT"><displayName>&lt;b&gt;ALT&lt;/b&gt;</displayName>
+</SimpleField>
+	</Schema>
+	<Style id="hlightPointStyle">
+		<IconStyle>
+			<color>e6ffaaff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/donut.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>ccffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<BalloonStyle>
+			<text><![CDATA[<table border="0">
+  <tr><td><b>LOC</b></td><td>$[trypoints/LOC]</td></tr>
+  <tr><td><b>LAT</b></td><td>$[trypoints/LAT]</td></tr>
+  <tr><td><b>LON</b></td><td>$[trypoints/LON]</td></tr>
+  <tr><td><b>ALT</b></td><td>$[trypoints/ALT]</td></tr>
+</table>]]></text>
+		</BalloonStyle>
+		<LineStyle>
+			<color>ffff55ff</color>
+			<width>1.5</width>
+		</LineStyle>
+	</Style>
+	<Style id="normPointStyle0">
+		<IconStyle>
+			<color>e6ffaaff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/donut.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>ccffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<BalloonStyle>
+			<text><![CDATA[<table border="0">
+  <tr><td><b>LOC</b></td><td>$[trypoints/LOC]</td></tr>
+  <tr><td><b>LAT</b></td><td>$[trypoints/LAT]</td></tr>
+  <tr><td><b>LON</b></td><td>$[trypoints/LON]</td></tr>
+  <tr><td><b>ALT</b></td><td>$[trypoints/ALT]</td></tr>
+</table>]]></text>
+		</BalloonStyle>
+		<LineStyle>
+			<color>ffff55ff</color>
+			<width>1.5</width>
+		</LineStyle>
+	</Style>
+	<StyleMap id="pointStyleMap1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#normPointStyle0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#hlightPointStyle</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Folder>
+		<name>Border Center</name>
+		<open>1</open>
+		<Placemark>
+			<name>Nb</name>
+			<styleUrl>#pointStyleMap1</styleUrl>
+			<ExtendedData>
+				<SchemaData schemaUrl="#S_trypoints_SDDD">
+					<SimpleData name="LOC">Nb</SimpleData>
+					<SimpleData name="LAT">38.996</SimpleData>
+					<SimpleData name="LON">-77.041</SimpleData>
+					<SimpleData name="ALT">259</SimpleData>
+				</SchemaData>
+			</ExtendedData>
+			<Point>
+				<extrude>1</extrude>
+				<altitudeMode>relativeToGround</altitudeMode>
+				<coordinates>-77.04098558,38.99595650999999,2</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Sb</name>
+			<styleUrl>#pointStyleMap1</styleUrl>
+			<ExtendedData>
+				<SchemaData schemaUrl="#S_trypoints_SDDD">
+					<SimpleData name="LOC">Sb</SimpleData>
+					<SimpleData name="LAT">38.7903</SimpleData>
+					<SimpleData name="LON">-77.0406</SimpleData>
+					<SimpleData name="ALT">1</SimpleData>
+				</SchemaData>
+			</ExtendedData>
+			<Point>
+				<extrude>1</extrude>
+				<altitudeMode>relativeToGround</altitudeMode>
+				<coordinates>-77.04058603,38.79033915000001,2</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Wb</name>
+			<styleUrl>#pointStyleMap1</styleUrl>
+			<ExtendedData>
+				<SchemaData schemaUrl="#S_trypoints_SDDD">
+					<SimpleData name="LOC">Wb</SimpleData>
+					<SimpleData name="LAT">38.8932</SimpleData>
+					<SimpleData name="LON">-77.1723</SimpleData>
+					<SimpleData name="ALT">343</SimpleData>
+				</SchemaData>
+			</ExtendedData>
+			<Point>
+				<extrude>1</extrude>
+				<altitudeMode>relativeToGround</altitudeMode>
+				<coordinates>-77.17230114000002,38.89324512999998,2</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Eb</name>
+			<styleUrl>#pointStyleMap1</styleUrl>
+			<ExtendedData>
+				<SchemaData schemaUrl="#S_trypoints_SDDD">
+					<SimpleData name="LOC">Eb</SimpleData>
+					<SimpleData name="LAT">38.8929</SimpleData>
+					<SimpleData name="LON">-76.9092</SimpleData>
+					<SimpleData name="ALT">94</SimpleData>
+				</SchemaData>
+			</ExtendedData>
+			<Point>
+				<extrude>1</extrude>
+				<altitudeMode>relativeToGround</altitudeMode>
+				<coordinates>-76.90916553,38.89286049999997,2</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Nc</name>
+			<styleUrl>#pointStyleMap1</styleUrl>
+			<ExtendedData>
+				<SchemaData schemaUrl="#S_trypoints_SDDD">
+					<SimpleData name="LOC">Nc</SimpleData>
+					<SimpleData name="LAT">38.8936</SimpleData>
+					<SimpleData name="LON">-77.041</SimpleData>
+					<SimpleData name="ALT">15</SimpleData>
+				</SchemaData>
+			</ExtendedData>
+			<Point>
+				<extrude>1</extrude>
+				<altitudeMode>relativeToGround</altitudeMode>
+				<coordinates>-77.04098558,38.89359614000001,2</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Sc</name>
+			<styleUrl>#pointStyleMap1</styleUrl>
+			<ExtendedData>
+				<SchemaData schemaUrl="#S_trypoints_SDDD">
+					<SimpleData name="LOC">Sc</SimpleData>
+					<SimpleData name="LAT">38.8927</SimpleData>
+					<SimpleData name="LON">-77.0406</SimpleData>
+					<SimpleData name="ALT">15</SimpleData>
+				</SchemaData>
+			</ExtendedData>
+			<Point>
+				<extrude>1</extrude>
+				<altitudeMode>relativeToGround</altitudeMode>
+				<coordinates>-77.04058603,38.89269952,2</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Wc</name>
+			<styleUrl>#pointStyleMap1</styleUrl>
+			<ExtendedData>
+				<SchemaData schemaUrl="#S_trypoints_SDDD">
+					<SimpleData name="LOC">Wc</SimpleData>
+					<SimpleData name="LAT">38.8932</SimpleData>
+					<SimpleData name="LON">-77.0408</SimpleData>
+					<SimpleData name="ALT">15</SimpleData>
+				</SchemaData>
+			</ExtendedData>
+			<Point>
+				<extrude>1</extrude>
+				<altitudeMode>relativeToGround</altitudeMode>
+				<coordinates>-77.04078625,38.89317136999999,2</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Ec</name>
+			<styleUrl>#pointStyleMap1</styleUrl>
+			<ExtendedData>
+				<SchemaData schemaUrl="#S_trypoints_SDDD">
+					<SimpleData name="LOC">Ec</SimpleData>
+					<SimpleData name="LAT">38.8928</SimpleData>
+					<SimpleData name="LON">-77.0407</SimpleData>
+					<SimpleData name="ALT">15</SimpleData>
+				</SchemaData>
+			</ExtendedData>
+			<Point>
+				<extrude>1</extrude>
+				<altitudeMode>relativeToGround</altitudeMode>
+				<coordinates>-77.0406797,38.89278669999997,2</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Ac</name>
+			<styleUrl>#pointStyleMap1</styleUrl>
+			<ExtendedData>
+				<SchemaData schemaUrl="#S_trypoints_SDDD">
+					<SimpleData name="LOC">Ac</SimpleData>
+					<SimpleData name="LAT">38.8931</SimpleData>
+					<SimpleData name="LON">-77.0408</SimpleData>
+					<SimpleData name="ALT">12</SimpleData>
+				</SchemaData>
+			</ExtendedData>
+			<Point>
+				<extrude>1</extrude>
+				<altitudeMode>relativeToGround</altitudeMode>
+				<coordinates>-77.04075956,38.89310014000002,2</coordinates>
+			</Point>
+		</Placemark>
+		<atom:link rel="app" href="https://www.google.com/earth/about/versions/#earth-pro" title="Google Earth Pro 7.3.6.10201"></atom:link>
+	</Folder>
+</Document>
+</kml>

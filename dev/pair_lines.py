@@ -4,7 +4,7 @@ import os
 # Data file paths
 base_data_folder = r"c:\Users\David\Documents\Local_Python\geodesy\dev\data"
 
-datafile_A = os.path.join(base_data_folder, "selected.csv")
+#datafile_A = os.path.join(base_data_folder, "selected.csv")
 datafile_B = os.path.join(base_data_folder, "ref.csv")
 #datafile_C = os.path.join(base_data_folder, "CapPnts.csv")
 
@@ -66,8 +66,8 @@ def process_line_pairs():
     print(f"Loading data from {datafile_B}...")
     load_coords_from_csv(datafile_B, all_points_coords)
     #  last (highest precedence)
-    print(f"Loading data from {datafile_A}...")
-    load_coords_from_csv(datafile_A, all_points_coords)
+    #print(f"Loading data from {datafile_A}...")
+    #load_coords_from_csv(datafile_A, all_points_coords)
 
     if not all_points_coords:
         print("Error: No point data loaded. Please check the data files and paths. Exiting.")

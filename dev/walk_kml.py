@@ -4,7 +4,7 @@ import os
 
 # --- Configuration ---
 # Use a raw string (r'...') for Windows paths to handle backslashes correctly
-kml_file_path = r"C:\Users\David\Documents\Local_Python\geodesy\dev\data\PenPnts.kml"
+kml_file_path = r"C:\Users\David\Documents\Local_Python\geodesy\dev\data\brdrcntr_output.kml"
 #\centerpnts.kml'
 # --- End Configuration ---
 

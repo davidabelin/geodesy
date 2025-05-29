@@ -84,7 +84,7 @@ if __name__ == "__main__":
     args = p.parse_args()
     coord_files = [
       r"data\ref.csv",
-      r"data\selected.csv"
+      #r"data\selected.csv"
       #r"data\trypoints.csv"
     ]
     draw(args.linepairs_csv, coord_files, args.kml_out)

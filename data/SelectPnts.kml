@@ -122,11 +122,11 @@
 	<StyleMap id="msn_star">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_star</styleUrl>
+			<styleUrl>#sn_star5</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_star</styleUrl>
+			<styleUrl>#sh_star1</styleUrl>
 		</Pair>
 	</StyleMap>
 	<Style id="normPointStyle">
@@ -240,8 +240,6 @@
 			<color>c9ffffff</color>
 			<scale>0.6</scale>
 		</LabelStyle>
-		<ListStyle>
-		</ListStyle>
 		<LineStyle>
 			<color>e6ffffff</color>
 			<width>0.5</width>
@@ -260,8 +258,6 @@
 			<color>ccffffff</color>
 			<scale>0.5</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
 		<LineStyle>
 			<color>ccffff00</color>
 			<colorMode>random</colorMode>
@@ -283,14 +279,12 @@
 			<color>c9ffffff</color>
 			<scale>0.5</scale>
 		</LabelStyle>
-		<ListStyle>
-		</ListStyle>
 		<LineStyle>
 			<color>ccffffff</color>
 			<width>0.5</width>
 		</LineStyle>
 	</Style>
-	<Style id="sh_star">
+	<Style id="sh_star1">
 		<IconStyle>
 			<color>cc00ff00</color>
 			<scale>0.827273</scale>
@@ -302,8 +296,6 @@
 			<color>ccffffff</color>
 			<scale>0.7</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
 	</Style>
 	<Style id="sn_open-diamond0">
 		<IconStyle>
@@ -317,8 +309,6 @@
 			<color>c9ffffff</color>
 			<scale>0.6</scale>
 		</LabelStyle>
-		<ListStyle>
-		</ListStyle>
 		<LineStyle>
 			<color>e6ffffff</color>
 			<width>0.5</width>
@@ -337,8 +327,6 @@
 			<color>ccffffff</color>
 			<scale>0.5</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
 		<LineStyle>
 			<color>ccffff00</color>
 			<colorMode>random</colorMode>
@@ -360,14 +348,12 @@
 			<color>c9ffffff</color>
 			<scale>0.5</scale>
 		</LabelStyle>
-		<ListStyle>
-		</ListStyle>
 		<LineStyle>
 			<color>ccffffff</color>
 			<width>0.5</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_star">
+	<Style id="sn_star5">
 		<IconStyle>
 			<color>cc00ff00</color>
 			<scale>0.7</scale>
@@ -379,11 +365,10 @@
 			<color>ccffffff</color>
 			<scale>0.7</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
 	</Style>
 	<Folder>
 		<name>SelectPnts</name>
+		<open>1</open>
 		<Placemark>
 			<name>HawC</name>
 			<styleUrl>#pointStyleMap</styleUrl>
@@ -785,22 +770,6 @@
 			</Point>
 		</Placemark>
 		<Placemark>
-			<name>P</name>
-			<styleUrl>#pointStyleMap000</styleUrl>
-			<ExtendedData>
-				<SchemaData schemaUrl="#S_centerpnts_SDD0">
-					<SimpleData name="LOC">PEN</SimpleData>
-					<SimpleData name="LAT">38.871</SimpleData>
-					<SimpleData name="LON">-77.056</SimpleData>
-				</SchemaData>
-			</ExtendedData>
-			<Point>
-				<extrude>1</extrude>
-				<altitudeMode>absolute</altitudeMode>
-				<coordinates>-77.05598519142683,38.8710236073416,50.00000000000001</coordinates>
-			</Point>
-		</Placemark>
-		<Placemark>
 			<name>PenA</name>
 			<LookAt>
 				<longitude>-77.05734143759395</longitude>
@@ -883,6 +852,22 @@
 			<Point>
 				<gx:drawOrder>1</gx:drawOrder>
 				<coordinates>-77.05466801451274,38.87298421406125,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>P</name>
+			<styleUrl>#pointStyleMap000</styleUrl>
+			<ExtendedData>
+				<SchemaData schemaUrl="#S_centerpnts_SDD0">
+					<SimpleData name="LOC">PEN</SimpleData>
+					<SimpleData name="LAT">38.871</SimpleData>
+					<SimpleData name="LON">-77.056</SimpleData>
+				</SchemaData>
+			</ExtendedData>
+			<Point>
+				<extrude>1</extrude>
+				<altitudeMode>absolute</altitudeMode>
+				<coordinates>-77.05598519142683,38.8710236073416,50.00000000000001</coordinates>
 			</Point>
 		</Placemark>
 		<atom:link rel="app" href="https://www.google.com/earth/about/versions/#earth-pro" title="Google Earth Pro 7.3.6.10201"></atom:link>

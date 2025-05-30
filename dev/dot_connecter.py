@@ -111,11 +111,11 @@ if __name__ == '__main__':
         '--metrics-csv', help='Write full metrics to CSV file (RefPnt,Pnt,Az,Dist)'
     )
     parser.add_argument(
-        '--dist-tol', type=float, default=0.005,
+        '--dist-tol', type=float, default=0.001,
         help='Distance tolerance (miles)'
     )
     parser.add_argument(
-        '--az-tol', type=float, default=0.1,
+        '--az-tol', type=float, default=0.005,
         help='Azimuth tolerance (degrees)'
     )
     parser.add_argument(

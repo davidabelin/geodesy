@@ -1,9 +1,11 @@
 """
-azdist_filter.py — FINAL, ALL-IN-ONE, FULLY ANNOTATED, REASON COLUMN, FLEXIBLE TENTH/HALF/WHOLE
+azdist_filter.py v3.8
 
 - --tenth, --half, --whole apply to both Az and Dist unless --az-only or --dist-only specified.
 - 'Reason' column shows which criteria/field was matched.
-- Keeps all # comments.
+- Example usage:
+        azd --az-targets 46 --az-tol 0.005 --dist-targets 2.882 7.071 --dist-tol 0.0005 --az-multiples 18 --dist-multiples 1.5 --factor-targets 14.142 --factor-tol 0.001 --tenth --spherical --half --whole --out data/azdist_filtered.csv data/SelectPnts.kml data/SelectPnts_critlines.kml
+
 """
 
 import pandas as pd
@@ -97,22 +99,53 @@ def mask_whole(series, tol=TOL):
     return (np.abs(series - np.round(series)) <= tol) & (decimals == 0)
 
 # === KML Drawing (already present) ===
-def draw_lines(pairs: List[Dict[str, str]], points: Dict[str, Tuple[float, float]], out_path: str):
+def draw_lines(
+    pair_records: List[Dict[str, any]], 
+    points: Dict[str, Tuple[float, float]], 
+    out_path: str, 
+    ellipsoid_calc_used: bool
+):
     kml = simplekml.Kml(name="Filtered Lines") # Added name to KML root
+    
+    calc_method_str = "Ellipsoidal (WGS84)" if ellipsoid_calc_used else "Spherical"
+    kml.document.description = f"Lines generated using {calc_method_str} calculations."
+
     palette = ['FF0000FF','FF00FF00','FFFF0000','FFFFFF00','FF00FFFF','FFFF00FF']
     style_map = {}
-    for pi in pairs:
-        grp = pi['p1']
+
+    for record in pair_records:
+        p1_name = record['RefPnt']
+        p2_name = record['Pnt']
+
+        grp = p1_name # Group style by the reference point
         if grp not in style_map:
             style_map[grp] = palette[len(style_map) % len(palette)]
-        line = kml.newlinestring(name=f"{grp}→{pi['p2']}")
-        lat1, lon1 = points[grp]
-        lat2, lon2 = points[pi['p2']]
+
+        line = kml.newlinestring(name=f"{p1_name} → {p2_name}")
+        lat1, lon1 = points[p1_name]
+        lat2, lon2 = points[p2_name]
         line.coords = [(lon1, lat1), (lon2, lat2)]
         line.style.linestyle.color = style_map[grp]
         line.style.linestyle.width = 1.5
+        
+        description_html = f"""
+        <![CDATA[
+          <b>RefPnt:</b> {record['RefPnt']}<br>
+          <b>Pnt:</b> {record['Pnt']}<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> {record['Az']:.3f}°<br>
+          <b>Distance:</b> {record['Dist']:.3f} miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> {record['BackAz']:.3f}°<br>
+          <hr>
+          <b>Filter Reason(s):</b> {record['Reason']}<br>
+          <hr>
+          <i>Calculation Method: {calc_method_str}</i>
+        ]]>
+        """
+        line.description = description_html
+
     kml.save(out_path)
-    print(f"Wrote KML with {len(pairs)} lines to {out_path}.")
+    print(f"Wrote KML with {len(pair_records)} lines to {out_path}.")
 
 
 def filter_pairs(
@@ -287,10 +320,9 @@ def main():
 
     # Generate KML output with lines
     if not filtered.empty:
-        selected_pairs_for_kml = []
-        for _, row in filtered.iterrows():
-            selected_pairs_for_kml.append({'p1': row['RefPnt'], 'p2': row['Pnt']})
-        draw_lines(selected_pairs_for_kml, points_data, args.output_kml)
+        # Convert filtered DataFrame rows to a list of dictionaries
+        pair_records_for_kml = filtered.to_dict(orient='records')
+        draw_lines(pair_records_for_kml, points_data, args.output_kml, ellipsoid_calc_used=not args.spherical)
     else:
         print(f"No lines to draw. KML file '{args.output_kml}' will not be created with content (or may be empty if simplekml creates it anyway).")
 

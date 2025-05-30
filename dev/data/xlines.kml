@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+    <Document id="1">
+        <Style id="4">
+            <LineStyle id="5">
+                <color>FF0000FF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="8">
+            <LineStyle id="9">
+                <color>FF00FF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="12">
+            <LineStyle id="13">
+                <color>FFFF0000</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="16">
+            <LineStyle id="17">
+                <color>FFFFFF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="20">
+            <LineStyle id="21">
+                <color>FF00FFFF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="24">
+            <LineStyle id="25">
+                <color>FFFF00FF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="28">
+            <LineStyle id="29">
+                <color>FF0000FF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="32">
+            <LineStyle id="33">
+                <color>FF00FF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="36">
+            <LineStyle id="37">
+                <color>FFFF0000</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="40">
+            <LineStyle id="41">
+                <color>FFFFFF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <name>Filtered Lines</name>
+        <Placemark id="3">
+            <name>Intsct009→Intsct034</name>
+            <styleUrl>#4</styleUrl>
+            <LineString id="2">
+                <coordinates>-77.04345942253296,38.90964122798432,0.0 -77.00906872063872,38.88982871858197,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="7">
+            <name>Intsct012→Intsct051</name>
+            <styleUrl>#8</styleUrl>
+            <LineString id="6">
+                <coordinates>-77.03653717204568,38.90723476009851,0.0 -76.98552565100998,38.88033775286354,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="11">
+            <name>Intsct016→Intsct082</name>
+            <styleUrl>#12</styleUrl>
+            <LineString id="10">
+                <coordinates>-77.0448188981081,38.91909113698802,0.0 -77.0090785493361,38.87069432450439,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="15">
+            <name>Intsct091→Intsct057</name>
+            <styleUrl>#16</styleUrl>
+            <LineString id="14">
+                <coordinates>-77.02450570244964,38.91839622446161,0.0 -76.98553999503207,38.88410581119781,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="19">
+            <name>Intsct033→Intsct082</name>
+            <styleUrl>#20</styleUrl>
+            <LineString id="18">
+                <coordinates>-76.99026100358863,38.89733317505476,0.0 -77.0090785493361,38.87069432450439,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="23">
+            <name>Intsct082→Intsct033</name>
+            <styleUrl>#24</styleUrl>
+            <LineString id="22">
+                <coordinates>-77.0090785493361,38.87069432450439,0.0 -76.99026100358863,38.89733317505476,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="27">
+            <name>Intsct065→Intsct084</name>
+            <styleUrl>#28</styleUrl>
+            <LineString id="26">
+                <coordinates>-76.99158281042443,38.87788360928428,0.0 -76.97498797962025,38.87135220237067,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="31">
+            <name>Intsct084→Intsct065</name>
+            <styleUrl>#32</styleUrl>
+            <LineString id="30">
+                <coordinates>-76.97498797962025,38.87135220237067,0.0 -76.99158281042443,38.87788360928428,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="35">
+            <name>Intsct022→Intsct056</name>
+            <styleUrl>#36</styleUrl>
+            <LineString id="34">
+                <coordinates>-77.01496041933852,38.9566796552525,0.0 -76.97070467583606,38.87349247971915,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="39">
+            <name>Intsct083→Intsct068</name>
+            <styleUrl>#40</styleUrl>
+            <LineString id="38">
+                <coordinates>-76.95902409071122,38.86197363998543,0.0 -77.00585067211077,38.89606887058728,0.0</coordinates>
+            </LineString>
+        </Placemark>
+    </Document>
+</kml>

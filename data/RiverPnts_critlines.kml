@@ -1,0 +1,1154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+    <Document id="1">
+        <Style id="4">
+            <LineStyle id="5">
+                <color>FF0000FF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="8">
+            <LineStyle id="9">
+                <color>FF00FF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="12">
+            <LineStyle id="13">
+                <color>FFFF0000</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="16">
+            <LineStyle id="17">
+                <color>FFFFFF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="20">
+            <LineStyle id="21">
+                <color>FF00FFFF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="24">
+            <LineStyle id="25">
+                <color>FFFF00FF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="28">
+            <LineStyle id="29">
+                <color>FF0000FF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="32">
+            <LineStyle id="33">
+                <color>FF0000FF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="36">
+            <LineStyle id="37">
+                <color>FF00FF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="40">
+            <LineStyle id="41">
+                <color>FFFF0000</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="44">
+            <LineStyle id="45">
+                <color>FFFF0000</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="48">
+            <LineStyle id="49">
+                <color>FFFFFF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="52">
+            <LineStyle id="53">
+                <color>FFFF0000</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="56">
+            <LineStyle id="57">
+                <color>FF00FF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="60">
+            <LineStyle id="61">
+                <color>FF00FF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="64">
+            <LineStyle id="65">
+                <color>FF00FFFF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="68">
+            <LineStyle id="69">
+                <color>FFFF00FF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="72">
+            <LineStyle id="73">
+                <color>FF0000FF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="76">
+            <LineStyle id="77">
+                <color>FF00FF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="80">
+            <LineStyle id="81">
+                <color>FFFF0000</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="84">
+            <LineStyle id="85">
+                <color>FF00FF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="88">
+            <LineStyle id="89">
+                <color>FFFFFF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="92">
+            <LineStyle id="93">
+                <color>FFFF00FF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="96">
+            <LineStyle id="97">
+                <color>FFFFFF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="100">
+            <LineStyle id="101">
+                <color>FF00FFFF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="104">
+            <LineStyle id="105">
+                <color>FFFF00FF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="108">
+            <LineStyle id="109">
+                <color>FF0000FF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="112">
+            <LineStyle id="113">
+                <color>FF00FF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="116">
+            <LineStyle id="117">
+                <color>FF00FF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="120">
+            <LineStyle id="121">
+                <color>FFFF0000</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="124">
+            <LineStyle id="125">
+                <color>FFFF0000</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="128">
+            <LineStyle id="129">
+                <color>FFFF0000</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="132">
+            <LineStyle id="133">
+                <color>FFFFFF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="136">
+            <LineStyle id="137">
+                <color>FFFFFF00</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="140">
+            <LineStyle id="141">
+                <color>FF00FFFF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="144">
+            <LineStyle id="145">
+                <color>FFFF00FF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="148">
+            <LineStyle id="149">
+                <color>FF0000FF</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <name>Filtered Lines</name>
+        <description>Lines generated using Spherical calculations.</description>
+        <Placemark id="3">
+            <name>Potomac Border → Anacostia Border</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> Potomac Border<br>
+          <b>Pnt:</b> Anacostia Border<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 96.499°<br>
+          <b>Distance:</b> 9.629 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 276.610°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#4</styleUrl>
+            <LineString id="2">
+                <coordinates>-77.11991586020626,38.93449308496549,0.0 -76.94192177011202,38.91858294558368,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="7">
+            <name>Anacostia Border → RCOther4</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> Anacostia Border<br>
+          <b>Pnt:</b> RCOther4<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 302.504°<br>
+          <b>Distance:</b> 7.710 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 122.428°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#8</styleUrl>
+            <LineString id="6">
+                <coordinates>-76.94192177011202,38.91858294558368,0.0 -77.06299611927956,38.97849246067945,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="11">
+            <name>RCOther5 → Anacostia Border</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> RCOther5<br>
+          <b>Pnt:</b> Anacostia Border<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 123.503°<br>
+          <b>Distance:</b> 6.575 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 303.567°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#12</styleUrl>
+            <LineString id="10">
+                <coordinates>-77.04392713804444,38.97116325363942,0.0 -76.94192177011202,38.91858294558368,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="15">
+            <name>RC Border → RCOther6</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> RC Border<br>
+          <b>Pnt:</b> RCOther6<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 170.497°<br>
+          <b>Distance:</b> 1.546 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 350.500°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#16</styleUrl>
+            <LineString id="14">
+                <coordinates>-77.05232207098962,38.98690866249334,0.0 -77.04757044506145,38.96483783380117,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="19">
+            <name>RCOther6 → RC Border</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> RCOther6<br>
+          <b>Pnt:</b> RC Border<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 350.500°<br>
+          <b>Distance:</b> 1.546 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 170.497°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#20</styleUrl>
+            <LineString id="18">
+                <coordinates>-77.04757044506145,38.96483783380117,0.0 -77.05232207098962,38.98690866249334,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="23">
+            <name>Other3 → Rock Potomac</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> Other3<br>
+          <b>Pnt:</b> Rock Potomac<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 281.503°<br>
+          <b>Distance:</b> 6.223 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 101.432°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#24</styleUrl>
+            <LineString id="22">
+                <coordinates>-76.94397771001366,38.88166401040803,0.0 -77.057407,38.899574,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="27">
+            <name>KeyAnaPot → Other1</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> KeyAnaPot<br>
+          <b>Pnt:</b> Other1<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 353.498°<br>
+          <b>Distance:</b> 9.210 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 173.485°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#28</styleUrl>
+            <LineString id="26">
+                <coordinates>-77.023561,38.855142,0.0 -77.0429846910699,38.98760044182171,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="31">
+            <name>KeyAnaPot → Other1a</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> KeyAnaPot<br>
+          <b>Pnt:</b> Other1a<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 355.854°<br>
+          <b>Distance:</b> 9.500 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 175.846°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Dist Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#32</styleUrl>
+            <LineString id="30">
+                <coordinates>-77.023561,38.855142,0.0 -77.03635292709073,38.99229810801602,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="35">
+            <name>Other1a → KeyAnaPot</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> Other1a<br>
+          <b>Pnt:</b> KeyAnaPot<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 175.846°<br>
+          <b>Distance:</b> 9.500 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 355.854°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Dist Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#36</styleUrl>
+            <LineString id="34">
+                <coordinates>-77.03635292709073,38.99229810801602,0.0 -77.023561,38.855142,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="39">
+            <name>PotOther45 → AnOther3</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> PotOther45<br>
+          <b>Pnt:</b> AnOther3<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 43.499°<br>
+          <b>Distance:</b> 5.453 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 223.543°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#40</styleUrl>
+            <LineString id="38">
+                <coordinates>-77.02085781106435,38.85729079287179,0.0 -76.95101954248115,38.91453501889308,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="43">
+            <name>PotOther45 → AnOther6</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> PotOther45<br>
+          <b>Pnt:</b> AnOther6<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 164.459°<br>
+          <b>Distance:</b> 2.882 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 344.468°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Dist target:2.882<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#44</styleUrl>
+            <LineString id="42">
+                <coordinates>-77.02085781106435,38.85729079287179,0.0 -77.00651022684497,38.81709059736713,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="47">
+            <name>AnOther6 → PotOther45</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> AnOther6<br>
+          <b>Pnt:</b> PotOther45<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 344.468°<br>
+          <b>Distance:</b> 2.882 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 164.459°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Dist target:2.882<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#48</styleUrl>
+            <LineString id="46">
+                <coordinates>-77.00651022684497,38.81709059736713,0.0 -77.02085781106435,38.85729079287179,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="51">
+            <name>PotOther45 → RCOther1</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> PotOther45<br>
+          <b>Pnt:</b> RCOther1<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 352.503°<br>
+          <b>Distance:</b> 8.826 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 172.490°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#52</styleUrl>
+            <LineString id="50">
+                <coordinates>-77.02085781106435,38.85729079287179,0.0 -77.04230196166395,38.98395607563889,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="55">
+            <name>Other1a → AnOther3</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> Other1a<br>
+          <b>Pnt:</b> AnOther3<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 139.497°<br>
+          <b>Distance:</b> 7.062 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 319.551°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#56</styleUrl>
+            <LineString id="54">
+                <coordinates>-77.03635292709073,38.99229810801602,0.0 -76.95101954248115,38.91453501889308,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="59">
+            <name>Other1a → RCOther1</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> Other1a<br>
+          <b>Pnt:</b> RCOther1<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 209.002°<br>
+          <b>Distance:</b> 0.659 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 28.998°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Whole<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#60</styleUrl>
+            <LineString id="58">
+                <coordinates>-77.03635292709073,38.99229810801602,0.0 -77.04230196166395,38.98395607563889,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="63">
+            <name>AnOther7 → Other2</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> AnOther7<br>
+          <b>Pnt:</b> Other2<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 45.003°<br>
+          <b>Distance:</b> 3.450 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 225.031°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Whole<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#64</styleUrl>
+            <LineString id="62">
+                <coordinates>-76.95716998951772,38.85568392761234,0.0 -76.91179740412662,38.89098691249208,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="67">
+            <name>Other2 → RCOther6</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> Other2<br>
+          <b>Pnt:</b> RCOther6<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 305.004°<br>
+          <b>Distance:</b> 8.903 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 124.918°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Whole<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#68</styleUrl>
+            <LineString id="66">
+                <coordinates>-76.91179740412662,38.89098691249208,0.0 -77.04757044506145,38.96483783380117,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="71">
+            <name>Other2b → PotOther3</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> Other2b<br>
+          <b>Pnt:</b> PotOther3<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 226.502°<br>
+          <b>Distance:</b> 10.432 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 46.414°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#72</styleUrl>
+            <LineString id="70">
+                <coordinates>-76.91080686023217,38.89400705959527,0.0 -77.05134754557095,38.78997807723254,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="75">
+            <name>Other2a → AnOther01</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> Other2a<br>
+          <b>Pnt:</b> AnOther01<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 252.331°<br>
+          <b>Distance:</b> 4.714 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 72.279°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Dist factor:14.142<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#76</styleUrl>
+            <LineString id="74">
+                <coordinates>-76.91344596466341,38.88972524047381,0.0 -76.99696100301952,38.86898287196977,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="79">
+            <name>AnOther01 → Other2a</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> AnOther01<br>
+          <b>Pnt:</b> Other2a<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 72.279°<br>
+          <b>Distance:</b> 4.714 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 252.331°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Dist factor:14.142<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#80</styleUrl>
+            <LineString id="78">
+                <coordinates>-76.99696100301952,38.86898287196977,0.0 -76.91344596466341,38.88972524047381,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="83">
+            <name>Other2a → RCOther2</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> Other2a<br>
+          <b>Pnt:</b> RCOther2<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 315.501°<br>
+          <b>Distance:</b> 10.012 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 135.419°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#84</styleUrl>
+            <LineString id="82">
+                <coordinates>-76.91344596466341,38.88972524047381,0.0 -77.04414616023155,38.99302843057183,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="87">
+            <name>AnOther6 → Other3</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> AnOther6<br>
+          <b>Pnt:</b> Other3<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 37.003°<br>
+          <b>Distance:</b> 5.587 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 217.043°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Whole<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#88</styleUrl>
+            <LineString id="86">
+                <coordinates>-77.00651022684497,38.81709059736713,0.0 -76.94397771001366,38.88166401040803,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="91">
+            <name>Other3 → AnOther5</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> Other3<br>
+          <b>Pnt:</b> AnOther5<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 210.497°<br>
+          <b>Distance:</b> 3.075 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 30.478°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#92</styleUrl>
+            <LineString id="90">
+                <coordinates>-76.94397771001366,38.88166401040803,0.0 -76.9729791669901,38.84330794882491,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="95">
+            <name>PotOther2 → PotOther3</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> PotOther2<br>
+          <b>Pnt:</b> PotOther3<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 232.503°<br>
+          <b>Distance:</b> 1.956 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 52.485°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#96</styleUrl>
+            <LineString id="94">
+                <coordinates>-77.02252927769628,38.80721550435717,0.0 -77.05134754557095,38.78997807723254,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="99">
+            <name>AnOther2 → PotOther2</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> AnOther2<br>
+          <b>Pnt:</b> PotOther2<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 209.501°<br>
+          <b>Distance:</b> 8.685 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 29.451°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#100</styleUrl>
+            <LineString id="98">
+                <coordinates>-76.94307691109967,38.91667012408496,0.0 -77.02252927769628,38.80721550435717,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="103">
+            <name>AnOther8 → PotOther3</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> AnOther8<br>
+          <b>Pnt:</b> PotOther3<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 228.001°<br>
+          <b>Distance:</b> 7.278 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 47.938°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Whole<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#104</styleUrl>
+            <LineString id="102">
+                <coordinates>-76.95089338505285,38.86051899180352,0.0 -77.05134754557095,38.78997807723254,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="107">
+            <name>RCOther4 → AnOther2</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> RCOther4<br>
+          <b>Pnt:</b> AnOther2<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 123.502°<br>
+          <b>Distance:</b> 7.730 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 303.577°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#108</styleUrl>
+            <LineString id="106">
+                <coordinates>-77.06299611927956,38.97849246067945,0.0 -76.94307691109967,38.91667012408496,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="111">
+            <name>AnOther4 → RCOther1</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> AnOther4<br>
+          <b>Pnt:</b> RCOther1<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 319.000°<br>
+          <b>Distance:</b> 6.948 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 138.947°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Whole<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#112</styleUrl>
+            <LineString id="110">
+                <coordinates>-76.9574089882556,38.90807446086753,0.0 -77.04230196166395,38.98395607563889,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="115">
+            <name>AnOther4 → RCOther3</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> AnOther4<br>
+          <b>Pnt:</b> RCOther3<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 323.995°<br>
+          <b>Distance:</b> 7.120 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 143.946°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az multiple:18.0<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#116</styleUrl>
+            <LineString id="114">
+                <coordinates>-76.9574089882556,38.90807446086753,0.0 -77.03536369606196,38.99142823973498,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="119">
+            <name>AnOther3 → AnOther5</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> AnOther3<br>
+          <b>Pnt:</b> AnOther5<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 193.503°<br>
+          <b>Distance:</b> 5.060 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 13.489°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#120</styleUrl>
+            <LineString id="118">
+                <coordinates>-76.95101954248115,38.91453501889308,0.0 -76.9729791669901,38.84330794882491,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="123">
+            <name>AnOther3 → AnOther01</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> AnOther3<br>
+          <b>Pnt:</b> AnOther01<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 218.146°<br>
+          <b>Distance:</b> 4.000 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 38.117°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Dist Whole<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#124</styleUrl>
+            <LineString id="122">
+                <coordinates>-76.95101954248115,38.91453501889308,0.0 -76.99696100301952,38.86898287196977,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="127">
+            <name>AnOther01 → AnOther3</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> AnOther01<br>
+          <b>Pnt:</b> AnOther3<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 38.117°<br>
+          <b>Distance:</b> 4.000 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 218.146°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Dist Whole<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#128</styleUrl>
+            <LineString id="126">
+                <coordinates>-76.99696100301952,38.86898287196977,0.0 -76.95101954248115,38.91453501889308,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="131">
+            <name>AnOther9 → RCOther3</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> AnOther9<br>
+          <b>Pnt:</b> RCOther3<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 333.501°<br>
+          <b>Distance:</b> 8.268 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 153.458°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#132</styleUrl>
+            <LineString id="130">
+                <coordinates>-76.96665937739726,38.8843415345149,0.0 -77.03536369606196,38.99142823973498,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="135">
+            <name>AnOther9 → RCOther6</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> AnOther9<br>
+          <b>Pnt:</b> RCOther6<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 322.001°<br>
+          <b>Distance:</b> 7.059 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 141.950°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Whole<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#136</styleUrl>
+            <LineString id="134">
+                <coordinates>-76.96665937739726,38.8843415345149,0.0 -77.04757044506145,38.96483783380117,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="139">
+            <name>RCOther2 → AnOther01</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> RCOther2<br>
+          <b>Pnt:</b> AnOther01<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 163.502°<br>
+          <b>Distance:</b> 8.936 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 343.531°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Half<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#140</styleUrl>
+            <LineString id="138">
+                <coordinates>-77.04414616023155,38.99302843057183,0.0 -76.99696100301952,38.86898287196977,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="143">
+            <name>RCOther3a → RCOther7</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> RCOther3a<br>
+          <b>Pnt:</b> RCOther7<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 185.004°<br>
+          <b>Distance:</b> 2.317 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 5.001°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Whole<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#144</styleUrl>
+            <LineString id="142">
+                <coordinates>-77.03793092768112,38.99355611820573,0.0 -77.04169301965709,38.96014433370642,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="147">
+            <name>RCOther7 → RCOther3a</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>RefPnt:</b> RCOther7<br>
+          <b>Pnt:</b> RCOther3a<br>
+          <hr>
+          <b>Azimuth (RefPnt→Pnt):</b> 5.001°<br>
+          <b>Distance:</b> 2.317 miles<br>
+          <b>Back Azimuth (Pnt→RefPnt):</b> 185.004°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Az Whole<br>
+          <hr>
+          <i>Calculation Method: Spherical</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#148</styleUrl>
+            <LineString id="146">
+                <coordinates>-77.04169301965709,38.96014433370642,0.0 -77.03793092768112,38.99355611820573,0.0</coordinates>
+            </LineString>
+        </Placemark>
+    </Document>
+</kml>

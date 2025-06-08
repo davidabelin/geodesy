@@ -1,0 +1,727 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>top_ten_highpoints_quadrants</name>
+	<atom:link rel="app" href="https://www.google.com/earth/about/versions/#earth-pro" title="Google Earth Pro 7.3.6.10201"></atom:link>
+	<Schema name="dc_top_ten_highpoints_quadrants" id="J_dc_top_ten_highpoints_quadrants_DSSSI">
+		<SimpleField type="double" name="elevation"><displayName>elevation</displayName>
+</SimpleField>
+		<SimpleField type="string" name="marker_color"><displayName>marker-color</displayName>
+</SimpleField>
+		<SimpleField type="string" name="name"><displayName>name</displayName>
+</SimpleField>
+		<SimpleField type="string" name="quadrant"><displayName>quadrant</displayName>
+</SimpleField>
+		<SimpleField type="int" name="rank"><displayName>rank</displayName>
+</SimpleField>
+	</Schema>
+	<Style id="dc_top_ten_highpoints_quadrants_style">
+		<IconStyle>
+			<color>ccacfaff</color>
+			<scale>0.5</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/paddle/pink-blank.png</href>
+			</Icon>
+			<hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3acfaff</color>
+			<scale>0.6</scale>
+		</LabelStyle>
+		<BalloonStyle>
+			<text><![CDATA[<table border="0">
+  <tr><td><b>$[dc_top_ten_highpoints_quadrants/elevation/displayName]</b></td><td>$[dc_top_ten_highpoints_quadrants/elevation]</td></tr>
+  <tr><td><b>$[dc_top_ten_highpoints_quadrants/marker_color/displayName]</b></td><td>$[dc_top_ten_highpoints_quadrants/marker_color]</td></tr>
+  <tr><td><b>$[dc_top_ten_highpoints_quadrants/name/displayName]</b></td><td>$[dc_top_ten_highpoints_quadrants/name]</td></tr>
+  <tr><td><b>$[dc_top_ten_highpoints_quadrants/quadrant/displayName]</b></td><td>$[dc_top_ten_highpoints_quadrants/quadrant]</td></tr>
+  <tr><td><b>$[dc_top_ten_highpoints_quadrants/rank/displayName]</b></td><td>$[dc_top_ten_highpoints_quadrants/rank]</td></tr>
+</table>
+$[description]]]></text>
+		</BalloonStyle>
+		<ListStyle>
+			<ItemIcon>
+				<href>http://maps.google.com/mapfiles/kml/paddle/pink-blank-lv.png</href>
+			</ItemIcon>
+		</ListStyle>
+	</Style>
+	<StyleMap id="dc_top_ten_highpoints_quadrants_style0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#dc_top_ten_highpoints_quadrants_style</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#dc_top_ten_highpoints_quadrants_style1</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="dc_top_ten_highpoints_quadrants_style1">
+		<IconStyle>
+			<color>ccacfaff</color>
+			<scale>0.5</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/paddle/pink-blank.png</href>
+			</Icon>
+			<hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3acfaff</color>
+			<scale>0.6</scale>
+		</LabelStyle>
+		<BalloonStyle>
+			<text><![CDATA[<table border="0">
+  <tr><td><b>$[dc_top_ten_highpoints_quadrants/elevation/displayName]</b></td><td>$[dc_top_ten_highpoints_quadrants/elevation]</td></tr>
+  <tr><td><b>$[dc_top_ten_highpoints_quadrants/marker_color/displayName]</b></td><td>$[dc_top_ten_highpoints_quadrants/marker_color]</td></tr>
+  <tr><td><b>$[dc_top_ten_highpoints_quadrants/name/displayName]</b></td><td>$[dc_top_ten_highpoints_quadrants/name]</td></tr>
+  <tr><td><b>$[dc_top_ten_highpoints_quadrants/quadrant/displayName]</b></td><td>$[dc_top_ten_highpoints_quadrants/quadrant]</td></tr>
+  <tr><td><b>$[dc_top_ten_highpoints_quadrants/rank/displayName]</b></td><td>$[dc_top_ten_highpoints_quadrants/rank]</td></tr>
+</table>
+$[description]]]></text>
+		</BalloonStyle>
+		<ListStyle>
+			<ItemIcon>
+				<href>http://maps.google.com/mapfiles/kml/paddle/pink-blank-lv.png</href>
+			</ItemIcon>
+		</ListStyle>
+	</Style>
+	<Placemark>
+		<name>NW1</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">140.159790039</SimpleData>
+				<SimpleData name="marker_color">#FF0000</SimpleData>
+				<SimpleData name="name">NW1</SimpleData>
+				<SimpleData name="quadrant">NW</SimpleData>
+				<SimpleData name="rank">1</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.15771392254524,38.90349383452012,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NW2</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">132.012512207</SimpleData>
+				<SimpleData name="marker_color">#FF0000</SimpleData>
+				<SimpleData name="name">NW2</SimpleData>
+				<SimpleData name="quadrant">NW</SimpleData>
+				<SimpleData name="rank">2</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.12792869461572,38.90484713287189,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NW3</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">130.76512146</SimpleData>
+				<SimpleData name="marker_color">#FF0000</SimpleData>
+				<SimpleData name="name">NW3</SimpleData>
+				<SimpleData name="quadrant">NW</SimpleData>
+				<SimpleData name="rank">3</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.07763959154487,38.95341219226924,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NW4</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">120.622062683</SimpleData>
+				<SimpleData name="marker_color">#FF0000</SimpleData>
+				<SimpleData name="name">NW4</SimpleData>
+				<SimpleData name="quadrant">NW</SimpleData>
+				<SimpleData name="rank">4</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.09374009251276,38.93199644297314,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NW5</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">119.669120789</SimpleData>
+				<SimpleData name="marker_color">#FF0000</SimpleData>
+				<SimpleData name="name">NW5</SimpleData>
+				<SimpleData name="quadrant">NW</SimpleData>
+				<SimpleData name="rank">5</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.06825055986558,38.97148130269738,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NW6</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">118.033401489</SimpleData>
+				<SimpleData name="marker_color">#FF0000</SimpleData>
+				<SimpleData name="name">NW6</SimpleData>
+				<SimpleData name="quadrant">NW</SimpleData>
+				<SimpleData name="rank">6</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.07015375461505,38.93394947186515,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NW7</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">105.596229553</SimpleData>
+				<SimpleData name="marker_color">#FF0000</SimpleData>
+				<SimpleData name="name">NW7</SimpleData>
+				<SimpleData name="quadrant">NW</SimpleData>
+				<SimpleData name="rank">7</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.05156721088159,38.95895398302798,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NW8</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">97.7925949097</SimpleData>
+				<SimpleData name="marker_color">#FF0000</SimpleData>
+				<SimpleData name="name">NW8</SimpleData>
+				<SimpleData name="quadrant">NW</SimpleData>
+				<SimpleData name="rank">8</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.1107500346977,38.89282098875421,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NW9</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">97.2928390503</SimpleData>
+				<SimpleData name="marker_color">#FF0000</SimpleData>
+				<SimpleData name="name">NW9</SimpleData>
+				<SimpleData name="quadrant">NW</SimpleData>
+				<SimpleData name="rank">9</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.03989646735123,38.99496325843041,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NW10</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">92.2138366699</SimpleData>
+				<SimpleData name="marker_color">#FF0000</SimpleData>
+				<SimpleData name="name">NW10</SimpleData>
+				<SimpleData name="quadrant">NW</SimpleData>
+				<SimpleData name="rank">10</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.1005818358701,38.95042086380163,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SW1</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">126.435920715</SimpleData>
+				<SimpleData name="marker_color">#0000FF</SimpleData>
+				<SimpleData name="name">SW1</SimpleData>
+				<SimpleData name="quadrant">SW</SimpleData>
+				<SimpleData name="rank">1</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.14436572593894,38.8707848236208,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SW2</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">124.844642639</SimpleData>
+				<SimpleData name="marker_color">#0000FF</SimpleData>
+				<SimpleData name="name">SW2</SimpleData>
+				<SimpleData name="quadrant">SW</SimpleData>
+				<SimpleData name="rank">2</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.13577312967706,38.89401637179065,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SW3</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">115.284233093</SimpleData>
+				<SimpleData name="marker_color">#0000FF</SimpleData>
+				<SimpleData name="name">SW3</SimpleData>
+				<SimpleData name="quadrant">SW</SimpleData>
+				<SimpleData name="rank">3</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.17115360290147,38.89304085643226,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SW4</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">105.299659729</SimpleData>
+				<SimpleData name="marker_color">#0000FF</SimpleData>
+				<SimpleData name="name">SW4</SimpleData>
+				<SimpleData name="quadrant">SW</SimpleData>
+				<SimpleData name="rank">4</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.11182307731859,38.89404878942544,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SW5</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">84.9906921387</SimpleData>
+				<SimpleData name="marker_color">#0000FF</SimpleData>
+				<SimpleData name="name">SW5</SimpleData>
+				<SimpleData name="quadrant">SW</SimpleData>
+				<SimpleData name="rank">5</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.11221897332845,38.87605029211385,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SW6</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">79.9973068237</SimpleData>
+				<SimpleData name="marker_color">#0000FF</SimpleData>
+				<SimpleData name="name">SW6</SimpleData>
+				<SimpleData name="quadrant">SW</SimpleData>
+				<SimpleData name="rank">6</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.08946694170656,38.88154254239193,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SW7</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">79.4230422974</SimpleData>
+				<SimpleData name="marker_color">#0000FF</SimpleData>
+				<SimpleData name="name">SW7</SimpleData>
+				<SimpleData name="quadrant">SW</SimpleData>
+				<SimpleData name="rank">7</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.12392791799552,38.85679765503221,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SW8</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">68.2273712158</SimpleData>
+				<SimpleData name="marker_color">#0000FF</SimpleData>
+				<SimpleData name="name">SW8</SimpleData>
+				<SimpleData name="quadrant">SW</SimpleData>
+				<SimpleData name="rank">8</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.07845956024296,38.85801938235348,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SW9</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">64.1233444214</SimpleData>
+				<SimpleData name="marker_color">#0000FF</SimpleData>
+				<SimpleData name="name">SW9</SimpleData>
+				<SimpleData name="quadrant">SW</SimpleData>
+				<SimpleData name="rank">9</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.09238259317782,38.82961358988067,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SW10</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">62.5385704041</SimpleData>
+				<SimpleData name="marker_color">#0000FF</SimpleData>
+				<SimpleData name="name">SW10</SimpleData>
+				<SimpleData name="quadrant">SW</SimpleData>
+				<SimpleData name="rank">10</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.10481619727457,38.84552599076017,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SE1</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">93.9058380127</SimpleData>
+				<SimpleData name="marker_color">#00FF00</SimpleData>
+				<SimpleData name="name">SE1</SimpleData>
+				<SimpleData name="quadrant">SE</SimpleData>
+				<SimpleData name="rank">1</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-76.93918566516243,38.87141111652249,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SE2</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">90.108757019</SimpleData>
+				<SimpleData name="marker_color">#00FF00</SimpleData>
+				<SimpleData name="name">SE2</SimpleData>
+				<SimpleData name="quadrant">SE</SimpleData>
+				<SimpleData name="rank">2</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-76.95995351092337,38.86106087610089,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SE3</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">82.7250518799</SimpleData>
+				<SimpleData name="marker_color">#00FF00</SimpleData>
+				<SimpleData name="name">SE3</SimpleData>
+				<SimpleData name="quadrant">SE</SimpleData>
+				<SimpleData name="rank">3</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-76.98255098585255,38.85737175565055,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SE4</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">66.29347229</SimpleData>
+				<SimpleData name="marker_color">#00FF00</SimpleData>
+				<SimpleData name="name">SE4</SimpleData>
+				<SimpleData name="quadrant">SE</SimpleData>
+				<SimpleData name="rank">4</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-76.91658806439369,38.88687015031434,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SE5</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">64.5305633545</SimpleData>
+				<SimpleData name="marker_color">#00FF00</SimpleData>
+				<SimpleData name="name">SE5</SimpleData>
+				<SimpleData name="quadrant">SE</SimpleData>
+				<SimpleData name="rank">5</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-76.98051219823188,38.8359473977964,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SE6</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">54.9132652283</SimpleData>
+				<SimpleData name="marker_color">#00FF00</SimpleData>
+				<SimpleData name="name">SE6</SimpleData>
+				<SimpleData name="quadrant">SE</SimpleData>
+				<SimpleData name="rank">6</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.0148724526864,38.82543683907126,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SE7</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">53.6876411438</SimpleData>
+				<SimpleData name="marker_color">#00FF00</SimpleData>
+				<SimpleData name="name">SE7</SimpleData>
+				<SimpleData name="quadrant">SE</SimpleData>
+				<SimpleData name="rank">7</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.00185334976342,38.84663563870244,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SE8</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">51.4764938354</SimpleData>
+				<SimpleData name="marker_color">#00FF00</SimpleData>
+				<SimpleData name="name">SE8</SimpleData>
+				<SimpleData name="quadrant">SE</SimpleData>
+				<SimpleData name="rank">8</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-76.94338460320795,38.88916997243381,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SE9</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">31.6312179565</SimpleData>
+				<SimpleData name="marker_color">#00FF00</SimpleData>
+				<SimpleData name="name">SE9</SimpleData>
+				<SimpleData name="quadrant">SE</SimpleData>
+				<SimpleData name="rank">9</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.00504929882477,38.89062785354151,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>SE10</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">24.9322662354</SimpleData>
+				<SimpleData name="marker_color">#00FF00</SimpleData>
+				<SimpleData name="name">SE10</SimpleData>
+				<SimpleData name="quadrant">SE</SimpleData>
+				<SimpleData name="rank">10</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-76.98112610268464,38.89152038350696,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NE1</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">111.403137207</SimpleData>
+				<SimpleData name="marker_color">#800080</SimpleData>
+				<SimpleData name="name">NE1</SimpleData>
+				<SimpleData name="quadrant">NE</SimpleData>
+				<SimpleData name="rank">1</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.03239884148559,38.97974086282069,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NE2</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">100.058265686</SimpleData>
+				<SimpleData name="marker_color">#800080</SimpleData>
+				<SimpleData name="name">NE2</SimpleData>
+				<SimpleData name="quadrant">NE</SimpleData>
+				<SimpleData name="rank">2</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.011595518372,38.94180325946651,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NE3</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">94.8817901611</SimpleData>
+				<SimpleData name="marker_color">#800080</SimpleData>
+				<SimpleData name="name">NE3</SimpleData>
+				<SimpleData name="quadrant">NE</SimpleData>
+				<SimpleData name="rank">3</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.01138387946719,38.97083294927425,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NE4</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">88.4766387939</SimpleData>
+				<SimpleData name="marker_color">#800080</SimpleData>
+				<SimpleData name="name">NE4</SimpleData>
+				<SimpleData name="quadrant">NE</SimpleData>
+				<SimpleData name="rank">4</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.02923561242829,38.95939716684541,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NE5</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">82.9055099487</SimpleData>
+				<SimpleData name="marker_color">#800080</SimpleData>
+				<SimpleData name="name">NE5</SimpleData>
+				<SimpleData name="quadrant">NE</SimpleData>
+				<SimpleData name="rank">5</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.04073159768797,38.99652708825251,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NE6</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">73.0605316162</SimpleData>
+				<SimpleData name="marker_color">#800080</SimpleData>
+				<SimpleData name="name">NE6</SimpleData>
+				<SimpleData name="quadrant">NE</SimpleData>
+				<SimpleData name="rank">6</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-76.98849290255305,38.93526523490068,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NE7</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">72.5947113037</SimpleData>
+				<SimpleData name="marker_color">#800080</SimpleData>
+				<SimpleData name="name">NE7</SimpleData>
+				<SimpleData name="quadrant">NE</SimpleData>
+				<SimpleData name="rank">7</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.04085641124364,38.94331080852606,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NE8</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">72.3247146606</SimpleData>
+				<SimpleData name="marker_color">#800080</SimpleData>
+				<SimpleData name="name">NE8</SimpleData>
+				<SimpleData name="quadrant">NE</SimpleData>
+				<SimpleData name="rank">8</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-76.97546704594468,38.90855650820678,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NE9</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">66.2357254028</SimpleData>
+				<SimpleData name="marker_color">#800080</SimpleData>
+				<SimpleData name="name">NE9</SimpleData>
+				<SimpleData name="quadrant">NE</SimpleData>
+				<SimpleData name="rank">9</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-76.9587223201264,38.92633520887378,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>NE10</name>
+		<styleUrl>#dc_top_ten_highpoints_quadrants_style0</styleUrl>
+		<ExtendedData>
+			<SchemaData schemaUrl="#J_dc_top_ten_highpoints_quadrants_DSSSI">
+				<SimpleData name="elevation">62.7139053345</SimpleData>
+				<SimpleData name="marker_color">#800080</SimpleData>
+				<SimpleData name="name">NE10</SimpleData>
+				<SimpleData name="quadrant">NE</SimpleData>
+				<SimpleData name="rank">10</SimpleData>
+			</SchemaData>
+		</ExtendedData>
+		<Point>
+			<coordinates>-77.03478814827194,38.92245353330819,0</coordinates>
+		</Point>
+	</Placemark>
+</Document>
+</kml>

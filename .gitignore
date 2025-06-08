@@ -1,7 +1,8 @@
 # Large data files
-#data/Roadway_SubBlock.geojson
-#data/*.xlsx
-#data/*.tif
+#Roadway_SubBlock.geojson
+*.xlsx
+*.tif
+*.xcs
 
 # Both project Data folders but keep kml
 data/*.csv
@@ -19,7 +20,6 @@ dev/*.bat
 # image folder contents
 image/
 images/
-images/master_plan.tif
 
 # sandbox folder contents
 sandbox/
@@ -182,3 +182,133 @@ cython_debug/
 
 # YAML
 .yaml
+data/DC_ao051525.kml
+data/dc_color_aves.kml
+data/E W Hill Lines.kml
+data/HilltopLines.jpg
+data/N S Hill Lines.kml
+data/NE SW Hill Lines.kml
+data/NW SE Hill Lines.kml
+data/octant_highpnts.geojson
+data/official_boundaries.geojson
+data/PenLinesFiltered.kml
+data/River.kml
+data/RiverLinesFiltered.kml
+data/RiverPnts_critlines.kml
+data/RiverPnts.kml
+data/SelectLinesFiltered.kml
+data/SelectPnts.kml
+data/ThreeHigh.kml
+data/XCenterLinesFiltered.kml
+data/XEastLinesFiltered.kml
+data/XNorthLinesFiltered.kml
+data/XPnts.kml
+data/River.kml
+data/RiverPnts_critlines.kml
+data/SelectPnts.kml
+qgis/DC_City_Substreet_attachments.zip
+qgis/DC_City_Substreet.qgs
+qgis/DC_City_Substreet.qgs~
+qgis/dc_dem.tif
+qgis/dc_dem.tif.aux.xml
+qgis/DC_Roadways.qgz
+qgis/DC_USGS_combo__attachments.zip
+qgis/DC_USGS_combo_.qgs
+qgis/DC_USGS_combo_.qgs~
+qgis/DC_USGS_comboA_attachments.zip
+qgis/DC_USGS_comboA.qgs
+qgis/DC_USGS_comboA.qgs~
+qgis/DC_USGS_comboB_attachments.zip
+qgis/DC_USGS_comboB.qgs
+qgis/DC_USGS_comboB.qgs~
+qgis/DC_USGS_comboC_attachments.zip
+qgis/DC_USGS_comboC.qgs
+qgis/DC_USGS_comboC.qgs~
+qgis/DC_USGS_hawkin_attachments.zip
+qgis/DC_USGS_hawkin.qgs~
+qgis/DC_USGS_hawkins.qgs
+qgis/DC_USGS_schematic_attachments.zip
+qgis/DC_USGS_schematic.qgs
+qgis/DC_USGS_schematic.qgs~
+qgis/DC_Waterways.qgz
+qgis/hilltops_attachments.zip
+qgis/hilltops.qgs
+qgis/hilltops.qgs~
+qgis/Hydrography_Centerline.geojson
+qgis/Hydrography_Lines.geojson
+qgis/Roadway_SubBlock.geojson
+qgis/USGS_1M_18_x32y430_VA_NorthernVA_B22.tif
+qgis/USGS_1m_x31y432_VA_Fairfax_County_2018.tif
+qgis/USGS_1m_x31y432_VA_Fairfax_County_2018.tif.aux - Copy.xml
+qgis/USGS_1m_x31y432_VA_Fairfax_County_2018.tif.aux.xml
+qgis/USGS_1m.qgz
+qgis/USGS_one_meter_x32y431_MD_VA_Sandy_NCR_2014.tif
+qgis/USGS_one_meter_x32y432_MD_VA_Sandy_NCR_2014.tif
+qgis/Waterbodies_2019.geojson
+qgis/Ellicot/ellicott_loc.xcf
+qgis/Ellicot/ellicott_outline.png
+qgis/Ellicot/ellicott_outline.xcf
+qgis/Ellicot/ellicott_overlay_outline.png
+qgis/Ellicot/Ellicott_Plan.img.points
+qgis/Ellicot/ellicott_plan.jpg
+qgis/Ellicot/ellicott_plan.xcf
+qgis/Ellicot/ellicott_spirals.xcf
+qgis/Ellicot/ellicott.qgz
+qgis/Ellicot/ellicott.xcf
+qgis/Ellicot/LEnfant plan.jpg
+qgis/Ellicot/lenfant_planA.jpg
+qgis/Ellicot/lenfant_rectangles.jpg
+qgis/Ellicot/washington_plan.xcf
+qgis/Ellicot/Ellicott_Plan/Ellicott_Hawkins.img.points
+qgis/Ellicot/Ellicott_Plan/Ellicott_Plan.img
+qgis/Ellicot/Ellicott_Plan/Ellicott_Plan.img.xml
+qgis/Ellicot/Ellicott_Plan/Ellicott_Plan.rrd
+qgis/Ellicot/Ellicott_Plan/scratch_delete_me.img.points
+qgis/Hawkins/Ellicott_Hawkins_attachments.zip
+qgis/Hawkins/Ellicott_Hawkins.qgs
+qgis/Hawkins/Ellicott_Hawkins.tif
+qgis/Hawkins/Ellicott_Hawkins.tif.aux.xml
+qgis/Hawkins/Hawkins_bilinear_modB.tif
+qgis/Hawkins/Hawkins_bilinear_modB.tif.aux.xml
+qgis/Hawkins/Hawkins_georefA.tif
+qgis/Hawkins/Hawkins_georefA.tif.aux.xml
+qgis/Hawkins/Hawkins_georefC.img.points
+qgis/Hawkins/Hawkins_modA.tif
+qgis/Hawkins/Hawkins_modA.tif.aux.xml
+qgis/Hawkins/hawkins_topo_project.qgz
+qgis/Hawkins/Hawkins_Topography_georefA.tif.aux.xml
+qgis/Hawkins/Hawkins_Topography_super_overlay.kmz
+qgis/Hawkins/Hawkins_Topography.igw
+qgis/Hawkins/Hawkins_Topography.img
+qgis/Hawkins/Hawkins_Topography.img.points
+qgis/Hawkins/Hawkins_Topography.img.xml
+qgis/Hawkins/Hawkins_Topography.rrd
+qgis/Hawkins/USGS_Hawkins.img.points
+qgis/Schematic Detail/master-gmd-gmd385m-g3850m-g3850m-gct00377-cs000005.tif
+qgis/Schematic Detail/master-gmd-gmd385m-g3850m-g3850m-gct00377-cs000005.tif.aux.xml
+qgis/Schematic Detail/master-gmd-gmd385m-g3850m-g3850m-gct00377-cs000006.tif
+qgis/Schematic Detail/master-gmd-gmd385m-g3850m-g3850m-gct00377-cs000008.tif
+qgis/Schematic Detail/master-gmd-gmd385m-g3850m-g3850m-gct00377-cs000010.tif
+qgis/Schematic Detail/master-gmd-gmd385m-g3850m-g3850m-gct00377-cs000010.tif.aux.xml
+qgis/Schematic Detail/schematic.xcf
+qgis/Schematic Detail/schematic03_helmert.tif
+qgis/Schematic Detail/schematic03_helmert.tif.aux.xml
+qgis/Schematic Detail/schematic03_poly2.tif
+qgis/Schematic Detail/schematic03_poly2.tif.aux.xml
+qgis/Schematic Detail/schematic03.tif
+qgis/Schematic Detail/schematic03.tif.aux.xml
+qgis/Schematic Detail/schematic03.tif.ovr
+qgis/Schematic Detail/schematic03.tif.points
+qgis/Schematic Detail/schematic04_warpA.tif
+qgis/Schematic Detail/schematic04_warpA.tif.aux.xml
+qgis/Schematic Detail/schematic04.tif
+qgis/Schematic Detail/schematic04.tif.aux.xml
+qgis/Schematic Detail/schematic04.tif.points
+qgis/Schematic Detail/schematic07.tif
+qgis/Schematic Detail/schematic07.tif.aux.xml
+qgis/Schematic Detail/schematic09.tif
+qgis/Schematic Detail/schematic09.tif.aux.xml
+qgis/Shaded Relief/Historic_Shaded_Relief.img
+qgis/Shaded Relief/Historic_Shaded_Relief.img.xml
+qgis/Shaded Relief/Historic_Shaded_Relief.rrd
+qgis/Shaded Relief/shaded_relief.kmz

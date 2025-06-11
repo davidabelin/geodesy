@@ -1,4 +1,4 @@
-# C:\Users\David\Documents\Local_Python\qgis\octant_heights.py
+# C:\Users\David\Documents\Local_Python\geodesy\octant_heights.py
 import rasterio
 import numpy as np
 from rasterio.mask import mask
@@ -107,7 +107,7 @@ def get_top_ten_peaks_octant(dem_path, triad, buffer_m=100, separation_m=100):
 
             peaks = []
             dem_iter = dem_working.copy()
-            for rank in range(1, 11):
+            for rank in range(1, 11):  #11 Set number points per octant = 10
                 if np.isnan(dem_iter).all():
                     break
                 flat_index = np.nanargmax(dem_iter)
@@ -140,11 +140,11 @@ def get_top_ten_peaks_octant(dem_path, triad, buffer_m=100, separation_m=100):
         return None
 
 def main():
-    buffer_m=1000
-    separation_m=10
+    buffer_m=500
+    separation_m=2000
     dem_file = "qgis/dc_dem.tif"
     # Define the four octant triads.
-    triads = [
+    og_triads = [
         ["N", "NW5", "C"],  # NW octant
         ["NW5", "W", "C"],  # NW5 octant
         ["W", "SW5", "C"],  # SW5 octant
@@ -153,13 +153,37 @@ def main():
         ["SE5", "E", "C"],  # SE octant
         ["E", "NE5", "C"],  # SE octant
         ["NE5", "N", "C"],  # NE5 octant
+    ]    
+    triads = [
+        ["N", "SW5", "SE5"],  # NW octant
+        ["NW5", "S", "NE5"],  # NW5 octant
+        ["W", "SE5", "NE5"],  # SW5 octant
+        ["SW5", "E", "NW5"],  # SW octant
+        ["S", "E", "N"],  # SE5 octant 
+        ["W", "E", "N"],  # SE octant
+        ["SE5", "C", "NE5"],  # SE octant
+        ["S", "C", "SE5"],  # NE5 octant
     ]
     # Mapping from the triad key to a two-letter octant name.
+    og_triad_to_quad = {
+        "NNW5C": "NW",
+        "NW5WC": "NW5",
+        "WSW5C": "SW",
+        "SW5SC": "SW5",
+        "SSE5C": "SE", 
+        "SE5EC": "SE5",
+        "ENE5C": "NE",
+        "NE5NC": "NE5"
+    }
     triad_to_quad = {
-        "NWC": "NW",
-        "WSC": "SW",
-        "SEC": "SE",
-        "ENC": "NE"
+        "NSW5SE5": "NW",
+        "NW5SNE5": "NW5",
+        "WSE5NE5": "SW",
+        "SW5ENW5": "SW5",
+        "SEN": "SE", 
+        "WEN": "SE5",
+        "SE5CNE5": "NE",
+        "SCSE5": "NE5"
     }
     # Marker colors for each octant.
     marker_colors = {
@@ -204,7 +228,7 @@ def main():
         #crs="EPSG:4326" #generic WGS84
         crs="EPSG:32618" #WGS84 UTM 18N
     )
-    out_geojson = "data/octant_highpnts.geojson"
+    out_geojson = "highpoints/octant_x_2000.geojson"
     gdf.to_file(out_geojson, driver='GeoJSON')
     print(f"GeoJSON with octant peaks saved to: {out_geojson}")
 

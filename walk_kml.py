@@ -4,7 +4,7 @@ import os
 
 # --- Configuration ---
 # Use a raw string (r'...') for Windows paths to handle backslashes correctly
-kml_file_path = r"C:\Users\David\Documents\Local_Python\geodesy\data\downloaded\dc_topo_1791.img\Hawkins_Topography.img.xml"
+kml_file_path = "highpoints\BigMixPnts.kml"
 #\centerpnts.kml'
 # --- End Configuration ---
 

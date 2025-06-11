@@ -1,5 +1,7 @@
-# ChatGPT o3-mini-high v4
+# v4.5
 # C:\Users\David\Documents\Local_Data\WashDC\highpoints_o3.py
+# originally: C:\Users\David\Documents\Local_Python\geodesy\highpoints.py
+
 import rasterio
 import numpy as np
 from rasterio.mask import mask
@@ -139,7 +141,7 @@ def get_top_ten_peaks_quadrant(dem_path, triad, buffer_m=100, separation_m=100):
 def main():
     buffer_m=100
     separation_m=2000
-    dem_file = "data/dc_dem.tif"
+    dem_file = "qgis/dc_dem.tif"
     # Define the four quadrant triads.
     triads = [
         ["N", "W", "C"],  # NW quadrant
@@ -192,7 +194,7 @@ def main():
         geometry=[feat["geometry"] for feat in all_features],
         crs="EPSG:4326"
     )
-    out_geojson = "data/dc_top_ten_highpoints_quadrants.geojson"
+    out_geojson = "highpoints/dc_top_ten_highpoints_quadrants.geojson"
     gdf.to_file(out_geojson, driver='GeoJSON')
     print(f"GeoJSON with quadrant peaks saved to: {out_geojson}")
 

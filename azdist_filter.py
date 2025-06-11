@@ -1,5 +1,5 @@
 """
-azdist_filter.py v3.8
+azdist_filter.py v3.9
 
 - --tenth, --half, --whole apply to both Az and Dist unless --az-only or --dist-only specified.
 - 'Reason' column shows which criteria/field was matched.
@@ -22,23 +22,51 @@ import geometry # For inverse_geodetic
 PHI = (1 + 5 ** 0.5) / 2
 PI = math.pi
 SQRT2 = math.sqrt(2)
-SQRT3 = math.sqrt(3)
-TOL = 0.001
+SQRT3 = math.sqrt(3) 
+TOL = 0.01 # Default tolerance, used in various places
 
 # === KML Parsing (from dot_connecter.py) ===
 def load_points_from_kml(path: str) -> Dict[str, Tuple[float, float]]:
-    """Parse KML to dict name -> (lat, lon)."""
+    """
+    Parse KML to dict name -> (lat, lon).
+    Handles Placemarks without a <name> tag by generating a unique name.
+    """
     ns = {'kml': 'http://www.opengis.net/kml/2.2'}
     tree = ET.parse(path)
     root = tree.getroot()
     pts = {}
-    for pm in root.findall('.//kml:Placemark', ns):
+    unnamed_point_idx = 0
+    for pm_idx, pm in enumerate(root.findall('.//kml:Placemark', ns)):
         name = pm.findtext('kml:name', default='', namespaces=ns).strip()
-        coord_text = pm.findtext('kml:Point/kml:coordinates', default='', namespaces=ns).strip()
-        if not name or not coord_text:
+        
+        # Find coordinates element safely
+        coordinates_element = pm.find('.//kml:Point/kml:coordinates', ns)
+        if coordinates_element is None or coordinates_element.text is None:
+            # print(f"Warning: Placemark {pm_idx + 1} skipped, missing coordinates element or text.")
             continue
-        lon, lat, *_ = coord_text.split(',') # KML order is lon,lat,alt
-        pts[name] = (float(lat), float(lon)) # Stores as lat,lon
+        
+        coord_text_str = coordinates_element.text.strip()
+        if not coord_text_str: # Skip if coordinates string is empty after stripping
+            # print(f"Warning: Placemark {pm_idx + 1} (Name: '{name}') skipped, empty coordinates string.")
+            continue
+
+        if not name: # If name is missing, generate one
+            unnamed_point_idx += 1
+            name = f"UnnamedPoint_{unnamed_point_idx}"
+        
+        # Ensure name is unique (handles auto-generated or KML duplicates)
+        original_name = name
+        suffix_counter = 1
+        while name in pts: 
+            name = f"{original_name}_{suffix_counter}"
+            suffix_counter += 1
+            
+        try:
+            lon_str, lat_str, *_ = coord_text_str.split(',') # KML order is lon,lat,alt
+            pts[name] = (float(lat_str), float(lon_str)) # Stores as lat,lon
+        except ValueError:
+            # print(f"Warning: Could not parse coordinates for Placemark '{name}': {coord_text_str}")
+            continue
     print(f"Loaded {len(pts)} points from {path}.")
     return pts
 
@@ -47,17 +75,21 @@ def generate_all_pairs_dataframe(points: Dict[str, Tuple[float, float]], ellipso
     """Calculates Az/Dist for all unique pairs and returns a DataFrame."""
     pair_data_list = []
     point_names = list(points.keys())
+    columns = ['RefPnt', 'Pnt', 'Az', 'Dist', 'BackAz'] # Define expected columns
 
-    for p1_name, p2_name in combinations(point_names, 2):
-        lat1, lon1 = points[p1_name]
-        lat2, lon2 = points[p2_name]
+    if len(point_names) >= 2: # Only proceed if pairs can be formed
+        for p1_name, p2_name in combinations(point_names, 2):
+            lat1, lon1 = points[p1_name]
+            lat2, lon2 = points[p2_name]
 
-        az1, az2, dist = geometry.inverse_geodetic(lat1, lon1, lat2, lon2, unit='miles', ellipsoid=ellipsoid)
-        
-        pair_data_list.append({'RefPnt': p1_name, 'Pnt': p2_name, 'Az': az1 % 360, 'Dist': dist, 'BackAz': az2 % 360})
-        pair_data_list.append({'RefPnt': p2_name, 'Pnt': p1_name, 'Az': az2 % 360, 'Dist': dist, 'BackAz': az1 % 360}) # Add reverse pair
+            az1, az2, dist = geometry.inverse_geodetic(lat1, lon1, lat2, lon2, unit='miles', ellipsoid=ellipsoid)
+            
+            pair_data_list.append({'RefPnt': p1_name, 'Pnt': p2_name, 'Az': az1 % 360, 'Dist': dist, 'BackAz': az2 % 360})
+            pair_data_list.append({'RefPnt': p2_name, 'Pnt': p1_name, 'Az': az2 % 360, 'Dist': dist, 'BackAz': az1 % 360}) # Add reverse pair
 
-    return pd.DataFrame(pair_data_list)
+    if not pair_data_list: # If no pairs were generated
+        return pd.DataFrame(columns=columns) # Return empty DataFrame with defined columns
+    return pd.DataFrame(pair_data_list, columns=columns)
 def to_float_list(seq):
     if seq is None:
         return []
@@ -102,7 +134,7 @@ def mask_whole(series, tol=TOL):
 def draw_lines(
     pair_records: List[Dict[str, any]], 
     points: Dict[str, Tuple[float, float]], 
-    out_path: str, 
+    out_path: str,
     ellipsoid_calc_used: bool
 ):
     kml = simplekml.Kml(name="Filtered Lines") # Added name to KML root

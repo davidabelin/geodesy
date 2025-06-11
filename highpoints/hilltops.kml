@@ -2,406 +2,609 @@
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
 <Document>
 	<name>hilltops.kml</name>
-	<StyleMap id="msn_arrow2">
-		<Pair>
-			<key>normal</key>
-			<styleUrl>#sn_arrow3000</styleUrl>
-		</Pair>
-		<Pair>
-			<key>highlight</key>
-			<styleUrl>#sh_arrow300</styleUrl>
-		</Pair>
-	</StyleMap>
-	<StyleMap id="msn_arrow20">
-		<Pair>
-			<key>normal</key>
-			<styleUrl>#sn_arrow30</styleUrl>
-		</Pair>
-		<Pair>
-			<key>highlight</key>
-			<styleUrl>#sh_arrow3000</styleUrl>
-		</Pair>
-	</StyleMap>
-	<StyleMap id="msn_arrow21">
-		<Pair>
-			<key>normal</key>
-			<styleUrl>#sn_arrow300</styleUrl>
-		</Pair>
-		<Pair>
-			<key>highlight</key>
-			<styleUrl>#sh_arrow30</styleUrl>
-		</Pair>
-	</StyleMap>
 	<StyleMap id="msn_shaded_dot">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_shaded_dot0</styleUrl>
+			<styleUrl>#sn_shaded_dot</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
 			<styleUrl>#sh_shaded_dot</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_star0">
+	<StyleMap id="msn_shaded_dot0">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_star40</styleUrl>
+			<styleUrl>#sn_shaded_dot00</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_star4</styleUrl>
+			<styleUrl>#sh_shaded_dot18</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_star10">
+	<StyleMap id="msn_shaded_dot1">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_star00</styleUrl>
+			<styleUrl>#sn_shaded_dot13</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_star2</styleUrl>
+			<styleUrl>#sh_shaded_dot16</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_star11">
+	<StyleMap id="msn_shaded_dot12">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_star2</styleUrl>
+			<styleUrl>#sn_shaded_dot8</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_star6</styleUrl>
+			<styleUrl>#sh_shaded_dot12</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_star20">
+	<StyleMap id="msn_shaded_dot14">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_star001</styleUrl>
+			<styleUrl>#sn_shaded_dot14</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_star11</styleUrl>
+			<styleUrl>#sh_shaded_dot3</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_star4">
+	<StyleMap id="msn_shaded_dot15">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_star30</styleUrl>
+			<styleUrl>#sn_shaded_dot17</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_star200</styleUrl>
+			<styleUrl>#sh_shaded_dot24</styleUrl>
 		</Pair>
 	</StyleMap>
-	<Style id="sh_arrow30">
-		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.709091</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>80ffffff</color>
-			<scale>0.4</scale>
-		</LabelStyle>
-		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
-		</LineStyle>
-	</Style>
-	<Style id="sh_arrow300">
-		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.709091</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>80ffffff</color>
-			<scale>0.4</scale>
-		</LabelStyle>
-		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
-		</LineStyle>
-	</Style>
-	<Style id="sh_arrow3000">
-		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.709091</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>80ffffff</color>
-			<scale>0.4</scale>
-		</LabelStyle>
-		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
-		</LineStyle>
-	</Style>
+	<StyleMap id="msn_shaded_dot16">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_shaded_dot23</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_shaded_dot26</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_shaded_dot17">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_shaded_dot02</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_shaded_dot10</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_shaded_dot19">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_shaded_dot20</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_shaded_dot22</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_shaded_dot23">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_shaded_dot21</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_shaded_dot0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_shaded_dot26">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_shaded_dot22</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_shaded_dot11</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_shaded_dot5">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_shaded_dot19</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_shaded_dot20</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_shaded_dot6">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_shaded_dot12</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_shaded_dot1</styleUrl>
+		</Pair>
+	</StyleMap>
 	<Style id="sh_shaded_dot">
 		<IconStyle>
-			<color>e6ff0000</color>
-			<scale>1.06364</scale>
+			<color>f2ffff00</color>
+			<scale>0.709093</scale>
 			<Icon>
 				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
 			</Icon>
 		</IconStyle>
 		<LabelStyle>
-			<scale>0.6</scale>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+		<ListStyle>
+		</ListStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sh_shaded_dot1">
+		<IconStyle>
+			<color>f2ffff00</color>
+			<scale>0.709093</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
 		</LabelStyle>
 		<LineStyle>
 			<color>ffffb205</color>
 			<width>1.2</width>
 		</LineStyle>
 	</Style>
-	<Style id="sh_star11">
+	<Style id="sh_shaded_dot0">
 		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.709091</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>80ffffff</color>
-			<scale>0.4</scale>
-		</LabelStyle>
-		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
-		</LineStyle>
-	</Style>
-	<Style id="sh_star2">
-		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.709091</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>80ffffff</color>
-			<scale>0.4</scale>
-		</LabelStyle>
-		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
-		</LineStyle>
-	</Style>
-	<Style id="sh_star200">
-		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.709091</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>80ffffff</color>
-			<scale>0.4</scale>
-		</LabelStyle>
-		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
-		</LineStyle>
-	</Style>
-	<Style id="sh_star4">
-		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.709091</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>80ffffff</color>
-			<scale>0.4</scale>
-		</LabelStyle>
-		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
-		</LineStyle>
-	</Style>
-	<Style id="sh_star6">
-		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.709091</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>80ffffff</color>
-			<scale>0.4</scale>
-		</LabelStyle>
-		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
-		</LineStyle>
-	</Style>
-	<Style id="sn_arrow30">
-		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.6</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>80ffffff</color>
-			<scale>0.4</scale>
-		</LabelStyle>
-		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
-		</LineStyle>
-	</Style>
-	<Style id="sn_arrow300">
-		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.6</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>80ffffff</color>
-			<scale>0.4</scale>
-		</LabelStyle>
-		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
-		</LineStyle>
-	</Style>
-	<Style id="sn_arrow3000">
-		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.6</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>80ffffff</color>
-			<scale>0.4</scale>
-		</LabelStyle>
-		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
-		</LineStyle>
-	</Style>
-	<Style id="sn_shaded_dot0">
-		<IconStyle>
-			<color>e6ff0000</color>
-			<scale>0.9</scale>
+			<color>f200ff00</color>
+			<scale>0.709093</scale>
 			<Icon>
 				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
 			</Icon>
 		</IconStyle>
 		<LabelStyle>
-			<scale>0.6</scale>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
 		</LabelStyle>
 		<LineStyle>
 			<color>ffffb205</color>
 			<width>1.2</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_star00">
+	<Style id="sh_shaded_dot10">
 		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.6</scale>
+			<color>f2ffff00</color>
+			<scale>0.709093</scale>
 			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
 			</Icon>
 		</IconStyle>
 		<LabelStyle>
-			<color>80ffffff</color>
+			<color>b3ffffff</color>
 			<scale>0.4</scale>
 		</LabelStyle>
 		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
+			<color>ffffb205</color>
+			<width>1.2</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_star001">
+	<Style id="sh_shaded_dot11">
 		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.6</scale>
+			<color>ffffff00</color>
+			<scale>0.709093</scale>
 			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
 			</Icon>
 		</IconStyle>
 		<LabelStyle>
-			<color>80ffffff</color>
+			<color>b3ffffff</color>
 			<scale>0.4</scale>
 		</LabelStyle>
 		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
+			<color>ffffb205</color>
+			<width>1.2</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_star2">
+	<Style id="sh_shaded_dot12">
 		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.6</scale>
+			<color>f2ffff00</color>
+			<scale>0.709093</scale>
 			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
 			</Icon>
 		</IconStyle>
 		<LabelStyle>
-			<color>80ffffff</color>
+			<color>b3ffffff</color>
 			<scale>0.4</scale>
 		</LabelStyle>
 		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
+			<color>ffffb205</color>
+			<width>1.2</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_star30">
+	<Style id="sh_shaded_dot16">
 		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.6</scale>
+			<color>f2ffff00</color>
+			<scale>0.709093</scale>
 			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
 			</Icon>
 		</IconStyle>
 		<LabelStyle>
-			<color>80ffffff</color>
+			<color>b3ffffff</color>
 			<scale>0.4</scale>
 		</LabelStyle>
 		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
+			<color>ffffb205</color>
+			<width>1.2</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_star40">
+	<Style id="sh_shaded_dot18">
 		<IconStyle>
-			<color>ff00ff00</color>
-			<scale>0.6</scale>
+			<color>f2ffff00</color>
+			<scale>0.709093</scale>
 			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
 			</Icon>
 		</IconStyle>
 		<LabelStyle>
-			<color>80ffffff</color>
+			<color>b3ffffff</color>
 			<scale>0.4</scale>
 		</LabelStyle>
 		<LineStyle>
-			<color>bf000000</color>
-			<width>2</width>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sh_shaded_dot20">
+		<IconStyle>
+			<color>f2ffaaaa</color>
+			<scale>0.709093</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sh_shaded_dot22">
+		<IconStyle>
+			<color>f2ffff00</color>
+			<scale>0.709093</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sh_shaded_dot24">
+		<IconStyle>
+			<color>f2ffff00</color>
+			<scale>0.709093</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sh_shaded_dot26">
+		<IconStyle>
+			<color>f2ffff00</color>
+			<scale>0.709093</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sh_shaded_dot3">
+		<IconStyle>
+			<color>f200ff00</color>
+			<scale>0.709093</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_shaded_dot">
+		<IconStyle>
+			<color>f2ffff00</color>
+			<scale>0.6</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+		<ListStyle>
+		</ListStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_shaded_dot00">
+		<IconStyle>
+			<color>f2ffff00</color>
+			<scale>0.6</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_shaded_dot02">
+		<IconStyle>
+			<color>f2ffff00</color>
+			<scale>0.6</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_shaded_dot12">
+		<IconStyle>
+			<color>f2ffff00</color>
+			<scale>0.6</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_shaded_dot13">
+		<IconStyle>
+			<color>f2ffff00</color>
+			<scale>0.6</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_shaded_dot14">
+		<IconStyle>
+			<color>f200ff00</color>
+			<scale>0.6</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_shaded_dot17">
+		<IconStyle>
+			<color>f2ffff00</color>
+			<scale>0.6</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_shaded_dot19">
+		<IconStyle>
+			<color>f2ffaaaa</color>
+			<scale>0.6</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_shaded_dot20">
+		<IconStyle>
+			<color>f2ffff00</color>
+			<scale>0.6</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_shaded_dot21">
+		<IconStyle>
+			<color>f200ff00</color>
+			<scale>0.6</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_shaded_dot22">
+		<IconStyle>
+			<color>ffffff00</color>
+			<scale>0.6</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_shaded_dot23">
+		<IconStyle>
+			<color>f2ffff00</color>
+			<scale>0.6</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_shaded_dot8">
+		<IconStyle>
+			<color>f2ffff00</color>
+			<scale>0.6</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
 		</LineStyle>
 	</Style>
 	<Folder>
 		<name>Hilltops</name>
-		<visibility>0</visibility>
+		<Placemark>
+			<name>H79</name>
+			<LookAt>
+				<longitude>-77.09212195339286</longitude>
+				<latitude>38.81897618187132</latitude>
+				<altitude>0</altitude>
+				<heading>-28.99615859091372</heading>
+				<tilt>0</tilt>
+				<range>632.9188321443942</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#msn_shaded_dot16</styleUrl>
+			<Point>
+				<extrude>1</extrude>
+				<altitudeMode>relativeToGround</altitudeMode>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-77.09249520755921,38.81970378763515,66</coordinates>
+			</Point>
+		</Placemark>
 		<Placemark>
 			<name>NO</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.06717090886728</longitude>
 				<latitude>38.92153325549694</latitude>
@@ -411,7 +614,7 @@
 				<range>71.28350507486542</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_shaded_dot</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -421,7 +624,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H66</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.10101368579197</longitude>
 				<latitude>38.90516878875509</latitude>
@@ -431,7 +633,7 @@
 				<range>810.2730251905255</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -441,7 +643,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H67</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-77.08922930421467</longitude>
 				<latitude>38.91550877252504</latitude>
@@ -451,7 +652,7 @@
 				<roll>89.51782983133583</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -461,27 +662,25 @@
 		</Placemark>
 		<Placemark>
 			<name>H68</name>
-			<visibility>0</visibility>
-			<LookAt>
-				<longitude>-77.05152835544784</longitude>
-				<latitude>38.8941776906008</latitude>
-				<altitude>0</altitude>
-				<heading>89.98735109398531</heading>
-				<tilt>0</tilt>
-				<range>272.4902180048371</range>
+			<Camera>
+				<longitude>-77.05049499016789</longitude>
+				<latitude>38.89255443832852</latitude>
+				<altitude>76.73243954024369</altitude>
+				<heading>-11.48760217402149</heading>
+				<tilt>92.12032813761594</tilt>
+				<roll>-0.0003962239936097531</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-			</LookAt>
-			<styleUrl>#msn_star0</styleUrl>
+			</Camera>
+			<styleUrl>#msn_shaded_dot0</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
 				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-77.05068740682157,38.89420492353727,66</coordinates>
+				<coordinates>-77.05071924388986,38.89412312383742,66</coordinates>
 			</Point>
 		</Placemark>
 		<Placemark>
 			<name>H69</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.0722267041271</longitude>
 				<latitude>38.87685920939965</latitude>
@@ -491,7 +690,7 @@
 				<range>459.1379958081993</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow21</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -501,7 +700,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H70</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.0715408469804</longitude>
 				<latitude>38.87440682362214</latitude>
@@ -511,7 +709,7 @@
 				<range>570.056810115854</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow21</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -521,7 +719,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H71</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.00750341346131</longitude>
 				<latitude>38.88900910286353</latitude>
@@ -531,7 +728,7 @@
 				<range>670.0732789840221</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow21</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -541,7 +738,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H72</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.01222255861975</longitude>
 				<latitude>38.88941586438295</latitude>
@@ -551,7 +747,7 @@
 				<range>1052.94124411426</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow21</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -561,7 +757,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H73</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.0743218331759</longitude>
 				<latitude>38.89749323586066</latitude>
@@ -571,7 +766,7 @@
 				<range>3715.329198433071</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow2</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -581,7 +776,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H81</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.93117767937731</longitude>
 				<latitude>38.88611940091499</latitude>
@@ -591,7 +785,7 @@
 				<range>548.8141150141993</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_star20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -601,8 +795,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H82</name>
-			<visibility>0</visibility>
-			<open>1</open>
 			<LookAt>
 				<longitude>-76.91435061673258</longitude>
 				<latitude>38.89283117673259</latitude>
@@ -612,7 +804,7 @@
 				<range>2041.545948169123</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_star20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -622,8 +814,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H83</name>
-			<visibility>0</visibility>
-			<open>1</open>
 			<LookAt>
 				<longitude>-76.91379590516017</longitude>
 				<latitude>38.88460199554675</latitude>
@@ -633,7 +823,7 @@
 				<range>1135.636213314719</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_star20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -643,29 +833,25 @@
 		</Placemark>
 		<Placemark>
 			<name>H84</name>
-			<visibility>0</visibility>
-			<open>1</open>
 			<LookAt>
-				<longitude>-77.05042204323979</longitude>
-				<latitude>38.98822365236561</latitude>
+				<longitude>-77.04658351277105</longitude>
+				<latitude>38.99120719771257</latitude>
 				<altitude>0</altitude>
-				<heading>-170.8927119241829</heading>
-				<tilt>58.16313210315071</tilt>
-				<range>911.6366235555932</range>
+				<heading>-6.178115041448814</heading>
+				<tilt>73.05774642247772</tilt>
+				<range>560.5687686624379</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_star20</styleUrl>
+			<styleUrl>#msn_shaded_dot6</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
 				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-77.04817694003842,38.98985284622731,66</coordinates>
+				<coordinates>-77.04664850305308,38.9896929685426,66</coordinates>
 			</Point>
 		</Placemark>
 		<Placemark>
 			<name>H85</name>
-			<visibility>0</visibility>
-			<open>1</open>
 			<LookAt>
 				<longitude>-77.01240672870637</longitude>
 				<latitude>38.84920114033948</latitude>
@@ -675,7 +861,7 @@
 				<range>3013.803786559253</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_star11</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -685,29 +871,25 @@
 		</Placemark>
 		<Placemark>
 			<name>H88</name>
-			<visibility>0</visibility>
-			<open>1</open>
 			<LookAt>
-				<longitude>-76.99435295015455</longitude>
-				<latitude>38.87358000041949</latitude>
+				<longitude>-77.00536040864864</longitude>
+				<latitude>38.84961112265357</latitude>
 				<altitude>0</altitude>
-				<heading>15.37388993421837</heading>
-				<tilt>81.99953039486692</tilt>
-				<range>4032.333481411887</range>
+				<heading>75.95914105760626</heading>
+				<tilt>52.46432866086699</tilt>
+				<range>296.8313510262874</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_star4</styleUrl>
+			<styleUrl>#msn_shaded_dot</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
 				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-77.00536419041367,38.84862203085905,66</coordinates>
+				<coordinates>-77.00492179089107,38.84950002068123,66</coordinates>
 			</Point>
 		</Placemark>
 		<Placemark>
 			<name>H77</name>
-			<visibility>0</visibility>
-			<open>1</open>
 			<LookAt>
 				<longitude>-77.03776173775044</longitude>
 				<latitude>38.89772181369853</latitude>
@@ -717,7 +899,7 @@
 				<range>1082.99189473325</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_star10</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -727,7 +909,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H1</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.94283359967845</longitude>
 				<latitude>38.88881083489753</latitude>
@@ -737,7 +918,7 @@
 				<range>33.85623053159224</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -747,7 +928,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H2</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.94429910811849</longitude>
 				<latitude>38.89510964895052</latitude>
@@ -757,7 +937,7 @@
 				<range>80.44960737496243</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -767,7 +947,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H3</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-76.95748368423828</longitude>
 				<latitude>38.91253354267205</latitude>
@@ -777,7 +956,7 @@
 				<roll>89.1698040813888</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -787,7 +966,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H4</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.9479421315405</longitude>
 				<latitude>38.88480974350178</latitude>
@@ -797,7 +975,7 @@
 				<range>39.64549889795649</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -807,7 +985,7 @@
 		</Placemark>
 		<Placemark>
 			<name>H5</name>
-			<visibility>0</visibility>
+			<open>1</open>
 			<LookAt>
 				<longitude>-76.9402513476077</longitude>
 				<latitude>38.87276503844644</latitude>
@@ -817,7 +995,7 @@
 				<range>102.0472944055531</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot26</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -827,7 +1005,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H6</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-76.99335689574919</longitude>
 				<latitude>38.91160305207332</latitude>
@@ -837,7 +1014,7 @@
 				<roll>90.0038523418457</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -847,85 +1024,63 @@
 		</Placemark>
 		<Placemark>
 			<name>H7</name>
-			<visibility>0</visibility>
 			<LookAt>
-				<longitude>-76.97540604056967</longitude>
-				<latitude>38.9083807623478</latitude>
+				<longitude>-76.97625569500234</longitude>
+				<latitude>38.91816163808006</latitude>
 				<altitude>0</altitude>
-				<heading>53.40214560751946</heading>
-				<tilt>36.6854746336921</tilt>
-				<range>21.08650902251525</range>
+				<heading>-5.075091240701057</heading>
+				<tilt>81.22217874564748</tilt>
+				<range>1215.885781203965</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot0</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
 				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-76.97538168393014,38.90838764699864,66</coordinates>
+				<coordinates>-76.97540464909751,38.90856884148683,66</coordinates>
 			</Point>
 		</Placemark>
 		<Placemark>
 			<name>H8</name>
-			<visibility>0</visibility>
-			<Camera>
-				<longitude>-76.95864165309793</longitude>
-				<latitude>38.92608479119659</latitude>
-				<altitude>88.071292643737</altitude>
-				<heading>146.0996591535123</heading>
-				<tilt>0.01523442012158879</tilt>
-				<roll>86.30804391666555</roll>
-				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
-			<Point>
-				<extrude>1</extrude>
-				<altitudeMode>relativeToGround</altitudeMode>
-				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-76.95855678750596,38.92606044772766,66</coordinates>
-			</Point>
-		</Placemark>
-		<Placemark>
-			<name>H9</name>
-			<visibility>0</visibility>
-			<Camera>
-				<longitude>-76.96263006415637</longitude>
-				<latitude>38.86785659976503</latitude>
-				<altitude>37.60434483555506</altitude>
-				<heading>82.44737169937504</heading>
-				<tilt>0.01692371652858878</tilt>
-				<roll>88.90194078505809</roll>
-				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
-			<Point>
-				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-76.96264230165659,38.86779408256991,0</coordinates>
-			</Point>
-		</Placemark>
-		<Placemark>
-			<name>H9</name>
-			<visibility>0</visibility>
 			<LookAt>
-				<longitude>-76.94371343874008</longitude>
-				<latitude>38.82136885316606</latitude>
+				<longitude>-76.95932634155616</longitude>
+				<latitude>38.92596145503213</latitude>
 				<altitude>0</altitude>
-				<heading>-179.9952147246554</heading>
-				<tilt>44.83874364522131</tilt>
-				<range>188.8391231813018</range>
+				<heading>-177.1272309642876</heading>
+				<tilt>39.37832145199678</tilt>
+				<range>254.8978639676916</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot15</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
 				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-76.94378354505614,38.82146563169719,66</coordinates>
+				<coordinates>-76.95853332476764,38.92609741015503,66</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>H79</name>
+			<LookAt>
+				<longitude>-76.94410983865804</longitude>
+				<latitude>38.82189235364486</latitude>
+				<altitude>0</altitude>
+				<heading>-175.9050322185516</heading>
+				<tilt>53.54877519389029</tilt>
+				<range>603.0268446915696</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#msn_shaded_dot15</styleUrl>
+			<Point>
+				<extrude>1</extrude>
+				<altitudeMode>relativeToGround</altitudeMode>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-76.94346972840613,38.82109787567701,66</coordinates>
 			</Point>
 		</Placemark>
 		<Placemark>
 			<name>H10</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-76.97060362189328</longitude>
 				<latitude>38.85236001199961</latitude>
@@ -935,7 +1090,7 @@
 				<roll>12.17748274522294</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -945,7 +1100,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H11</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-77.00443838855342</longitude>
 				<latitude>38.91469988398221</latitude>
@@ -955,7 +1109,7 @@
 				<roll>132.9336482843617</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -965,7 +1119,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H12</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.94901527183805</longitude>
 				<latitude>38.91974253235791</latitude>
@@ -975,7 +1128,7 @@
 				<range>197.9874286716565</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -985,7 +1138,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H13</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.0138444551025</longitude>
 				<latitude>38.94580609608838</latitude>
@@ -995,7 +1147,7 @@
 				<range>173.8139136122697</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1005,7 +1157,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H14</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.00436614741096</longitude>
 				<latitude>38.94813352005457</latitude>
@@ -1015,7 +1166,7 @@
 				<range>163.9304035560585</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1025,7 +1176,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H15</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.01140976324753</longitude>
 				<latitude>38.94206814618089</latitude>
@@ -1035,7 +1185,7 @@
 				<range>145.6002424735044</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1045,7 +1195,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H16</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-77.07889484432434</longitude>
 				<latitude>38.85709085923281</latitude>
@@ -1055,7 +1204,7 @@
 				<roll>-81.03838562385097</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1065,7 +1214,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H17</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-77.07244994074456</longitude>
 				<latitude>38.88147992912072</latitude>
@@ -1075,7 +1223,7 @@
 				<roll>-15.83270592983976</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1085,7 +1233,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H18</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-77.05978921617221</longitude>
 				<latitude>38.8472927371859</latitude>
@@ -1095,7 +1242,7 @@
 				<roll>-79.86935237903104</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1105,7 +1252,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H19</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-77.07783443540235</longitude>
 				<latitude>38.91542369389239</latitude>
@@ -1115,7 +1261,7 @@
 				<roll>-86.94585192756915</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1125,7 +1271,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H20</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-77.07785118538045</longitude>
 				<latitude>38.92276840510066</latitude>
@@ -1135,7 +1280,7 @@
 				<roll>-48.26297365354998</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1145,7 +1290,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H21</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-77.07132898569694</longitude>
 				<latitude>38.92827174694192</latitude>
@@ -1155,7 +1299,7 @@
 				<roll>-2.379014044419612</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1165,7 +1309,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H22</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-77.06002158725704</longitude>
 				<latitude>38.92836988001681</latitude>
@@ -1175,7 +1318,7 @@
 				<roll>-93.7002860962241</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1185,27 +1328,25 @@
 		</Placemark>
 		<Placemark>
 			<name>H23</name>
-			<visibility>0</visibility>
-			<Camera>
-				<longitude>-77.0879912838972</longitude>
-				<latitude>38.93948365049536</latitude>
-				<altitude>246.7369477684891</altitude>
-				<heading>-150.6896081691179</heading>
-				<tilt>2.384113683015449</tilt>
-				<roll>-90.36166825765747</roll>
+			<LookAt>
+				<longitude>-77.08920120856462</longitude>
+				<latitude>38.93857654104651</latitude>
+				<altitude>0</altitude>
+				<heading>-144.8503059292551</heading>
+				<tilt>12.67269074914752</tilt>
+				<range>952.7936957040301</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			</LookAt>
+			<styleUrl>#msn_shaded_dot1</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
 				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-77.08819548973982,38.93923293315854,66</coordinates>
+				<coordinates>-77.08834070412745,38.93923731423045,66</coordinates>
 			</Point>
 		</Placemark>
 		<Placemark>
 			<name>H24</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.07048860486185</longitude>
 				<latitude>38.91778244638378</latitude>
@@ -1215,7 +1356,7 @@
 				<range>200.9752431454169</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1225,7 +1366,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H25</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-77.06688281960517</longitude>
 				<latitude>38.92137558765498</latitude>
@@ -1235,7 +1375,7 @@
 				<roll>-89.76972825762866</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1245,7 +1385,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H26</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.06673519976685</longitude>
 				<latitude>38.80846865542457</latitude>
@@ -1255,7 +1394,7 @@
 				<range>245.095095828896</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot19</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1265,7 +1404,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H27</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.17340349949269</longitude>
 				<latitude>38.83108604250701</latitude>
@@ -1275,7 +1413,7 @@
 				<range>584.1008574216595</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1285,7 +1423,7 @@
 		</Placemark>
 		<Placemark>
 			<name>H28</name>
-			<visibility>0</visibility>
+			<open>1</open>
 			<LookAt>
 				<longitude>-77.12838990132768</longitude>
 				<latitude>38.90531770462196</latitude>
@@ -1295,7 +1433,7 @@
 				<range>67.81903420284614</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1305,7 +1443,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H29</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.11981024498378</longitude>
 				<latitude>38.90993704714922</latitude>
@@ -1315,7 +1452,7 @@
 				<range>682.8397494784626</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1325,7 +1462,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H30</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.090770014618</longitude>
 				<latitude>38.93568786151554</latitude>
@@ -1335,7 +1471,7 @@
 				<range>319.9880889691029</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1345,27 +1481,25 @@
 		</Placemark>
 		<Placemark>
 			<name>H31</name>
-			<visibility>0</visibility>
 			<LookAt>
-				<longitude>-77.09305480085426</longitude>
-				<latitude>38.93175894164909</latitude>
+				<longitude>-77.09334074885723</longitude>
+				<latitude>38.93230216205691</latitude>
 				<altitude>0</altitude>
-				<heading>151.4619271959746</heading>
-				<tilt>38.76795400037769</tilt>
-				<range>157.9008586565131</range>
+				<heading>160.8354294696876</heading>
+				<tilt>0</tilt>
+				<range>176.3341324464111</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot1</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
 				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-77.09314297554148,38.93208208104548,66</coordinates>
+				<coordinates>-77.09367738494352,38.93203756982007,66</coordinates>
 			</Point>
 		</Placemark>
 		<Placemark>
 			<name>H32</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.08979428833879</longitude>
 				<latitude>38.92421103162577</latitude>
@@ -1375,7 +1509,7 @@
 				<range>314.6420502142405</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1385,7 +1519,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H33</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.11303539008838</longitude>
 				<latitude>38.92065428536915</latitude>
@@ -1395,7 +1528,7 @@
 				<range>111.06781327734</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1405,7 +1538,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H34</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.06564420430333</longitude>
 				<latitude>38.91313743825327</latitude>
@@ -1415,7 +1547,7 @@
 				<range>102.7938670237934</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1425,7 +1557,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H35</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.07951017096735</longitude>
 				<latitude>38.91989831461733</latitude>
@@ -1435,7 +1566,7 @@
 				<range>325.9004216742021</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1445,7 +1576,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H36</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.10039299103573</longitude>
 				<latitude>38.89741674302629</latitude>
@@ -1455,7 +1585,7 @@
 				<range>444.3285607691826</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1465,7 +1595,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H37</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.11243758461468</longitude>
 				<latitude>38.89646419747441</latitude>
@@ -1475,7 +1604,7 @@
 				<range>113.762214148648</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1485,7 +1614,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H38</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.30487532716441</longitude>
 				<latitude>38.91970451839327</latitude>
@@ -1495,7 +1623,7 @@
 				<range>293.1844943897252</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1505,7 +1633,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H39</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.24216870540344</longitude>
 				<latitude>38.91902494314627</latitude>
@@ -1515,7 +1642,7 @@
 				<range>169.3985132739054</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1525,7 +1652,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H40</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.15884238905845</longitude>
 				<latitude>38.90123631127758</latitude>
@@ -1535,7 +1661,7 @@
 				<range>219.4442648833101</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1545,7 +1671,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H41</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.23142628855091</longitude>
 				<latitude>38.92737198417545</latitude>
@@ -1555,7 +1680,7 @@
 				<range>854.9565771466824</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1565,7 +1690,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H42</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.01402221381707</longitude>
 				<latitude>38.82698403658401</latitude>
@@ -1575,7 +1699,7 @@
 				<range>462.3293360154279</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1585,8 +1709,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H87</name>
-			<visibility>0</visibility>
-			<open>1</open>
 			<Camera>
 				<longitude>-77.01022585580269</longitude>
 				<latitude>38.8188017682234</latitude>
@@ -1596,7 +1718,7 @@
 				<roll>-78.5280859608432</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_star4</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1606,8 +1728,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H86</name>
-			<visibility>0</visibility>
-			<open>1</open>
 			<LookAt>
 				<longitude>-76.99537065299157</longitude>
 				<latitude>38.81048044830791</latitude>
@@ -1617,7 +1737,7 @@
 				<range>415.3176081074374</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_star4</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1627,7 +1747,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H43</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.14665108452705</longitude>
 				<latitude>38.87385327472731</latitude>
@@ -1637,7 +1756,7 @@
 				<range>339.1451797320888</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1647,7 +1766,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H44</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.11431129672067</longitude>
 				<latitude>38.90268351679772</latitude>
@@ -1657,7 +1775,7 @@
 				<range>749.3049725608621</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1667,7 +1785,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H46</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.03510940481986</longitude>
 				<latitude>38.97579759484167</latitude>
@@ -1677,7 +1794,7 @@
 				<range>449.2598953439957</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1687,7 +1804,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H47</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.01003553293992</longitude>
 				<latitude>38.93977523498958</latitude>
@@ -1697,7 +1813,7 @@
 				<range>587.1677133672948</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1707,7 +1823,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H48</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.05169524715227</longitude>
 				<latitude>38.95969943665582</latitude>
@@ -1717,7 +1832,7 @@
 				<range>181.0786905846419</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1727,7 +1842,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H49</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.05210968324663</longitude>
 				<latitude>38.95494557049076</latitude>
@@ -1737,7 +1851,7 @@
 				<range>361.800305960279</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1747,7 +1861,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H50</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.05315826257365</longitude>
 				<latitude>38.96188173273116</latitude>
@@ -1757,7 +1870,7 @@
 				<range>801.7285399491095</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1767,7 +1880,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H51</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.0496506342492</longitude>
 				<latitude>38.91416305416067</latitude>
@@ -1777,7 +1889,7 @@
 				<range>205.496718997087</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1787,7 +1899,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H52</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.07496114768816</longitude>
 				<latitude>38.9236028657371</latitude>
@@ -1797,7 +1908,7 @@
 				<range>210.2359340336097</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1807,7 +1918,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H53</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.0357434076776</longitude>
 				<latitude>38.92125487474832</latitude>
@@ -1817,7 +1927,7 @@
 				<range>78.71755992990668</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1827,7 +1937,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H54</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-77.38991460245347</longitude>
 				<latitude>39.26009844739819</latitude>
@@ -1837,7 +1946,7 @@
 				<roll>13.89566566306115</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1847,7 +1956,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H55</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.07249206017678</longitude>
 				<latitude>38.97140312932499</latitude>
@@ -1857,7 +1965,7 @@
 				<range>988.5796148162116</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1867,7 +1975,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H56</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.06101334404653</longitude>
 				<latitude>38.91725085307708</latitude>
@@ -1877,7 +1984,7 @@
 				<range>246.201285339104</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1887,7 +1994,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H57</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.12196644178408</longitude>
 				<latitude>38.93297194313763</latitude>
@@ -1897,7 +2003,7 @@
 				<range>1262.981557441804</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1907,7 +2013,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H60</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-76.91721517859401</longitude>
 				<latitude>38.93151974977108</latitude>
@@ -1917,7 +2022,7 @@
 				<range>222.6604357283222</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1927,7 +2032,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H61</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-76.92471994038009</longitude>
 				<latitude>38.92957495407189</latitude>
@@ -1937,7 +2041,7 @@
 				<roll>90.14616719557105</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1947,7 +2051,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H63</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-76.98806800192187</longitude>
 				<latitude>38.93573262477566</latitude>
@@ -1957,7 +2060,7 @@
 				<roll>134.6191497884156</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1967,7 +2070,6 @@
 		</Placemark>
 		<Placemark>
 			<name>H64</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.01771423712583</longitude>
 				<latitude>38.92529230203103</latitude>
@@ -1977,7 +2079,7 @@
 				<range>560.2873656773106</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			<styleUrl>#msn_shaded_dot17</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -1987,24 +2089,252 @@
 		</Placemark>
 		<Placemark>
 			<name>H65</name>
-			<visibility>0</visibility>
-			<LookAt>
-				<longitude>-77.00714102205163</longitude>
-				<latitude>38.91899126431166</latitude>
-				<altitude>0</altitude>
-				<heading>52.90714606194106</heading>
-				<tilt>51.95828451251474</tilt>
-				<range>136.3904627313372</range>
+			<Camera>
+				<longitude>-77.00743646351081</longitude>
+				<latitude>38.9193344128334</latitude>
+				<altitude>457.8366601027411</altitude>
+				<heading>61.45735887962919</heading>
+				<tilt>0.01069102459098561</tilt>
+				<roll>-78.37394075537516</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-			</LookAt>
-			<styleUrl>#msn_arrow20</styleUrl>
+			</Camera>
+			<styleUrl>#msn_shaded_dot12</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
 				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-77.00721561127719,38.91912064117349,66</coordinates>
+				<coordinates>-77.00739402065348,38.91883509061264,66</coordinates>
 			</Point>
 		</Placemark>
+		<Folder>
+			<name>euclid</name>
+			<Placemark>
+				<name>Untitled Placemark</name>
+				<LookAt>
+					<longitude>-77.03813423304003</longitude>
+					<latitude>38.9190459905174</latitude>
+					<altitude>0</altitude>
+					<heading>9.452670518424247</heading>
+					<tilt>84.38922013086957</tilt>
+					<range>514.9284596199107</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_shaded_dot5</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.03814449752903,38.91923366558144,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Untitled Placemark</name>
+				<LookAt>
+					<longitude>-77.03629284884268</longitude>
+					<latitude>38.92254811228475</latitude>
+					<altitude>0</altitude>
+					<heading>9.450399553115325</heading>
+					<tilt>84.35480169904162</tilt>
+					<range>1164.877538643253</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_shaded_dot5</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.03868001051684,38.91944640584248,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Untitled Placemark</name>
+				<LookAt>
+					<longitude>-77.03471979290995</longitude>
+					<latitude>38.91964117953236</latitude>
+					<altitude>0</altitude>
+					<heading>9.45481552673761</heading>
+					<tilt>84.38990299948776</tilt>
+					<range>591.3125015769712</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_shaded_dot5</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.03393934795712,38.92035038719956,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Untitled Placemark</name>
+				<Camera>
+					<longitude>-77.03566135937878</longitude>
+					<latitude>38.91895395049291</latitude>
+					<altitude>73.3185993575902</altitude>
+					<heading>11.33872671209676</heading>
+					<tilt>90.43962816305067</tilt>
+					<roll>-0.00190339785942832</roll>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</Camera>
+				<styleUrl>#msn_shaded_dot5</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.03539882810438,38.92060088510963,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Untitled Placemark</name>
+				<Camera>
+					<longitude>-77.03610707412722</longitude>
+					<latitude>38.91820702938229</latitude>
+					<altitude>84.70317133459609</altitude>
+					<heading>11.33844668940295</heading>
+					<tilt>90.43962816305067</tilt>
+					<roll>-0.001903397859418778</roll>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</Camera>
+				<styleUrl>#msn_shaded_dot5</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.03684599748424,38.9205582700707,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Untitled Placemark</name>
+				<Camera>
+					<longitude>-77.03566135937878</longitude>
+					<latitude>38.91895395049291</latitude>
+					<altitude>73.3185993575902</altitude>
+					<heading>11.33872671209676</heading>
+					<tilt>90.43962816305067</tilt>
+					<roll>-0.00190339785942832</roll>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</Camera>
+				<styleUrl>#msn_shaded_dot5</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.03600379403835,38.92056403415413,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Untitled Placemark</name>
+				<Camera>
+					<longitude>-77.03566135937878</longitude>
+					<latitude>38.91895395049291</latitude>
+					<altitude>73.3185993575902</altitude>
+					<heading>11.33872671209676</heading>
+					<tilt>90.43962816305067</tilt>
+					<roll>-0.00190339785942832</roll>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</Camera>
+				<styleUrl>#msn_shaded_dot5</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.03472226502623,38.9226621639487,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Untitled Placemark</name>
+				<Camera>
+					<longitude>-77.03610707412722</longitude>
+					<latitude>38.91820702938229</latitude>
+					<altitude>84.70317133459609</altitude>
+					<heading>11.33844668940295</heading>
+					<tilt>90.43962816305067</tilt>
+					<roll>-0.001903397859418778</roll>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</Camera>
+				<styleUrl>#msn_shaded_dot5</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.03617001837226,38.92152134626814,0</coordinates>
+				</Point>
+			</Placemark>
+		</Folder>
+		<Folder>
+			<name>Second Set</name>
+			<Placemark>
+				<name>Untitled Placemark</name>
+				<LookAt>
+					<longitude>-77.04065098071761</longitude>
+					<latitude>38.92235246335012</latitude>
+					<altitude>0</altitude>
+					<heading>45.95605460715151</heading>
+					<tilt>79.39316789235225</tilt>
+					<range>1166.955735464627</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_shaded_dot23</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.04488585318772,38.92004497381009,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Untitled Placemark</name>
+				<LookAt>
+					<longitude>-77.03057236637105</longitude>
+					<latitude>38.91849653596508</latitude>
+					<altitude>0</altitude>
+					<heading>7.467072317171938</heading>
+					<tilt>47.0950860303635</tilt>
+					<range>2345.196264655959</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_shaded_dot23</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.02979055846771,38.9222936359061,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Untitled Placemark</name>
+				<LookAt>
+					<longitude>-77.03646040229332</longitude>
+					<latitude>38.90689456054947</latitude>
+					<altitude>0</altitude>
+					<heading>5.536739920783397</heading>
+					<tilt>2.667781611059306</tilt>
+					<range>445.0163131269036</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_shaded_dot14</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.03654373836189,38.90722369975338,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Untitled Placemark</name>
+				<open>1</open>
+				<LookAt>
+					<longitude>-77.04310608128121</longitude>
+					<latitude>38.90943249458518</latitude>
+					<altitude>0</altitude>
+					<heading>5.532567052400868</heading>
+					<tilt>2.667736733720477</tilt>
+					<range>337.8269650865088</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_shaded_dot14</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.0434478380522,38.90963315195856,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Untitled Placemark</name>
+				<open>1</open>
+				<LookAt>
+					<longitude>-77.04683993460439</longitude>
+					<latitude>38.91557815837803</latitude>
+					<altitude>0</altitude>
+					<heading>-31.9586269372821</heading>
+					<tilt>74.00261586384721</tilt>
+					<range>363.752031401072</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_shaded_dot23</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.04745914435648,38.9162941614489,0</coordinates>
+				</Point>
+			</Placemark>
+		</Folder>
 		<atom:link rel="app" href="https://www.google.com/earth/about/versions/#earth-pro" title="Google Earth Pro 7.3.6.10201"></atom:link>
 	</Folder>
 </Document>

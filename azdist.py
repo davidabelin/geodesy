@@ -151,66 +151,23 @@ def draw_lines(
     calc_method_str = "Ellipsoidal (WGS84)" if ellipsoid_calc_used else "Spherical"
     kml.document.description = f"Lines generated using {calc_method_str} calculations."
 
-    # Define color palettes (AABBGGRR format for KML)
-    # Hot: Red, DarkOrange, Orange, Yellow
-    hot_colors = ['FF0000FF', 'FF008CFF', 'FF00A5FF', 'FF00FFFF']
-    # Cool: Blue, Cyan, Green, Chartreuse
-    cool_colors = ['FFFF0000', 'FFFFFF00', 'FF00FF00', 'FF7FFF00']
-    # Mixed: Purple, Magenta, Orchid
-    mixed_colors = ['FF800080', 'FFFF00FF', 'FFDA70D6', 'FF4B0082'] # Added Indigo
-    # Neutral: Grey, DarkGrey
-    neutral_colors = ['FFAAAAAA', 'FF888888', 'FFCCCCCC'] # Added LightGrey
-
-    # To cycle through colors for unique reason sets
-    color_indices = {
-        "hot": 0,
-        "cool": 0,
-        "mixed": 0,
-        "neutral": 0
-    }
-    style_cache = {} # Maps frozenset(reasons) to {'color': str, 'width': float}
+    palette = ['FF0000FF','FF00FF00','FFFF0000','FFFFFF00','FF00FFFF','FFFF00FF']
+    style_map = {}
 
     for record in pair_records:
         p1_name = record['P1']
         p2_name = record['P2']
 
-        reason_string = record.get('Reason', "")
-        # Create a canonical key for the set of reasons
-        reasons_set = frozenset(r.strip() for r in reason_string.split(',') if r.strip())
-
-        if not reasons_set: # Should ideally not happen if filter_pairs ensures Reason is populated
-            style = {'color': neutral_colors[color_indices["neutral"] % len(neutral_colors)], 'width': 1.5}
-            color_indices["neutral"] += 1 # Cycle even for default
-        elif reasons_set in style_cache:
-            style = style_cache[reasons_set]
-        else:
-            has_az_reason = any("az" in r.lower() for r in reasons_set) # Case-insensitive check
-            has_dist_reason = any("dist" in r.lower() for r in reasons_set) # Case-insensitive check
-            
-            current_width = 1.5
-            
-            if has_az_reason and has_dist_reason:
-                current_width = 2.5
-                palette_name, palette = "mixed", mixed_colors
-            elif has_az_reason:
-                palette_name, palette = "hot", hot_colors
-            elif has_dist_reason:
-                palette_name, palette = "cool", cool_colors
-            else: # Custom or other non-specific reasons
-                palette_name, palette = "neutral", neutral_colors
-            
-            assigned_color = palette[color_indices[palette_name] % len(palette)]
-            color_indices[palette_name] += 1
-            
-            style = {'color': assigned_color, 'width': current_width}
-            style_cache[reasons_set] = style
+        grp = p1_name # Group style by the reference point
+        if grp not in style_map:
+            style_map[grp] = palette[len(style_map) % len(palette)]
 
         line = kml.newlinestring(name=f"{p1_name} → {p2_name}")
         lat1, lon1 = points[p1_name]
         lat2, lon2 = points[p2_name]
         line.coords = [(lon1, lat1), (lon2, lat2)]
-        line.style.linestyle.color = style['color']
-        line.style.linestyle.width = style['width']
+        line.style.linestyle.color = style_map[grp]
+        line.style.linestyle.width = 1.5
         
         description_html = f"""
         <![CDATA[
@@ -302,17 +259,17 @@ def filter_pairs(
                     keep.loc[idx] = True
                     reasons_dict[idx].append(f"Dist multiple:{m:.4f}")
 
-    # Tenths, halves, wholes filters (now test both Az and Dist by default)
-    test_az = not dist_only
-    test_dist = not az_only
-
-    # Distance is a factor of some special value? (Should only run if dist is being tested)
-    if test_dist and factor_targets and len(factor_targets) > 0:
+    # Distance is a factor of some special value?
+    if factor_targets and len(factor_targets) > 0:
         for tgt in factor_targets:
             for idx, x in df['Dist'].items():
                 if is_factor(x, tgt, factor_tol):
                     keep.loc[idx] = True
                     reasons_dict[idx].append(f"Dist factor of:{tgt:.4f}")
+
+    # Tenths, halves, wholes filters (now test both Az and Dist by default)
+    test_az = not dist_only
+    test_dist = not az_only
 
     if tenth:
         if test_az:

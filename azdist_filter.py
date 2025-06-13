@@ -1,12 +1,12 @@
 """
-azdist_filter.py v4.0
+azdist_filter.py v4.1
 
 - --tenth, --half, --whole apply to both Az and Dist unless --az-only or --dist-only specified.
 - 'Reason' column shows which criteria/field was matched.
 - Example usage:
         azd --az-targets 46 --az-tol 0.005 --dist-targets 2.882 7.071 --dist-tol 0.0005 --az-multiples 18 --dist-multiples 1.5 --factor-targets 14.142 --factor-tol 0.001 --tenth --spherical --half --whole --out data/azdist_filtered.csv data/SelectPnts.kml data/SelectPnts_critlines.kml
-        azd --dist-only --dist-targets 2.882 7.071 --dist-tol 0.0001 --dist-multiples 1.5 1.618 1.7321 1.4142 --factor-targets 1.5 1.618 1.7321 1.4142 --factor-tol 0.0001 --spherical --whole --out highpoints/azdist_out.csv highpoints/BigMixPnts.kml highpoints/BigMixLines.kml
-        azd --az-targets 13 66 112.5 --az-tol 0.005 --factor-targets 36 30 54 --factor-tol 0.0001 --spherical --half --whole --out highpoints/azdist_out.csv highpoints/BigMixPnts.kml highpoints/BigMixLines.kml
+        azd --dist-only --factor-tol 0.00019 --dist-tol 0.0002 --dist-targets 2.882 --dist-multiples 1.618 0.618 2.236 0.866 0.7071 --factor-targets 16.18 6.18 17.321 14.142 --spherical --whole --out highpoints/dist_out.csv highpoints/MixPnts.kml highpoints/dist_MMixLines.kml
+        azd --az-only --factor-tol 0.0001 --az-tol 0.005 --az-targets 13 5.142 66 --factor-targets 36 30 54 --spherical --half --whole --out highpoints/az_out.csv highpoints/BigMixPnts.kml highpoints/BigMixLines.kml
 
 """
 

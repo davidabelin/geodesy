@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+    <Document id="1">
+        <name>Lines for points in spirals.csv</name>
+        <Folder id="2">
+            <Style id="5">
+                <LineStyle id="6">
+                    <color>DD0000FF</color>
+                    <colorMode>normal</colorMode>
+                    <width>2.0</width>
+                </LineStyle>
+            </Style>
+            <name>Group Spi</name>
+            <Placemark id="4">
+                <name>Spi Sequence</name>
+                <styleUrl>#5</styleUrl>
+                <LineString id="3">
+                    <extrude>0</extrude>
+                    <altitudeMode>clampToGround</altitudeMode>
+                    <coordinates>-77.0045692,38.803587013,0.0 -77.04953231309636,38.914489757438616,0.0 -77.13918814611397,38.89721011374886,0.0 -77.12193544448067,38.854867319747406,0.0 -77.08770156634182,38.86143166934338,0.0 -77.09428004549478,38.877607857535054,0.0 -77.10735791543325,38.87509526840273,0.0 -77.10484348926585,38.868916904648785,0.0 -77.09984843436037,38.86987586486251,0.0</coordinates>
+                </LineString>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

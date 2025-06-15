@@ -1,13 +1,13 @@
 """
-azdist_filter.py v4.1
+azdist_filter.py v4.2
 
-- --tenth, --half, --whole apply to both Az and Dist unless --az-only or --dist-only specified.
+- --half, --whole apply to both Az and Dist unless --az-only or --dist-only specified.
 - 'Reason' column shows which criteria/field was matched.
 - Example usage:
-        azd --az-targets 46 --az-tol 0.005 --dist-targets 2.882 7.071 --dist-tol 0.0005 --az-multiples 18 --dist-multiples 1.5 --factor-targets 14.142 --factor-tol 0.001 --tenth --spherical --half --whole --out data/azdist_filtered.csv data/SelectPnts.kml data/SelectPnts_critlines.kml
-        azd --dist-only --factor-tol 0.00019 --dist-tol 0.0002 --dist-targets 2.882 --dist-multiples 1.618 0.618 2.236 0.866 0.7071 --factor-targets 16.18 6.18 17.321 14.142 --spherical --whole --out highpoints/dist_out.csv highpoints/MixPnts.kml highpoints/dist_MMixLines.kml
-        azd --az-only --factor-tol 0.0001 --az-tol 0.005 --az-targets 13 5.142 66 --factor-targets 36 30 54 --spherical --half --whole --out highpoints/az_out.csv highpoints/BigMixPnts.kml highpoints/BigMixLines.kml
-
+        azd --az-only --factor-tol 0.002 --az-tol 0.002 --az-targets 185.117 84.883 5.117 25.5 64.5 54.75 125.25 34.25 95.117 27.6923 117.692 152.3077 1 91 181 271 89 179 269 359 61 59 44 46 29 31 121 119 107 109 109.5 198 --az-multiples 13 15 18 33 --factor-targets 324 --spherical --whole --out highpoints/az_out.csv highpoints/MixPnts.kml highpoints/az_MixLines.kml
+        azd --dist-only --factor-tol 0.00025 --dist-tol 0.00025 --dist-targets 5.605 3.4641 0.33385 0.54018 0.87403 2.2882 3.7025 5.9907 0.004392 --dist-multiples 1.618 0.618 2.236 0.866 0.7071 --factor-targets 22.882 16.18 6.18 17.321 14.142 --spherical --whole --out highpoints/dist_out.csv highpoints/MixPnts.kml highpoints/dist_MixLines.kml
+        azd --az-targets 46 --az-tol 0.005 --dist-targets 2.2882 7.071 --dist-tol 0.0005 --az-multiples 18 --dist-multiples 1.5 --factor-targets 14.142 --factor-tol 0.001 --spherical --half --whole --out data/azdist_filtered.csv data/SelectPnts.kml data/SelectPnts_critlines.kml
+        azd --dist-only --factor-tol 0.00019 --dist-tol 0.0002 --dist-targets 2.2882 --dist-multiples 1.618 0.618 2.236 0.866 0.7071 --factor-targets 16.18 6.18 17.321 14.142 --spherical --whole --out highpoints/dist_out.csv highpoints/MixPnts.kml highpoints/dist_MMixLines.kml
 """
 
 import pandas as pd
@@ -127,10 +127,6 @@ def is_factor(val: float, target: float, tol: float) -> bool:
     rem = target % val
     return min(rem, abs(val - rem)) <= tol
 
-def mask_tenth(series, tol=TOL):
-    decimals = np.round((series - np.floor(series)) * 10)
-    return (np.abs(series - np.round(series * 10) / 10) <= tol) & (decimals == 1)
-
 def mask_half(series, tol=TOL):
     decimals = np.round((series - np.floor(series)) * 10)
     return (np.abs(series - np.round(series * 2) / 2) <= tol) & (decimals == 5)
@@ -248,7 +244,6 @@ def filter_pairs(
     dist_multiples: list = None,
     factor_targets: list = None,
     factor_tol: float = TOL,
-    tenth: bool = False,
     half: bool = False,
     whole: bool = False,
     az_only: bool = False,
@@ -256,7 +251,7 @@ def filter_pairs(
     custom_funcs: list = []
 ) -> pd.DataFrame:
     """
-    Flexible filtering: tenths/halves/wholes apply to both Az and Dist unless only one is requested.
+    Flexible filtering: halves/wholes apply to both Az and Dist unless only one is requested.
     Reason column records all matches for each field.
     """
     reasons_dict = {idx: [] for idx in df.index}
@@ -313,23 +308,6 @@ def filter_pairs(
                 if is_factor(x, tgt, factor_tol):
                     keep.loc[idx] = True
                     reasons_dict[idx].append(f"Dist factor of:{tgt:.4f}")
-
-    if tenth:
-        if test_az:
-            mask12 = mask_tenth(df['Az12'], az_tol)
-            mask21 = mask_tenth(df['Az21'], az_tol)
-            for idx in df.index[mask12]:
-                keep.loc[idx] = True
-                reasons_dict[idx].append("Az12 Tenth")
-            for idx in df.index[mask21]:
-                keep.loc[idx] = True
-                reasons_dict[idx].append("Az21 Tenth")
-        if test_dist:
-            mask = mask_tenth(df['Dist'], dist_tol)
-            for i, m in enumerate(mask):
-                if m:
-                    keep.iat[i] = True
-                    reasons_dict[i].append("Dist Tenth")
     if half:
         if test_az:
             mask12 = mask_half(df['Az12'], az_tol)
@@ -395,11 +373,10 @@ def main():
     parser.add_argument("--dist-multiples", nargs='*', type=float, default=None, help="Distance multiples to match")
     parser.add_argument("--factor-targets", nargs='*', type=float, default=None, help="Distance is a factor of each TARGET (within tolerance)")
     parser.add_argument("--factor-tol", type=float, default=TOL, help="Tolerance for --factor-targets checks [default: 0.001]")
-    parser.add_argument("--tenth", action='store_true', help="Filter for distances or azimuths ending in .1 (exclusive)")
     parser.add_argument("--half", action='store_true', help="Filter for distances or azimuths ending in .5 (exclusive)")
     parser.add_argument("--whole", action='store_true', help="Filter for distances or azimuths ending in .0 (exclusive)")
-    parser.add_argument("--az-only", action='store_true', help="Restrict --tenth/--half/--whole to Az only")
-    parser.add_argument("--dist-only", action='store_true', help="Restrict --tenth/--half/--whole to Dist only")
+    parser.add_argument("--az-only", action='store_true', help="Restrict --half/--whole to Az only")
+    parser.add_argument("--dist-only", action='store_true', help="Restrict --half/--whole to Dist only")
     parser.add_argument(
         '--spherical', action='store_true',
         help='Use spherical (not ellipsoidal) calculations for Az/Dist'
@@ -419,44 +396,80 @@ def main():
                 continue
         return out
 
+    # Parse filter arguments early to determine if any are active
+    parsed_az_targets = to_float_list(args.az_targets)
+    parsed_dist_targets = to_float_list(args.dist_targets)
+    parsed_az_multiples = to_float_list(args.az_multiples)
+    parsed_dist_multiples = to_float_list(args.dist_multiples)
+    parsed_factor_targets = to_float_list(args.factor_targets)
+
     points_data = load_points_from_kml(args.input_kml)
-    df = generate_all_pairs_dataframe(points_data, ellipsoid=not args.spherical)
-    filtered = filter_pairs(
-        df,
-        az_targets=to_float_list(args.az_targets),
+    all_pairs_df = generate_all_pairs_dataframe(points_data, ellipsoid=not args.spherical)
+
+    filters_active = (
+        bool(parsed_az_targets) or
+        bool(parsed_dist_targets) or
+        bool(parsed_az_multiples) or
+        bool(parsed_dist_multiples) or
+        bool(parsed_factor_targets) or
+        args.half or
+        args.whole
+    )
+
+    if not filters_active:
+        # No filters specified by the user, use all generated pairs
+        processed_df = all_pairs_df.copy()
+        # Add a 'Reason' column if df is not empty
+        if not processed_df.empty:
+            processed_df['Reason'] = "All Pairs (No Filters)"
+        elif 'Reason' not in processed_df.columns: # Ensure Reason column exists even for empty df
+            processed_df['Reason'] = pd.Series(dtype='str')
+        print(f"No filters specified. Processing all {len(processed_df)} pairs.")
+    else:
+        # Filters are active, apply them
+        processed_df = filter_pairs(
+            all_pairs_df,
+            az_targets=parsed_az_targets,
         az_tol=args.az_tol,
-        dist_targets=to_float_list(args.dist_targets),
+            dist_targets=parsed_dist_targets,
         dist_tol=args.dist_tol,
-        az_multiples=to_float_list(args.az_multiples),
-        dist_multiples=to_float_list(args.dist_multiples),
-        factor_targets=to_float_list(args.factor_targets),
+            az_multiples=parsed_az_multiples,
+            dist_multiples=parsed_dist_multiples,
+            factor_targets=parsed_factor_targets,
         factor_tol=args.factor_tol,
-        tenth=args.tenth,
         half=args.half,
         whole=args.whole,
         az_only=args.az_only,
         dist_only=args.dist_only
     )
-    print(f"Selected {len(filtered)} out of {len(df)} total calculated pairs.")
+        print(f"Selected {len(processed_df)} out of {len(all_pairs_df)} total calculated pairs.")
 
     if args.out:
-        filtered.to_csv(args.out, index=False)
-        print(f"Filtered pair data written to {args.out}")
+        processed_df.to_csv(args.out, index=False)
+        print(f"Pair data written to {args.out}")
     else:
         # Print to console if no CSV output, but maybe just a summary if KML is the main output
-        if not filtered.empty:
+        if not processed_df.empty:
             print("Filtered pairs (first 5 rows):")
-            print(filtered.head())
-        else:
+            print(processed_df.head())
+        elif filters_active: # Only print "No pairs matched" if filters were actually active
             print("No pairs matched the filter criteria.")
+        # If not filters_active and processed_df is empty, "Processing all 0 pairs" is already printed.
 
     # Generate KML output with lines
-    if not filtered.empty:
+    if not processed_df.empty:
         # Convert filtered DataFrame rows to a list of dictionaries
-        pair_records_for_kml = filtered.to_dict(orient='records')
+        pair_records_for_kml = processed_df.to_dict(orient='records')
+        # Sort records by 'Reason' for grouped KML output
+        pair_records_for_kml.sort(key=lambda x: x.get('Reason', ''))
         draw_lines(pair_records_for_kml, points_data, args.output_kml, ellipsoid_calc_used=not args.spherical)
     else:
-        print(f"No lines to draw. KML file '{args.output_kml}' will not be created with content (or may be empty if simplekml creates it anyway).")
+        # KML not created or empty
+        if filters_active:
+            print(f"No lines to draw as no pairs matched the filter criteria. KML file '{args.output_kml}' will not be created with content.")
+        else: # No filters active, but all_pairs_df was empty (e.g. <2 input points)
+            print(f"No lines to draw as no pairs could be generated from the input. KML file '{args.output_kml}' will not be created with content.")
+
 
 if __name__ == "__main__":
     main()

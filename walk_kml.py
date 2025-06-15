@@ -4,7 +4,7 @@ import os
 
 # --- Configuration ---
 # Use a raw string (r'...') for Windows paths to handle backslashes correctly
-kml_file_path = "highpoints\BigMixPnts.kml"
+kml_file_path = r"highpoints\MixPnts.kml"
 #\centerpnts.kml'
 # --- End Configuration ---
 

@@ -315,3 +315,5 @@ qgis/Shaded Relief/shaded_relief.kmz
 /highpoints
 highpoints/azd_og_highpnts.csv
 highpoints/dc_dem_highpoints.kml
+data/PenLines.kml
+data/PenPnts.kml

@@ -2,7 +2,7 @@
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
 <Document>
 	<name>PenPnts.kml</name>
-	<Schema name="centerpnts" id="S_centerpnts_SDD0">
+	<Schema name="centerpnts" id="S_centerpnts_SDD00">
 		<SimpleField type="string" name="LOC"><displayName>&lt;b&gt;LOC&lt;/b&gt;</displayName>
 </SimpleField>
 		<SimpleField type="double" name="LAT"><displayName>&lt;b&gt;LAT&lt;/b&gt;</displayName>
@@ -20,7 +20,7 @@
 		<SimpleField type="double" name="ALT"><displayName>&lt;b&gt;ALT&lt;/b&gt;</displayName>
 </SimpleField>
 	</Schema>
-	<Style id="hlightPointStyle3">
+	<Style id="hlightPointStyle300">
 		<IconStyle>
 			<color>e67fffff</color>
 			<scale>0.5</scale>
@@ -45,16 +45,6 @@
 			<width>0.5</width>
 		</LineStyle>
 	</Style>
-	<StyleMap id="m_ylw-pushpin">
-		<Pair>
-			<key>normal</key>
-			<styleUrl>#s_ylw-pushpin00</styleUrl>
-		</Pair>
-		<Pair>
-			<key>highlight</key>
-			<styleUrl>#s_ylw-pushpin_hl00</styleUrl>
-		</Pair>
-	</StyleMap>
 	<StyleMap id="m_ylw-pushpin0">
 		<Pair>
 			<key>normal</key>
@@ -65,40 +55,50 @@
 			<styleUrl>#s_ylw-pushpin_hl000</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_open-diamond00">
+	<StyleMap id="m_ylw-pushpin2">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin00</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl00</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_open-diamond000">
 		<Pair>
 			<key>normal</key>
 			<styleUrl>#sn_open-diamond0</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_open-diamond00</styleUrl>
+			<styleUrl>#sh_open-diamond000</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_placemark_circle">
+	<StyleMap id="msn_placemark_circle000">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_placemark_circle</styleUrl>
+			<styleUrl>#sn_placemark_circle01</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_placemark_circle_highlight</styleUrl>
+			<styleUrl>#sh_placemark_circle_highlight21</styleUrl>
 		</Pair>
 	</StyleMap>
 	<StyleMap id="msn_square">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_square</styleUrl>
+			<styleUrl>#sn_square0</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_square</styleUrl>
+			<styleUrl>#sh_square00</styleUrl>
 		</Pair>
 	</StyleMap>
 	<StyleMap id="msn_star">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_star</styleUrl>
+			<styleUrl>#sn_star0</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
@@ -170,14 +170,14 @@
 			<width>0.5</width>
 		</LineStyle>
 	</Style>
-	<StyleMap id="pointStyleMap2">
+	<StyleMap id="pointStyleMap20">
 		<Pair>
 			<key>normal</key>
 			<styleUrl>#normPointStyle</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#hlightPointStyle3</styleUrl>
+			<styleUrl>#hlightPointStyle300</styleUrl>
 		</Pair>
 	</StyleMap>
 	<Style id="s_ylw-pushpin00">
@@ -232,7 +232,7 @@
 			<scale>0.5</scale>
 		</LabelStyle>
 	</Style>
-	<Style id="sh_open-diamond00">
+	<Style id="sh_open-diamond000">
 		<IconStyle>
 			<color>e6ffffff</color>
 			<scale>0.827273</scale>
@@ -249,7 +249,7 @@
 			<width>0.5</width>
 		</LineStyle>
 	</Style>
-	<Style id="sh_placemark_circle_highlight">
+	<Style id="sh_placemark_circle_highlight21">
 		<IconStyle>
 			<color>ffffff00</color>
 			<colorMode>random</colorMode>
@@ -271,7 +271,7 @@
 			<colorMode>random</colorMode>
 		</PolyStyle>
 	</Style>
-	<Style id="sh_square">
+	<Style id="sh_square00">
 		<IconStyle>
 			<color>e00000ff</color>
 			<scale>0.709091</scale>
@@ -370,7 +370,7 @@
 			<width>0.5</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_placemark_circle">
+	<Style id="sn_placemark_circle01">
 		<IconStyle>
 			<color>ffffff00</color>
 			<colorMode>random</colorMode>
@@ -392,7 +392,7 @@
 			<colorMode>random</colorMode>
 		</PolyStyle>
 	</Style>
-	<Style id="sn_square">
+	<Style id="sn_square0">
 		<IconStyle>
 			<color>e00000ff</color>
 			<scale>0.6</scale>
@@ -409,7 +409,7 @@
 			<width>0.5</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_star">
+	<Style id="sn_star0">
 		<IconStyle>
 			<color>cc005500</color>
 			<scale>0.5</scale>
@@ -478,26 +478,99 @@
 		<name>PenPnts</name>
 		<visibility>0</visibility>
 		<Placemark>
-			<name>P22</name>
+			<name>P08</name>
 			<visibility>0</visibility>
 			<LookAt>
-				<longitude>-77.05597853099502</longitude>
-				<latitude>38.8711524612603</latitude>
+				<longitude>-77.05611861146028</longitude>
+				<latitude>38.87166376250247</latitude>
 				<altitude>0</altitude>
-				<heading>-0.009555351259497044</heading>
+				<heading>-0.009643261941684141</heading>
 				<tilt>0</tilt>
-				<range>86.93707023804092</range>
+				<range>148.4875333262881</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
 			<styleUrl>#m_ylw-pushpin0</styleUrl>
 			<Point>
 				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-77.05597261660679,38.87101774407496,0</coordinates>
+				<coordinates>-77.05609849461305,38.87160898020808,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>P17</name>
+			<visibility>0</visibility>
+			<LookAt>
+				<longitude>-77.04941691761063</longitude>
+				<latitude>38.87066043784247</latitude>
+				<altitude>0</altitude>
+				<heading>0.002916766895138742</heading>
+				<tilt>0</tilt>
+				<range>315.027776572951</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#msn_star5</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-77.04842184745299,38.87066146276954,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>P24</name>
+			<visibility>0</visibility>
+			<LookAt>
+				<longitude>-77.05229065654869</longitude>
+				<latitude>38.87228149332308</latitude>
+				<altitude>0</altitude>
+				<heading>-0.007240874250029111</heading>
+				<tilt>0</tilt>
+				<range>270.1149402832735</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin0</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-77.0511569563507,38.87285393325713,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>P25</name>
+			<visibility>0</visibility>
+			<LookAt>
+				<longitude>-77.05638318901015</longitude>
+				<latitude>38.87204126728031</latitude>
+				<altitude>0</altitude>
+				<heading>-0.001454856922055825</heading>
+				<tilt>0</tilt>
+				<range>308.2698606616494</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#msn_star</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-77.05608636015653,38.87184364241281,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>P26</name>
+			<visibility>0</visibility>
+			<LookAt>
+				<longitude>-77.05428167921031</longitude>
+				<latitude>38.87192123308982</latitude>
+				<altitude>0</altitude>
+				<heading>-0.008490479334987741</heading>
+				<tilt>0</tilt>
+				<range>76.57812226642059</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin0</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-77.05403696102074,38.87182116207816,0</coordinates>
 			</Point>
 		</Placemark>
 		<Placemark>
 			<name>PenA</name>
 			<visibility>0</visibility>
+			<open>1</open>
 			<LookAt>
 				<longitude>-77.05734143759395</longitude>
 				<latitude>38.87239733512456</latitude>
@@ -514,26 +587,9 @@
 			</Point>
 		</Placemark>
 		<Placemark>
-			<name>PenB</name>
-			<visibility>0</visibility>
-			<LookAt>
-				<longitude>-77.05722250384251</longitude>
-				<latitude>38.87239483275627</latitude>
-				<altitude>0</altitude>
-				<heading>-0.001984516796308416</heading>
-				<tilt>0</tilt>
-				<range>306.9284315906747</range>
-				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-			</LookAt>
-			<styleUrl>#msn_star1</styleUrl>
-			<Point>
-				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-77.05630382111248,38.87278527203482,0</coordinates>
-			</Point>
-		</Placemark>
-		<Placemark>
 			<name>PenC</name>
 			<visibility>0</visibility>
+			<open>1</open>
 			<LookAt>
 				<longitude>-77.05415553781546</longitude>
 				<latitude>38.87498540172819</latitude>
@@ -550,8 +606,28 @@
 			</Point>
 		</Placemark>
 		<Placemark>
+			<name>PenB</name>
+			<visibility>0</visibility>
+			<open>1</open>
+			<LookAt>
+				<longitude>-77.05722250384251</longitude>
+				<latitude>38.87239483275627</latitude>
+				<altitude>0</altitude>
+				<heading>-0.001984516796308416</heading>
+				<tilt>0</tilt>
+				<range>306.9284315906747</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#msn_star1</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-77.05630382111248,38.87278527203482,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
 			<name>PenD</name>
 			<visibility>0</visibility>
+			<open>1</open>
 			<LookAt>
 				<longitude>-77.05807008460445</longitude>
 				<latitude>38.87007085903708</latitude>
@@ -570,6 +646,7 @@
 		<Placemark>
 			<name>PenE</name>
 			<visibility>0</visibility>
+			<open>1</open>
 			<LookAt>
 				<longitude>-77.05362227031316</longitude>
 				<latitude>38.87072868085453</latitude>
@@ -588,6 +665,7 @@
 		<Placemark>
 			<name>PenF</name>
 			<visibility>0</visibility>
+			<open>1</open>
 			<LookAt>
 				<longitude>-77.05580753398471</longitude>
 				<latitude>38.86907066220041</latitude>
@@ -624,7 +702,7 @@
 		<Placemark>
 			<name>RK</name>
 			<visibility>0</visibility>
-			<styleUrl>#msn_placemark_circle</styleUrl>
+			<styleUrl>#msn_placemark_circle000</styleUrl>
 			<ExtendedData>
 				<SchemaData schemaUrl="#S_trypoints_SDDD">
 					<SimpleData name="LOC">RK</SimpleData>
@@ -642,9 +720,9 @@
 		<Placemark>
 			<name>K</name>
 			<visibility>0</visibility>
-			<styleUrl>#msn_open-diamond00</styleUrl>
+			<styleUrl>#msn_open-diamond000</styleUrl>
 			<ExtendedData>
-				<SchemaData schemaUrl="#S_centerpnts_SDD0">
+				<SchemaData schemaUrl="#S_centerpnts_SDD00">
 					<SimpleData name="LOC">KEY</SimpleData>
 					<SimpleData name="LAT">38.8928</SimpleData>
 					<SimpleData name="LON">-77.0514</SimpleData>
@@ -659,7 +737,7 @@
 		<Placemark>
 			<name>Sb</name>
 			<visibility>0</visibility>
-			<styleUrl>#pointStyleMap2</styleUrl>
+			<styleUrl>#pointStyleMap20</styleUrl>
 			<ExtendedData>
 				<SchemaData schemaUrl="#S_trypoints_SDDD">
 					<SimpleData name="LOC">Sb</SimpleData>
@@ -686,7 +764,7 @@
 				<roll>10.36020002336397</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_open-diamond00</styleUrl>
+			<styleUrl>#msn_open-diamond000</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>absolute</altitudeMode>
@@ -863,24 +941,6 @@
 			</Point>
 		</Placemark>
 		<Placemark>
-			<name>P08</name>
-			<visibility>0</visibility>
-			<LookAt>
-				<longitude>-77.05611861146028</longitude>
-				<latitude>38.87166376250247</latitude>
-				<altitude>0</altitude>
-				<heading>-0.009643261941684141</heading>
-				<tilt>0</tilt>
-				<range>148.4875333262881</range>
-				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-			</LookAt>
-			<styleUrl>#m_ylw-pushpin0</styleUrl>
-			<Point>
-				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-77.05609849461305,38.87160898020808,0</coordinates>
-			</Point>
-		</Placemark>
-		<Placemark>
 			<name>P07</name>
 			<visibility>0</visibility>
 			<LookAt>
@@ -1043,24 +1103,6 @@
 			</Point>
 		</Placemark>
 		<Placemark>
-			<name>P17</name>
-			<visibility>0</visibility>
-			<LookAt>
-				<longitude>-77.04941691761063</longitude>
-				<latitude>38.87066043784247</latitude>
-				<altitude>0</altitude>
-				<heading>0.002916766895138742</heading>
-				<tilt>0</tilt>
-				<range>315.027776572951</range>
-				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-			</LookAt>
-			<styleUrl>#msn_star5</styleUrl>
-			<Point>
-				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-77.04842184745299,38.87066146276954,0</coordinates>
-			</Point>
-		</Placemark>
-		<Placemark>
 			<name>P19</name>
 			<visibility>0</visibility>
 			<LookAt>
@@ -1108,7 +1150,7 @@
 				<range>276.596036317336</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#m_ylw-pushpin</styleUrl>
+			<styleUrl>#m_ylw-pushpin2</styleUrl>
 			<Point>
 				<gx:drawOrder>1</gx:drawOrder>
 				<coordinates>-77.05678476769384,38.87177218880161,0</coordinates>
@@ -1133,24 +1175,6 @@
 			</Point>
 		</Placemark>
 		<Placemark>
-			<name>P24</name>
-			<visibility>0</visibility>
-			<LookAt>
-				<longitude>-77.05229065654869</longitude>
-				<latitude>38.87228149332308</latitude>
-				<altitude>0</altitude>
-				<heading>-0.007240874250029111</heading>
-				<tilt>0</tilt>
-				<range>270.1149402832735</range>
-				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-			</LookAt>
-			<styleUrl>#m_ylw-pushpin0</styleUrl>
-			<Point>
-				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-77.0511569563507,38.87285393325713,0</coordinates>
-			</Point>
-		</Placemark>
-		<Placemark>
 			<name>P25</name>
 			<visibility>0</visibility>
 			<LookAt>
@@ -1166,42 +1190,6 @@
 			<Point>
 				<gx:drawOrder>1</gx:drawOrder>
 				<coordinates>-77.05703039364934,38.87069213946823,0</coordinates>
-			</Point>
-		</Placemark>
-		<Placemark>
-			<name>P25</name>
-			<visibility>0</visibility>
-			<LookAt>
-				<longitude>-77.05638318901015</longitude>
-				<latitude>38.87204126728031</latitude>
-				<altitude>0</altitude>
-				<heading>-0.001454856922055825</heading>
-				<tilt>0</tilt>
-				<range>308.2698606616494</range>
-				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-			</LookAt>
-			<styleUrl>#msn_star</styleUrl>
-			<Point>
-				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-77.05608636015653,38.87184364241281,0</coordinates>
-			</Point>
-		</Placemark>
-		<Placemark>
-			<name>P26</name>
-			<visibility>0</visibility>
-			<LookAt>
-				<longitude>-77.05428167921031</longitude>
-				<latitude>38.87192123308982</latitude>
-				<altitude>0</altitude>
-				<heading>-0.008490479334987741</heading>
-				<tilt>0</tilt>
-				<range>76.57812226642059</range>
-				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-			</LookAt>
-			<styleUrl>#m_ylw-pushpin0</styleUrl>
-			<Point>
-				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-77.05403696102074,38.87182116207816,0</coordinates>
 			</Point>
 		</Placemark>
 		<Placemark>
@@ -1279,7 +1267,7 @@
 		<Placemark>
 			<name>AN</name>
 			<visibility>0</visibility>
-			<styleUrl>#msn_placemark_circle</styleUrl>
+			<styleUrl>#msn_placemark_circle000</styleUrl>
 			<ExtendedData>
 				<SchemaData schemaUrl="#S_trypoints_SDDD">
 					<SimpleData name="LOC">AN</SimpleData>
@@ -1297,7 +1285,7 @@
 		<Placemark>
 			<name>RC</name>
 			<visibility>0</visibility>
-			<styleUrl>#msn_placemark_circle</styleUrl>
+			<styleUrl>#msn_placemark_circle000</styleUrl>
 			<ExtendedData>
 				<SchemaData schemaUrl="#S_trypoints_SDDD">
 					<SimpleData name="LOC">RC</SimpleData>
@@ -1315,7 +1303,7 @@
 		<Placemark>
 			<name>PO</name>
 			<visibility>0</visibility>
-			<styleUrl>#msn_placemark_circle</styleUrl>
+			<styleUrl>#msn_placemark_circle000</styleUrl>
 			<ExtendedData>
 				<SchemaData schemaUrl="#S_trypoints_SDDD">
 					<SimpleData name="LOC">PO</SimpleData>
@@ -1342,7 +1330,7 @@
 				<range>822.9833353372475</range>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</LookAt>
-			<styleUrl>#msn_placemark_circle</styleUrl>
+			<styleUrl>#msn_placemark_circle000</styleUrl>
 			<Point>
 				<altitudeMode>absolute</altitudeMode>
 				<gx:drawOrder>1</gx:drawOrder>
@@ -1370,7 +1358,7 @@
 		<Placemark>
 			<name>Eb</name>
 			<visibility>0</visibility>
-			<styleUrl>#pointStyleMap2</styleUrl>
+			<styleUrl>#pointStyleMap20</styleUrl>
 			<ExtendedData>
 				<SchemaData schemaUrl="#S_trypoints_SDDD">
 					<SimpleData name="LOC">Eb</SimpleData>
@@ -1388,7 +1376,7 @@
 		<Placemark>
 			<name>Nb</name>
 			<visibility>0</visibility>
-			<styleUrl>#pointStyleMap2</styleUrl>
+			<styleUrl>#pointStyleMap20</styleUrl>
 			<ExtendedData>
 				<SchemaData schemaUrl="#S_trypoints_SDDD">
 					<SimpleData name="LOC">Nb</SimpleData>
@@ -1406,7 +1394,7 @@
 		<Placemark>
 			<name>Wb</name>
 			<visibility>0</visibility>
-			<styleUrl>#pointStyleMap2</styleUrl>
+			<styleUrl>#pointStyleMap20</styleUrl>
 			<ExtendedData>
 				<SchemaData schemaUrl="#S_trypoints_SDDD">
 					<SimpleData name="LOC">Wb</SimpleData>
@@ -1443,7 +1431,7 @@
 		<Placemark>
 			<name>Sc</name>
 			<visibility>0</visibility>
-			<styleUrl>#pointStyleMap2</styleUrl>
+			<styleUrl>#pointStyleMap20</styleUrl>
 			<ExtendedData>
 				<SchemaData schemaUrl="#S_trypoints_SDDD">
 					<SimpleData name="LOC">Sc</SimpleData>
@@ -1461,7 +1449,7 @@
 		<Placemark>
 			<name>Ec</name>
 			<visibility>0</visibility>
-			<styleUrl>#pointStyleMap2</styleUrl>
+			<styleUrl>#pointStyleMap20</styleUrl>
 			<ExtendedData>
 				<SchemaData schemaUrl="#S_trypoints_SDDD">
 					<SimpleData name="LOC">Ec</SimpleData>
@@ -1479,7 +1467,7 @@
 		<Placemark>
 			<name>Nc</name>
 			<visibility>0</visibility>
-			<styleUrl>#pointStyleMap2</styleUrl>
+			<styleUrl>#pointStyleMap20</styleUrl>
 			<ExtendedData>
 				<SchemaData schemaUrl="#S_trypoints_SDDD">
 					<SimpleData name="LOC">Nc</SimpleData>
@@ -1497,7 +1485,7 @@
 		<Placemark>
 			<name>Wc</name>
 			<visibility>0</visibility>
-			<styleUrl>#pointStyleMap2</styleUrl>
+			<styleUrl>#pointStyleMap20</styleUrl>
 			<ExtendedData>
 				<SchemaData schemaUrl="#S_trypoints_SDDD">
 					<SimpleData name="LOC">Wc</SimpleData>

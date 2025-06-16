@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
 <Document>
-	<name>PenPnts.kml</name>
+	<name>PenPntsOG.kml</name>
 	<Schema name="centerpnts" id="S_centerpnts_SDD0">
 		<SimpleField type="string" name="LOC"><displayName>&lt;b&gt;LOC&lt;/b&gt;</displayName>
 </SimpleField>
@@ -178,10 +178,9 @@
 	</Style>
 	<Folder>
 		<name>Pen</name>
-		<visibility>0</visibility>
+		<open>1</open>
 		<Placemark>
 			<name>PenE</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.05362227031316</longitude>
 				<latitude>38.87072868085453</latitude>
@@ -199,7 +198,6 @@
 		</Placemark>
 		<Placemark>
 			<name>PenF</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.05580753398471</longitude>
 				<latitude>38.86907066220041</latitude>
@@ -217,7 +215,6 @@
 		</Placemark>
 		<Placemark>
 			<name>PenG</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.05485941336057</longitude>
 				<latitude>38.87296263568203</latitude>
@@ -235,7 +232,6 @@
 		</Placemark>
 		<Placemark>
 			<name>PenA</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.05734143759395</longitude>
 				<latitude>38.87239733512456</latitude>
@@ -253,7 +249,6 @@
 		</Placemark>
 		<Placemark>
 			<name>PenB</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.05722250384251</longitude>
 				<latitude>38.87239483275627</latitude>
@@ -271,7 +266,6 @@
 		</Placemark>
 		<Placemark>
 			<name>PenC</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.05415553781546</longitude>
 				<latitude>38.87498540172819</latitude>
@@ -289,7 +283,6 @@
 		</Placemark>
 		<Placemark>
 			<name>PenD</name>
-			<visibility>0</visibility>
 			<LookAt>
 				<longitude>-77.05807008460445</longitude>
 				<latitude>38.87007085903708</latitude>
@@ -307,7 +300,6 @@
 		</Placemark>
 		<Placemark>
 			<name>P</name>
-			<visibility>0</visibility>
 			<styleUrl>#pointStyleMap0000</styleUrl>
 			<ExtendedData>
 				<SchemaData schemaUrl="#S_centerpnts_SDD0">

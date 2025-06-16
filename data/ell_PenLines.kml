@@ -1,0 +1,1043 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+    <Document id="1">
+        <Style id="4">
+            <LineStyle id="5">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="8">
+            <LineStyle id="9">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="12">
+            <LineStyle id="13">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="16">
+            <LineStyle id="17">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="20">
+            <LineStyle id="21">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="24">
+            <LineStyle id="25">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="28">
+            <LineStyle id="29">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="32">
+            <LineStyle id="33">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="36">
+            <LineStyle id="37">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="40">
+            <LineStyle id="41">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="44">
+            <LineStyle id="45">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="48">
+            <LineStyle id="49">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="52">
+            <LineStyle id="53">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="56">
+            <LineStyle id="57">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="60">
+            <LineStyle id="61">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="64">
+            <LineStyle id="65">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="68">
+            <LineStyle id="69">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="72">
+            <LineStyle id="73">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="76">
+            <LineStyle id="77">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="80">
+            <LineStyle id="81">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="84">
+            <LineStyle id="85">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="88">
+            <LineStyle id="89">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="92">
+            <LineStyle id="93">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="96">
+            <LineStyle id="97">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="100">
+            <LineStyle id="101">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="104">
+            <LineStyle id="105">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="108">
+            <LineStyle id="109">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <Style id="112">
+            <LineStyle id="113">
+                <color>FFAAAAAA</color>
+                <colorMode>normal</colorMode>
+                <width>1.5</width>
+            </LineStyle>
+        </Style>
+        <name>Filtered Lines</name>
+        <description>Lines generated using Ellipsoidal (WGS84) calculations.</description>
+        <Placemark id="3">
+            <name>PenE → PenF</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenE<br>
+          <b>P2:</b> PenF<br>
+          <hr>
+          <b>Distance:</b> 0.174 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 225.987°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 225.986°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 45.986°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 45.987°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#4</styleUrl>
+            <LineString id="2">
+                <coordinates>-77.05324434344904,38.87072872172274,0.0 -77.05556655805725,38.8689747836158,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="7">
+            <name>PenE → PenG</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenE<br>
+          <b>P2:</b> PenG<br>
+          <hr>
+          <b>Distance:</b> 0.173 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 333.490°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 333.489°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 153.489°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 153.490°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#8</styleUrl>
+            <LineString id="6">
+                <coordinates>-77.05324434344904,38.87072872172274,0.0 -77.05467548773174,38.87297156405388,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="11">
+            <name>PenE → PenA</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenE<br>
+          <b>P2:</b> PenA<br>
+          <hr>
+          <b>Distance:</b> 0.281 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 297.726°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 297.723°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 117.723°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 117.726°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#12</styleUrl>
+            <LineString id="10">
+                <coordinates>-77.05324434344904,38.87072872172274,0.0 -77.05786528091933,38.87262722628098,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="15">
+            <name>PenE → PenB</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenE<br>
+          <b>P2:</b> PenB<br>
+          <hr>
+          <b>Distance:</b> 0.218 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 310.692°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 310.690°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 130.690°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 130.692°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#16</styleUrl>
+            <LineString id="14">
+                <coordinates>-77.05324434344904,38.87072872172274,0.0 -77.05630382111248,38.87278527203482,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="19">
+            <name>PenE → PenC</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenE<br>
+          <b>P2:</b> PenC<br>
+          <hr>
+          <b>Distance:</b> 0.472 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 333.455°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 333.453°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 153.453°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 153.455°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#20</styleUrl>
+            <LineString id="18">
+                <coordinates>-77.05324434344904,38.87072872172274,0.0 -77.05715373472489,38.87684588415627,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="23">
+            <name>PenE → PenD</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenE<br>
+          <b>P2:</b> PenD<br>
+          <hr>
+          <b>Distance:</b> 0.282 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 261.823°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 261.820°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 81.820°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 81.823°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#24</styleUrl>
+            <LineString id="22">
+                <coordinates>-77.05324434344904,38.87072872172274,0.0 -77.05841808191346,38.87014746169203,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="27">
+            <name>PenE → P</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenE<br>
+          <b>P2:</b> P<br>
+          <hr>
+          <b>Distance:</b> 0.149 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 277.837°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 277.835°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 97.835°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 97.837°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#28</styleUrl>
+            <LineString id="26">
+                <coordinates>-77.05324434344904,38.87072872172274,0.0 -77.05598519142683,38.8710236073416,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="31">
+            <name>PenF → PenG</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenF<br>
+          <b>P2:</b> PenG<br>
+          <hr>
+          <b>Distance:</b> 0.280 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 9.886°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 9.887°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 189.887°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 189.886°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#32</styleUrl>
+            <LineString id="30">
+                <coordinates>-77.05556655805725,38.8689747836158,0.0 -77.05467548773174,38.87297156405388,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="35">
+            <name>PenF → PenA</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenF<br>
+          <b>P2:</b> PenA<br>
+          <hr>
+          <b>Distance:</b> 0.281 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 333.803°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 333.802°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 153.802°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 153.803°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#36</styleUrl>
+            <LineString id="34">
+                <coordinates>-77.05556655805725,38.8689747836158,0.0 -77.05786528091933,38.87262722628098,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="39">
+            <name>PenF → PenB</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenF<br>
+          <b>P2:</b> PenB<br>
+          <hr>
+          <b>Distance:</b> 0.266 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 351.399°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 351.399°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 171.399°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 171.399°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#40</styleUrl>
+            <LineString id="38">
+                <coordinates>-77.05556655805725,38.8689747836158,0.0 -77.05630382111248,38.87278527203482,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="43">
+            <name>PenF → PenC</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenF<br>
+          <b>P2:</b> PenC<br>
+          <hr>
+          <b>Distance:</b> 0.550 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 351.043°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 351.042°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 171.042°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 171.043°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#44</styleUrl>
+            <LineString id="42">
+                <coordinates>-77.05556655805725,38.8689747836158,0.0 -77.05715373472489,38.87684588415627,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="47">
+            <name>PenF → PenD</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenF<br>
+          <b>P2:</b> PenD<br>
+          <hr>
+          <b>Distance:</b> 0.174 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 297.748°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 297.746°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 117.746°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 117.748°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#48</styleUrl>
+            <LineString id="46">
+                <coordinates>-77.05556655805725,38.8689747836158,0.0 -77.05841808191346,38.87014746169203,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="51">
+            <name>PenF → P</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenF<br>
+          <b>P2:</b> P<br>
+          <hr>
+          <b>Distance:</b> 0.143 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 350.925°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 350.924°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 170.924°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 170.925°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#52</styleUrl>
+            <LineString id="50">
+                <coordinates>-77.05556655805725,38.8689747836158,0.0 -77.05598519142683,38.8710236073416,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="55">
+            <name>PenG → PenA</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenG<br>
+          <b>P2:</b> PenA<br>
+          <hr>
+          <b>Distance:</b> 0.174 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 262.139°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 262.137°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 82.137°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 82.139°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#56</styleUrl>
+            <LineString id="54">
+                <coordinates>-77.05467548773174,38.87297156405388,0.0 -77.05786528091933,38.87262722628098,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="59">
+            <name>PenG → PenB</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenG<br>
+          <b>P2:</b> PenB<br>
+          <hr>
+          <b>Distance:</b> 0.089 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 261.674°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 261.673°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 81.673°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 81.674°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#60</styleUrl>
+            <LineString id="58">
+                <coordinates>-77.05467548773174,38.87297156405388,0.0 -77.05630382111248,38.87278527203482,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="63">
+            <name>PenG → PenC</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenG<br>
+          <b>P2:</b> PenC<br>
+          <hr>
+          <b>Distance:</b> 0.299 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 333.435°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 333.433°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 153.433°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 153.435°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#64</styleUrl>
+            <LineString id="62">
+                <coordinates>-77.05467548773174,38.87297156405388,0.0 -77.05715373472489,38.87684588415627,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="67">
+            <name>PenG → PenD</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenG<br>
+          <b>P2:</b> PenD<br>
+          <hr>
+          <b>Distance:</b> 0.280 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 226.014°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 226.011°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 46.011°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 46.014°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#68</styleUrl>
+            <LineString id="66">
+                <coordinates>-77.05467548773174,38.87297156405388,0.0 -77.05841808191346,38.87014746169203,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="71">
+            <name>PenG → P</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenG<br>
+          <b>P2:</b> P<br>
+          <hr>
+          <b>Distance:</b> 0.152 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 207.727°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 207.726°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 27.726°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 27.727°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#72</styleUrl>
+            <LineString id="70">
+                <coordinates>-77.05467548773174,38.87297156405388,0.0 -77.05598519142683,38.8710236073416,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="75">
+            <name>PenA → PenB</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenA<br>
+          <b>P2:</b> PenB<br>
+          <hr>
+          <b>Distance:</b> 0.085 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 82.622°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 82.623°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 262.623°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 262.622°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#76</styleUrl>
+            <LineString id="74">
+                <coordinates>-77.05786528091933,38.87262722628098,0.0 -77.05630382111248,38.87278527203482,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="79">
+            <name>PenA → PenC</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenA<br>
+          <b>P2:</b> PenC<br>
+          <hr>
+          <b>Distance:</b> 0.294 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 7.511°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 7.511°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 187.511°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 187.511°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#80</styleUrl>
+            <LineString id="78">
+                <coordinates>-77.05786528091933,38.87262722628098,0.0 -77.05715373472489,38.87684588415627,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="83">
+            <name>PenA → PenD</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenA<br>
+          <b>P2:</b> PenD<br>
+          <hr>
+          <b>Distance:</b> 0.174 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 189.886°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 189.885°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 9.885°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 9.886°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#84</styleUrl>
+            <LineString id="82">
+                <coordinates>-77.05786528091933,38.87262722628098,0.0 -77.05841808191346,38.87014746169203,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="87">
+            <name>PenA → P</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenA<br>
+          <b>P2:</b> P<br>
+          <hr>
+          <b>Distance:</b> 0.150 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 137.494°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 137.495°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 317.495°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 317.494°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#88</styleUrl>
+            <LineString id="86">
+                <coordinates>-77.05786528091933,38.87262722628098,0.0 -77.05598519142683,38.8710236073416,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="91">
+            <name>PenB → PenC</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenB<br>
+          <b>P2:</b> PenC<br>
+          <hr>
+          <b>Distance:</b> 0.284 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 350.708°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 350.708°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 170.708°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 170.708°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#92</styleUrl>
+            <LineString id="90">
+                <coordinates>-77.05630382111248,38.87278527203482,0.0 -77.05715373472489,38.87684588415627,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="95">
+            <name>PenB → PenD</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenB<br>
+          <b>P2:</b> PenD<br>
+          <hr>
+          <b>Distance:</b> 0.215 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 212.071°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 212.070°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 32.070°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 32.071°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#96</styleUrl>
+            <LineString id="94">
+                <coordinates>-77.05630382111248,38.87278527203482,0.0 -77.05841808191346,38.87014746169203,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="99">
+            <name>PenB → P</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenB<br>
+          <b>P2:</b> P<br>
+          <hr>
+          <b>Distance:</b> 0.123 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 171.952°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 171.952°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 351.952°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 351.952°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#100</styleUrl>
+            <LineString id="98">
+                <coordinates>-77.05630382111248,38.87278527203482,0.0 -77.05598519142683,38.8710236073416,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="103">
+            <name>PenC → PenD</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenC<br>
+          <b>P2:</b> PenD<br>
+          <hr>
+          <b>Distance:</b> 0.467 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 188.394°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 188.393°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 8.393°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 8.394°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#104</styleUrl>
+            <LineString id="102">
+                <coordinates>-77.05715373472489,38.87684588415627,0.0 -77.05841808191346,38.87014746169203,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="107">
+            <name>PenC → P</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenC<br>
+          <b>P2:</b> P<br>
+          <hr>
+          <b>Distance:</b> 0.407 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 171.083°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 171.084°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 351.084°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 351.083°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#108</styleUrl>
+            <LineString id="106">
+                <coordinates>-77.05715373472489,38.87684588415627,0.0 -77.05598519142683,38.8710236073416,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="111">
+            <name>PenD → P</name>
+            <description>
+                
+        
+<![CDATA[
+          <b>P1:</b> PenD<br>
+          <b>P2:</b> P<br>
+          <hr>
+          <b>Distance:</b> 0.144 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 65.265°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 65.267°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 245.267°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 245.265°<br>
+          <hr>
+          <b>Filter Reason(s):</b> All Pairs (No Filters)<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                
+        
+            </description>
+            <styleUrl>#112</styleUrl>
+            <LineString id="110">
+                <coordinates>-77.05841808191346,38.87014746169203,0.0 -77.05598519142683,38.8710236073416,0.0</coordinates>
+            </LineString>
+        </Placemark>
+    </Document>
+</kml>

@@ -4,10 +4,11 @@ azdist_filter.py v4.2
 - --half, --whole apply to both Az and Dist unless --az-only or --dist-only specified.
 - 'Reason' column shows which criteria/field was matched.
 - Example usage:
-        azd --az-only --factor-tol 0.002 --az-tol 0.002 --az-targets 185.117 84.883 5.117 25.5 64.5 54.75 125.25 34.25 95.117 27.6923 117.692 152.3077 1 91 181 271 89 179 269 359 61 59 44 46 29 31 121 119 107 109 109.5 198 --az-multiples 13 15 18 33 --factor-targets 324 --spherical --whole --out highpoints/az_out.csv highpoints/MixPnts.kml highpoints/az_MixLines.kml
+        azd --az-only --factor-tol 0.002 --az-tol 0.002 --az-targets 185.117 84.883 5.117 25.5 64.5 54.75 125.25 34.25 95.117 27.6923 117.692 152.3077 1 91 181 271 89 179 269 359 61 59 44 46 29 31 121 119 107 109 109.5 198 36.869898 53.130102 126.869898 143.130102 53.130102 36.869898 --az-multiples 15 18 --factor-targets 324 222.5 --spherical --whole --out highpoints/az_out.csv highpoints/MixPnts.kml highpoints/az_MixLines.kml
         azd --dist-only --factor-tol 0.00025 --dist-tol 0.00025 --dist-targets 5.605 3.4641 0.33385 0.54018 0.87403 2.2882 3.7025 5.9907 0.004392 --dist-multiples 1.618 0.618 2.236 0.866 0.7071 --factor-targets 22.882 16.18 6.18 17.321 14.142 --spherical --whole --out highpoints/dist_out.csv highpoints/MixPnts.kml highpoints/dist_MixLines.kml
         azd --az-targets 46 --az-tol 0.005 --dist-targets 2.2882 7.071 --dist-tol 0.0005 --az-multiples 18 --dist-multiples 1.5 --factor-targets 14.142 --factor-tol 0.001 --spherical --half --whole --out data/azdist_filtered.csv data/SelectPnts.kml data/SelectPnts_critlines.kml
         azd --dist-only --factor-tol 0.00019 --dist-tol 0.0002 --dist-targets 2.2882 --dist-multiples 1.618 0.618 2.236 0.866 0.7071 --factor-targets 16.18 6.18 17.321 14.142 --spherical --whole --out highpoints/dist_out.csv highpoints/MixPnts.kml highpoints/dist_MMixLines.kml
+        azd --dist-only --factor-tol 0.0005 --dist-tol 0.0005 --dist-multiples 3.4641 0.33385 0.54012 0.87403 3.7025 5.9907 1.618 0.618 2.236 0.866 0.7071 2.2882 5.605 0.174242 0.14943 --factor-targets 3.7025 5.9907 2.2882 3.7025 2.236 1.618 6.18 1.7321 1.4142 5.605 --spherical --half --whole --out data/d_penplus.csv data/PentagonPlusPoints.kml data/d_PenPlusLines_filt.kml
 """
 
 import pandas as pd
@@ -149,13 +150,14 @@ def draw_lines(
 
     # Define color palettes (AABBGGRR format for KML)
     # Hot: Red, DarkOrange, Orange, Yellow
-    hot_colors = ['FF0000FF', 'FF008CFF', 'FF00A5FF', 'FF00FFFF']
+    hot_colors = ['FF0000FF', 'FF3A9CD0', 'FF00A5FF', 'FF00FFFF', 'FF6600FF', 'FF00CCEE']
     # Cool: Blue, Cyan, Green, Chartreuse
-    cool_colors = ['FFFF0000', 'FFFFFF00', 'FF00FF00', 'FF7FFF00']
+    cool_colors = ['FF33DD00', 'FFBBEE11', 'FFEE5522', 'FFDDFF22', 'FF00DD00', 'FF77FF00']
     # Mixed: Purple, Magenta, Orchid
-    mixed_colors = ['FF800080', 'FFFF00FF', 'FFDA70D6', 'FF4B0082'] # Added Indigo
+    mixed_colors = ['FFFF0000', 'FFFFFF00', 'FF800A87', 'FF4EAAE4', 'FFAA0077', 'FF9A7037', 'FF4B0082',
+                    'FF7A0A0A', 'FF880099', 'FF998044', 'FF991122', 'FF11BBAA', 'FF1122FF', 'FFEEFFAA']
     # Neutral: Grey, DarkGrey
-    neutral_colors = ['FFAAAAAA', 'FF888888', 'FFCCCCCC'] # Added LightGrey
+    neutral_colors = ['FFAAAAFF', 'FFFFCCCC']
 
     # To cycle through colors for unique reason sets
     color_indices = {

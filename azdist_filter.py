@@ -1,5 +1,5 @@
 """
-azdist_filter.py v5.2
+azdist_filter.py v6.0
 
 - --half, --whole apply to both Az and Dist unless --az-only or --dist-only specified.
 - 'Reason' column shows which criteria/field was matched.
@@ -141,18 +141,20 @@ def generate_all_pairs_dataframe(points: Dict[str, Tuple[float, float]], ellipso
 def within_tol(val: float, targets: list, tol: float) -> bool:
     return any(abs(val - float(t)) <= tol for t in targets)
 
-def is_multiple(val: float, base: float, tol: float) -> bool:
-    base = float(base)
-    if base == 0: return False
-    rem = val % base
-    return min(rem, abs(base - rem)) <= tol
+def vectorized_is_multiple(series: pd.Series, base: float, tol: float) -> pd.Series:
+    """Vectorized check if values in a series are a multiple of a base value."""
+    if base == 0:
+        return pd.Series(False, index=series.index)
+    rem = series % base
+    return (rem <= tol) | (abs(base - rem) <= tol)
 
-def is_factor(val: float, target: float, tol: float) -> bool:
-    target = float(target)
-    if val == 0:
-        return False
-    rem = target % val
-    return min(rem, abs(val - rem)) <= tol
+def vectorized_is_factor(series: pd.Series, target: float, tol: float) -> pd.Series:
+    """Vectorized check if values in a series are a factor of a target value."""
+    # Avoid division by zero for val in series
+    safe_series = series.replace(0, np.nan)
+    rem = target % safe_series
+    mask = (rem <= tol) | (abs(safe_series - rem) <= tol)
+    return mask.fillna(False) # Treat original zeros as not being a factor
 
 def mask_half(series, tol=TOL):
     decimals = np.round((series - np.floor(series)) * 10)
@@ -182,106 +184,95 @@ def filter_pairs(
     Flexible filtering: halves/wholes apply to both Az and Dist unless only one is requested.
     Reason column records all matches for each field.
     """
-    reasons_dict = {idx: [] for idx in df.index}
-    keep = pd.Series(False, index=df.index)
+    if df.empty:
+        return df.copy()
 
-    # Azimuth close to a special value?
-    if az_targets and len(az_targets) > 0:
-        for idx, row in df.iterrows():
-            x12, x21 = row['Az12'], row['Az21']
-            for t in az_targets:
-                if abs(x12 - t) <= az_tol:
-                    keep.loc[idx] = True
-                    reasons_dict[idx].append(f"Az12 target:{t:.2f}")
-                if abs(x21 - t) <= az_tol:
-                    keep.loc[idx] = True
-                    reasons_dict[idx].append(f"Az21 target:{t:.2f}")
+    reasons_df = pd.DataFrame(index=df.index)
+    keep_mask = pd.Series(False, index=df.index)
 
-    # Distance close to a special value?
-    if dist_targets and len(dist_targets) > 0:
-        for idx, x in df['Dist'].items(): # Iterate with index
-            for t in dist_targets:
-                if abs(x - t) <= dist_tol:
-                    keep.loc[idx] = True
-                    reasons_dict[idx].append(f"Dist target:{t:.4f}")
-
-    # Azimuth is a multiple of some special value?
-    if az_multiples and len(az_multiples) > 0:
-        for idx, row in df.iterrows():
-            x12, x21 = row['Az12'], row['Az21']
-            for m in az_multiples:
-                if is_multiple(x12, m, az_tol):
-                    keep.loc[idx] = True
-                    reasons_dict[idx].append(f"Az12 multiple:{m:.2f}")
-                if is_multiple(x21, m, az_tol):
-                    keep.loc[idx] = True
-                    reasons_dict[idx].append(f"Az21 multiple:{m:.2f}")
-
-    # Distance is a multiple of some special value?
-    if dist_multiples and len(dist_multiples) > 0:
-        for m in dist_multiples:
-            for idx, x in df['Dist'].items():
-                if is_multiple(x, m, dist_tol):
-                    keep.loc[idx] = True
-                    reasons_dict[idx].append(f"Dist multiple:{m:.4f}")
-
-    # Halves, wholes filters (now test both Az and Dist by default)
+    # Determine which fields to test based on --az-only and --dist-only flags
     test_az = not dist_only
     test_dist = not az_only
 
+    # Azimuth close to a special value?
+    if test_az and az_targets:
+        for t in az_targets:
+            mask12 = (df['Az12'] - t).abs() <= az_tol
+            mask21 = (df['Az21'] - t).abs() <= az_tol
+            reasons_df.loc[mask12, f'az12_tgt_{t}'] = f"Az12 target:{t:.2f}"
+            reasons_df.loc[mask21, f'az21_tgt_{t}'] = f"Az21 target:{t:.2f}"
+            keep_mask |= mask12 | mask21
+
+    # Distance close to a special value?
+    if test_dist and dist_targets:
+        for t in dist_targets:
+            mask = (df['Dist'] - t).abs() <= dist_tol
+            reasons_df.loc[mask, f'dist_tgt_{t}'] = f"Dist target:{t:.4f}"
+            keep_mask |= mask
+
+    # Azimuth is a multiple of some special value?
+    if test_az and az_multiples:
+        for m in az_multiples:
+            mask12 = vectorized_is_multiple(df['Az12'], m, az_tol)
+            mask21 = vectorized_is_multiple(df['Az21'], m, az_tol)
+            reasons_df.loc[mask12, f'az12_mult_{m}'] = f"Az12 multiple:{m:.2f}"
+            reasons_df.loc[mask21, f'az21_mult_{m}'] = f"Az21 multiple:{m:.2f}"
+            keep_mask |= mask12 | mask21
+
+    # Distance is a multiple of some special value?
+    if test_dist and dist_multiples:
+        for m in dist_multiples:
+            mask = vectorized_is_multiple(df['Dist'], m, dist_tol)
+            reasons_df.loc[mask, f'dist_mult_{m}'] = f"Dist multiple:{m:.4f}"
+            keep_mask |= mask
+
     # Distance is a factor of some special value? (Should only run if dist is being tested)
-    if test_dist and factor_targets and len(factor_targets) > 0:
+    if test_dist and factor_targets:
         for tgt in factor_targets:
-            for idx, x in df['Dist'].items():
-                if is_factor(x, tgt, factor_tol):
-                    keep.loc[idx] = True
-                    reasons_dict[idx].append(f"Dist factor of:{tgt:.4f}")
+            mask = vectorized_is_factor(df['Dist'], tgt, factor_tol)
+            reasons_df.loc[mask, f'dist_factor_{tgt}'] = f"Dist factor of:{tgt:.4f}"
+            keep_mask |= mask
+
+    # Halves, wholes filters
     if half:
         if test_az:
             mask12 = mask_half(df['Az12'], az_tol)
             mask21 = mask_half(df['Az21'], az_tol)
-            for idx in df.index[mask12]:
-                keep.loc[idx] = True
-                reasons_dict[idx].append("Az12 Half")
-            for idx in df.index[mask21]:
-                keep.loc[idx] = True
-                reasons_dict[idx].append("Az21 Half")
+            reasons_df.loc[mask12, 'az12_half'] = "Az12 Half"
+            reasons_df.loc[mask21, 'az21_half'] = "Az21 Half"
+            keep_mask |= mask12 | mask21
         if test_dist:
             mask = mask_half(df['Dist'], dist_tol)
-            for i, m in enumerate(mask):
-                if m:
-                    keep.iat[i] = True
-                    reasons_dict[i].append("Dist Half")
+            reasons_df.loc[mask, 'dist_half'] = "Dist Half"
+            keep_mask |= mask
     if whole:
         if test_az:
             mask12 = mask_whole(df['Az12'], az_tol)
             mask21 = mask_whole(df['Az21'], az_tol)
-            for idx in df.index[mask12]:
-                keep.loc[idx] = True
-                reasons_dict[idx].append("Az12 Whole")
-            for idx in df.index[mask21]:
-                keep.loc[idx] = True
-                reasons_dict[idx].append("Az21 Whole")
+            reasons_df.loc[mask12, 'az12_whole'] = "Az12 Whole"
+            reasons_df.loc[mask21, 'az21_whole'] = "Az21 Whole"
+            keep_mask |= mask12 | mask21
         if test_dist:
             mask = mask_whole(df['Dist'], dist_tol)
-            for i, m in enumerate(mask):
-                if m:
-                    keep.iat[i] = True
-                    reasons_dict[i].append("Dist Whole")
+            reasons_df.loc[mask, 'dist_whole'] = "Dist Whole"
+            keep_mask |= mask
 
     # User-supplied custom functions (advanced usage)
-    for func in custom_funcs:
+    for i, func in enumerate(custom_funcs):
         mask = df.apply(func, axis=1)
-        for idx in df.index[mask]:
-            keep.loc[idx] = True
-            reasons_dict[idx].append("Custom")
+        reasons_df.loc[mask, f'custom_{i}'] = "Custom"
+        keep_mask |= mask
 
-    filtered_df = df[keep].copy()
+    filtered_df = df[keep_mask].copy()
     
     # Populate the 'Reason' column for the filtered DataFrame
-    # Using sorted(list(set(...))) to ensure unique and ordered reasons
     if not filtered_df.empty:
-        filtered_df["Reason"] = [", ".join(sorted(list(set(reasons_dict[idx])))) for idx in filtered_df.index]
+        reasons_for_filtered = reasons_df.loc[filtered_df.index]
+        reason_series = reasons_for_filtered.apply(
+            lambda row: ", ".join(sorted(list(set(r for r in row if pd.notna(r))))),
+            axis=1
+        )
+        filtered_df["Reason"] = reason_series
     else:
         # Add Reason column even if empty to maintain schema
         filtered_df["Reason"] = pd.Series(dtype='str')
@@ -293,10 +284,18 @@ def rgba_to_kml_color(rgba):
     r, g, b, a = [int(255*x) for x in rgba]
     return f"{a:02X}{b:02X}{g:02X}{r:02X}"
 
+def normalize_reason(reason: str) -> str:
+    """Normalizes a reason string to treat Az12 and Az21 the same for grouping and coloring."""
+    if reason.startswith("Az12 "):
+        return reason.replace("Az12 ", "Az ", 1)
+    if reason.startswith("Az21 "):
+        return reason.replace("Az21 ", "Az ", 1)
+    return reason
+
 # === 1. Export mapping from unique reason-sets to user-editable color ids ===
 def export_reason_map_csv(pair_records, path='reason_color_map.csv'):
     reason_sets = set(
-        frozenset(r.strip() for r in rec.get('Reason', '').split(',') if r.strip())
+        frozenset(normalize_reason(r.strip()) for r in rec.get('Reason', '').split(',') if r.strip())
         for rec in pair_records
     )
 
@@ -352,15 +351,64 @@ def draw_lines(
 
     # The decision to create the map is now handled in main(). This function just loads and uses it.
     reason_to_color = load_reason_map(reason_color_map_path)
+    kml_folders = {} # To store folder objects: {folder_name: kml_folder}
+
+    def get_folder_name_for_reasons(normalized_reasons_set: frozenset) -> str:
+        """Determines the KML folder name based on a set of normalized reasons."""
+        # Special case for Az 15 & 18 multiples
+        has_az_15 = "Az multiple:15.00" in normalized_reasons_set
+        has_az_18 = "Az multiple:18.00" in normalized_reasons_set
+        if has_az_15 and has_az_18:
+            return "Az Multiples (15 & 18)"
+
+        if not normalized_reasons_set:
+            return "Uncategorized"
+
+        # Group by the first reason in the sorted list for consistent behavior
+        first_reason = sorted(list(normalized_reasons_set))[0]
+
+        if first_reason.startswith("Az target:"):
+            return "Az Targets"
+        if first_reason == "Az multiple:15.00":
+            return "Az Multiples (15)"
+        if first_reason == "Az multiple:18.00":
+            return "Az Multiples (18)"
+        if first_reason.startswith("Dist target:"):
+            return "Dist Targets"
+        if first_reason.startswith("Dist multiple:"):
+            return "Dist Multiples"
+        if first_reason.startswith("Dist factor of:"):
+            return "Dist Factors"
+        if first_reason.startswith("Az multiple:"):
+            return "Az Multiples (Other)"
+        if first_reason.endswith(" Half"):
+            return "Half Value Matches"
+        if first_reason.endswith(" Whole"):
+            return "Whole Value Matches"
+        
+        return "Miscellaneous"
 
     for rec in pair_records:
         p1_name = rec['P1']
         p2_name = rec['P2']
         reason_string = rec.get('Reason', "")
-        reasons_set = frozenset(r.strip() for r in reason_string.split(',') if r.strip())
-        color = reason_to_color.get(reasons_set, 'FFAAAAFF')
-        width = 2.5 if len(reasons_set) > 1 else 1.5
-        line = kml.newlinestring(name=f"{p1_name} → {p2_name}")
+
+        # Normalize reasons for consistent coloring and grouping
+        raw_reasons_set = frozenset(r.strip() for r in reason_string.split(',') if r.strip())
+        normalized_reasons_set = frozenset(normalize_reason(r) for r in raw_reasons_set)
+
+        # Use normalized set for color lookup and folder determination
+        color = reason_to_color.get(normalized_reasons_set, 'FFAAAAFF')
+        width = 2.5 if len(raw_reasons_set) > 1 else 1.5
+
+        # Determine folder and create if it doesn't exist
+        folder_name = get_folder_name_for_reasons(normalized_reasons_set)
+        if folder_name not in kml_folders:
+            kml_folders[folder_name] = kml.newfolder(name=folder_name)
+        
+        folder = kml_folders[folder_name]
+
+        line = folder.newlinestring(name=f"{p1_name} → {p2_name}")
         lat1, lon1 = points[p1_name]
         lat2, lon2 = points[p2_name]
         line.coords = [(lon1, lat1), (lon2, lat2)]
@@ -387,6 +435,21 @@ def draw_lines(
         ]]>
         """
         line.description = description_html
+
+    # Generate summary of folders and line counts and add to KML description
+    if kml_folders:
+        summary_html = "<b>Folder Summary:</b><br/><ul>"
+        # Sort folders by name for consistent output
+        for folder_name in sorted(kml_folders.keys()):
+            folder = kml_folders[folder_name]
+            line_count = len(folder.features)
+            if line_count > 0:
+                summary_html += f"<li>{folder_name}: {line_count} lines</li>"
+        summary_html += "</ul><hr>"
+        
+        # Prepend summary to the existing description
+        kml.document.description = summary_html + kml.document.description
+
     kml.save(out_path)
     print(f"Wrote KML with {len(pair_records)} lines to {out_path}.")
     
@@ -395,9 +458,10 @@ def main():
     parser.add_argument("input_kml", help="Input KML file with placemarks")
     parser.add_argument("output_kml", help="Output KML file with lines for filtered pairs")
     parser.add_argument("--out", help="Optional CSV file for saving filtered pair data (Az, Dist, Reason)", default=None)
-    parser.add_argument("--export-color-map", action='store_true', help="Export the reason-to-color map CSV and exit. Re-run without this flag to generate KML.")
-    parser.add_argument("--az-only", action='store_true', help="Restrict --half/--whole to Az only")
-    parser.add_argument("--dist-only", action='store_true', help="Restrict --half/--whole to Dist only")
+    parser.add_argument("--export-color-map", type=str, metavar='FILE', help="Export the reason-to-color map to a CSV file and exit.")
+    parser.add_argument("--color-map", type=str, metavar='FILE', default='reason_color_map.csv', help="Path to the color map CSV to use for KML generation. Colors can be KML names (e.g., 'red') or hex codes in AABBGGRR format (e.g., 'ff00ff00' for green). Default: 'reason_color_map.csv'")
+    parser.add_argument("--az-only", action='store_true', help="Restrict all filters to Azimuth fields only.")
+    parser.add_argument("--dist-only", action='store_true', help="Restrict all filters to Distance fields only.")
     parser.add_argument("--half", action='store_true', help="Filter for distances or azimuths ending in .5 (exclusive)")
     parser.add_argument("--whole", action='store_true', help="Filter for distances or azimuths ending in .0 (exclusive)")
     parser.add_argument("--az-tol", type=float, default=TOL, help="Tolerance for azimuth match [default: 0.001]")
@@ -488,18 +552,18 @@ def main():
     if not processed_df.empty:
         # Convert filtered DataFrame rows to a list of dictionaries
         pair_records_for_kml = processed_df.to_dict(orient='records')
-        color_map_path = 'reason_color_map.csv' # Could also be made a command-line arg
 
         # New explicit workflow for color map
         if args.export_color_map:
-            print("Exporting color map...")
-            export_reason_map_csv(pair_records_for_kml, color_map_path)
-            print(f"Color map exported to '{color_map_path}'. Edit this file, then rerun without --export-color-map.")
+            print(f"Exporting color map to '{args.export_color_map}'...")
+            export_reason_map_csv(pair_records_for_kml, args.export_color_map)
+            print(f"Edit this file, then rerun using the --color-map flag to generate the KML.")
             return # Exit after exporting
 
+        color_map_path = args.color_map
         if not os.path.exists(color_map_path):
             print(f"\nError: Color map '{color_map_path}' not found.")
-            print(f"Please run the script with the --export-color-map flag first to generate it.")
+            print(f"Please run the script with --export-color-map <filename.csv> first to generate it.")
             return
 
         # Sort records for potentially more organized KML output

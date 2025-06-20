@@ -1,62 +1,22 @@
 reason_set,color
-"['Az12 multiple:15.00', 'Az12 multiple:18.00', 'Az21 multiple:15.00', 'Az21 multiple:18.00']",color000
-"['Az12 multiple:15.00', 'Az12 multiple:18.00']",color001
-['Az12 multiple:15.00'],color002
-"['Az12 multiple:18.00', 'Az21 multiple:18.00']",color003
-['Az12 multiple:18.00'],color004
-['Az12 target:1.00'],color005
-['Az12 target:10.00'],color006
-['Az12 target:107.00'],color007
-['Az12 target:116.57'],color008
-['Az12 target:121.00'],color009
-['Az12 target:125.25'],color010
-['Az12 target:126.87'],color011
-['Az12 target:129.23'],color012
-['Az12 target:132.50'],color013
-['Az12 target:140.77'],color014
-['Az12 target:153.43'],color015
-['Az12 target:172.00'],color016
-"['Az12 target:179.00', 'Az21 target:359.00']",color017
-['Az12 target:25.50'],color018
-['Az12 target:31.00'],color019
-['Az12 target:34.25'],color020
-['Az12 target:38.17'],color021
-['Az12 target:39.23'],color022
-['Az12 target:42.50'],color023
-['Az12 target:44.00'],color024
-['Az12 target:50.77'],color025
-['Az12 target:51.83'],color026
-['Az12 target:59.00'],color027
-['Az12 target:61.00'],color028
-['Az12 target:64.50'],color029
-['Az12 target:73.00'],color030
-"['Az21 multiple:15.00', 'Az21 multiple:18.00']",color031
-['Az21 multiple:15.00'],color032
-"['Az21 multiple:18.00', 'Az21 target:198.00']",color033
-['Az21 multiple:18.00'],color034
-['Az21 target:10.00'],color035
-['Az21 target:109.50'],color036
-['Az21 target:116.57'],color037
-['Az21 target:121.00'],color038
-['Az21 target:126.87'],color039
-['Az21 target:129.23'],color040
-['Az21 target:132.50'],color041
-['Az21 target:134.00'],color042
-['Az21 target:136.00'],color043
-['Az21 target:140.77'],color044
-['Az21 target:141.83'],color045
-['Az21 target:153.43'],color046
-['Az21 target:172.00'],color047
-['Az21 target:26.57'],color048
-['Az21 target:269.00'],color049
-['Az21 target:31.00'],color050
-['Az21 target:39.23'],color051
-['Az21 target:42.50'],color052
-['Az21 target:54.75'],color053
-['Az21 target:59.00'],color054
-['Az21 target:61.00'],color055
-['Az21 target:64.50'],color056
-['Az21 target:74.00'],color057
-['Az21 target:82.00'],color058
-['Az21 target:89.00'],color059
-['Az21 target:91.00'],color060
+"['Dist factor of:1.6180', 'Dist factor of:5.6050']",color000
+"['Dist factor of:1.6180', 'Dist multiple:1.6180']",color001
+"['Dist factor of:1.7321', 'Dist multiple:0.8660']",color002
+"['Dist factor of:2.2360', 'Dist multiple:2.2360']",color003
+['Dist factor of:2.2360'],color004
+"['Dist factor of:2.2882', 'Dist multiple:2.2882']",color005
+['Dist factor of:2.2882'],color006
+['Dist factor of:5.6050'],color007
+"['Dist factor of:5.9907', 'Dist multiple:5.9907']",color008
+['Dist factor of:5.9907'],color009
+['Dist factor of:6.1800'],color010
+['Dist multiple:0.1494'],color011
+['Dist multiple:0.1742'],color012
+['Dist multiple:0.3338'],color013
+['Dist multiple:0.5401'],color014
+['Dist multiple:0.6180'],color015
+['Dist multiple:0.7071'],color016
+['Dist multiple:0.8660'],color017
+['Dist multiple:0.8740'],color018
+['Dist multiple:1.6180'],color019
+['Dist multiple:3.4641'],color020

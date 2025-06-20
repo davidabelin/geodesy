@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+    <Document id="1">
+        <name>Lines for points in penspirals.csv</name>
+        <Folder id="2">
+            <Style id="5">
+                <LineStyle id="6">
+                    <color>DD0000FF</color>
+                    <colorMode>normal</colorMode>
+                    <width>2.0</width>
+                </LineStyle>
+            </Style>
+            <name>Group PSe</name>
+            <Placemark id="4">
+                <name>PSe Sequence</name>
+                <styleUrl>#5</styleUrl>
+                <LineString id="3">
+                    <extrude>0</extrude>
+                    <altitudeMode>clampToGround</altitudeMode>
+                    <coordinates>-77.05596855,38.8710032,0.0 -77.05323754898434,38.870626719141185,0.0 -77.05401680636348,38.86717231526585,0.0 -77.06116638558362,38.868157772540016,0.0 -77.05912698128755,38.87720162728402,0.0 -77.040407260062,38.87462041596984,0.0 -77.04575141160909,38.85094403738848,0.0 -77.09474739356932,38.857693171562445,0.0 -77.0807899489649,38.91968380442548,0.0 -76.95242849122921,38.90195550361954,0.0 -76.98920086993543,38.739696782735,0.0</coordinates>
+                </LineString>
+            </Placemark>
+        </Folder>
+        <Folder id="7">
+            <Style id="10">
+                <LineStyle id="11">
+                    <color>DD00FF00</color>
+                    <colorMode>normal</colorMode>
+                    <width>2.0</width>
+                </LineStyle>
+            </Style>
+            <name>Group PSf</name>
+            <Placemark id="9">
+                <name>PSf Sequence</name>
+                <styleUrl>#10</styleUrl>
+                <LineString id="8">
+                    <extrude>0</extrude>
+                    <altitudeMode>clampToGround</altitudeMode>
+                    <coordinates>-77.05596855,38.8710032,0.0 -77.0555826143169,38.868856413752,0.0 -77.06002582937174,38.86836816508431,0.0 -77.06103661426143,38.873988482093516,0.0 -77.04940309947823,38.87526647490729,0.0 -77.04675951828916,38.860552003706566,0.0 -77.0772094195082,38.85720440303177,0.0 -77.08414882619087,38.89572539833552,0.0 -77.00438169715328,38.904477353560814,0.0 -76.98634040255561,38.80361445524225,0.0 -77.19484323106279,38.78061863691706,0.0</coordinates>
+                </LineString>
+            </Placemark>
+        </Folder>
+        <Folder id="12">
+            <Style id="15">
+                <LineStyle id="16">
+                    <color>DDFF0000</color>
+                    <colorMode>normal</colorMode>
+                    <width>2.0</width>
+                </LineStyle>
+            </Style>
+            <name>Group PSd</name>
+            <Placemark id="14">
+                <name>PSd Sequence</name>
+                <styleUrl>#15</styleUrl>
+                <LineString id="13">
+                    <extrude>0</extrude>
+                    <altitudeMode>clampToGround</altitudeMode>
+                    <coordinates>-77.05596855,38.8710032,0.0 -77.05846100368875,38.87005283601182,0.0 -77.06042816513623,38.87320548438986,0.0 -77.05390247636717,38.87569356516377,0.0 -77.04875332409958,38.86743946654629,0.0 -77.06583533014735,38.860925556338536,0.0 -77.07932244968691,38.88253261331109,0.0 -77.03458424477992,38.899586039108684,0.0 -76.99931883549137,38.84300120990254,0.0 -77.11632909970943,38.79835340712632,0.0 -77.20895853987716,38.946379154661635,0.0</coordinates>
+                </LineString>
+            </Placemark>
+        </Folder>
+        <Folder id="17">
+            <Style id="20">
+                <LineStyle id="21">
+                    <color>DD00FFFF</color>
+                    <colorMode>normal</colorMode>
+                    <width>2.0</width>
+                </LineStyle>
+            </Style>
+            <name>Group PSa</name>
+            <Placemark id="19">
+                <name>PSa Sequence</name>
+                <styleUrl>#20</styleUrl>
+                <LineString id="18">
+                    <extrude>0</extrude>
+                    <altitudeMode>clampToGround</altitudeMode>
+                    <coordinates>-77.05596855,38.8710032,0.0 -77.05789498099023,38.872562628356896,0.0 -77.05466715665166,38.87499929470629,0.0 -77.04962388562618,38.870916452388634,0.0 -77.0580739401049,38.864537346449005,0.0 -77.07127870228587,38.875224955469626,0.0 -77.04915274778074,38.89192683175328,0.0 -77.0145911991347,38.863936634510644,0.0 -77.07249426432517,38.8202185214824,0.0 -77.16303889938126,38.893431556945,0.0 -77.01128540439974,39.0079413945594,0.0</coordinates>
+                </LineString>
+            </Placemark>
+        </Folder>
+        <Folder id="22">
+            <Style id="25">
+                <LineStyle id="26">
+                    <color>DDFF00FF</color>
+                    <colorMode>normal</colorMode>
+                    <width>2.0</width>
+                </LineStyle>
+            </Style>
+            <name>Group PSg</name>
+            <Placemark id="24">
+                <name>PSg Sequence</name>
+                <styleUrl>#25</styleUrl>
+                <LineString id="23">
+                    <extrude>0</extrude>
+                    <altitudeMode>clampToGround</altitudeMode>
+                    <coordinates>-77.05596855,38.8710032,0.0 -77.0546666020198,38.87291731941839,0.0 -77.0507047924769,38.871270439100215,0.0 -77.05411338816164,38.8662592915465,0.0 -77.06448540502977,38.87057029559795,0.0 -77.05556193921565,38.883690213107236,0.0 -77.0284067214151,38.87239984974424,0.0 -77.0517710863252,38.838055320038215,0.0 -77.12285800406532,38.86758642636411,0.0 -77.06170585712464,38.957527992512496,0.0 -76.87555470471911,38.88002598378683,0.0</coordinates>
+                </LineString>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

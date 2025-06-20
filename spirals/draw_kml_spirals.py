@@ -1,4 +1,4 @@
-# v0.8
+# v1.0
 import csv
 import math
 import re
@@ -192,10 +192,10 @@ def generate_kml_from_csv(csv_filepath, kml_filepath, include_points=False):
 
 if __name__ == "__main__":
     # Default path to your input CSV file
-    input_csv_file = r"c:\Users\David\Documents\Local_Python\geodesy\dev\data\spirals.csv"
+    input_csv_file = r"c:\Users\David\Documents\Local_Python\geodesy\spirals\penspiA_pnts.csv"
     
     # Default output KML file path (saved in the same directory as the CSV)
-    output_kml_file = os.path.join(os.path.dirname(input_csv_file), "spirals.kml")
+    output_kml_file = os.path.join(os.path.dirname(input_csv_file), "pen_spirals_A.kml")
 
     p = argparse.ArgumentParser(description='Geodetic Connect-the-Dots Utility')
     sub = p.add_subparsers(dest='cmd')

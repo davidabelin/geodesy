@@ -1,32 +1,58 @@
 """
-azdist_filter.py v4.2
+azdist_filter.py v5.2
 
 - --half, --whole apply to both Az and Dist unless --az-only or --dist-only specified.
 - 'Reason' column shows which criteria/field was matched.
 - Example usage:
-        azd --az-only --factor-tol 0.002 --az-tol 0.002 --az-targets 185.117 84.883 5.117 25.5 64.5 54.75 125.25 34.25 95.117 27.6923 117.692 152.3077 1 91 181 271 89 179 269 359 61 59 44 46 29 31 121 119 107 109 109.5 198 36.869898 53.130102 126.869898 143.130102 53.130102 36.869898 --az-multiples 15 18 --factor-targets 324 222.5 --spherical --whole --out highpoints/az_out.csv highpoints/MixPnts.kml highpoints/az_MixLines.kml
+        azd --az-only --factor-tol 0.002 --az-tol 0.002 --az-targets 185.117 84.883 5.117 25.5 64.5 54.75 125.25 34.25 95.117 27.6923 117.692 152.3077 1 91 181 271 89 179 269 359 61 59 44 46 29 31 121 119 107 109 109.5 198 36.8699 53.1301 126.8699 143.1301 53.1301 36.8699 116.565 153.435 63.435 26.5651 --az-multiples 15 18 --factor-targets 222.5 --spherical --whole --out highpoints/az_out.csv highpoints/MixPnts.kml highpoints/az_MixLines.kml
         azd --dist-only --factor-tol 0.00025 --dist-tol 0.00025 --dist-targets 5.605 3.4641 0.33385 0.54018 0.87403 2.2882 3.7025 5.9907 0.004392 --dist-multiples 1.618 0.618 2.236 0.866 0.7071 --factor-targets 22.882 16.18 6.18 17.321 14.142 --spherical --whole --out highpoints/dist_out.csv highpoints/MixPnts.kml highpoints/dist_MixLines.kml
         azd --az-targets 46 --az-tol 0.005 --dist-targets 2.2882 7.071 --dist-tol 0.0005 --az-multiples 18 --dist-multiples 1.5 --factor-targets 14.142 --factor-tol 0.001 --spherical --half --whole --out data/azdist_filtered.csv data/SelectPnts.kml data/SelectPnts_critlines.kml
         azd --dist-only --factor-tol 0.00019 --dist-tol 0.0002 --dist-targets 2.2882 --dist-multiples 1.618 0.618 2.236 0.866 0.7071 --factor-targets 16.18 6.18 17.321 14.142 --spherical --whole --out highpoints/dist_out.csv highpoints/MixPnts.kml highpoints/dist_MMixLines.kml
         azd --dist-only --factor-tol 0.0005 --dist-tol 0.0005 --dist-multiples 3.4641 0.33385 0.54012 0.87403 3.7025 5.9907 1.618 0.618 2.236 0.866 0.7071 2.2882 5.605 0.174242 0.14943 --factor-targets 3.7025 5.9907 2.2882 3.7025 2.236 1.618 6.18 1.7321 1.4142 5.605 --spherical --half --whole --out data/d_penplus.csv data/PentagonPlusPoints.kml data/d_PenPlusLines_filt.kml
+        azd --az-only --az-tol 0.01 --az-targets 25.5 64.5 54.75 125.25 34.25 1 10 172 91 82 73 74 53 55 89 179 269 359 61 59 44 46 134 136 29 31 121 119 107 109 109.5 198 126.87 143.13 53.13 36.87 42.5 132.5 129.2315 140.7685 50.7685 39.2315 53.1301 36.8699 126.8699 143.1301 63.43495 26.56505 116.56505 153.43495 51.82729 38.1727 128.1727 141.82729 --az-multiples 15 18 --out data/az_mix_ell.csv data/MixPnts.kml data/az_MixLines_ell.kml
+Useful RIGHT Triangle properties:
+r2 - r3 - r5:   AZs 129.2315 140.7685 50.7685 39.2315
+                Ds 1.4142 1.7321 2.2361
+3 - 4 - 5:	    AZs 53.1301 36.8699 126.8699 143.1301
+                Ds 3 4 5
+1 - 2 - r5:	    AZs 63.43495 26.56505 116.56505 153.43495
+                Ds 1 2 2.2361
+1 - phi - phi^2:    AZs 51.82729 38.17271 128.17271 141.82729
+                    Ds 1 1.618 2.618
+18 - 72 - 90:	Ds 0.47553 1.618 1.5388
+36 - 54 - 90	Ds 1.31433 2 2.2361
+129.2315 140.7685 50.7685 39.2315 53.1301 36.8699 126.8699 143.1301 63.43495 26.56505 116.56505 153.43495 51.82729 38.1727 128.1727 141.82729
+1.4142 1.7321 2.2361 1.618 2.618 0.47553 1.31433 1.5388 3 4 5
+
+USER-DRIVEN COLORING: Skeleton for the Only Solution That Cannot Fail
+
+- Exports a CSV mapping every unique reason set (as frozenset string) to a unique id.
+- User then assigns their own color in Excel, Notepad, or Google Sheets.
+- Script reads in mapping and applies user-assigned color codes when generating KML.
+- This gives *full control* over what color every line is, and enables visual grouping, legend, re-use, and no surprises.
+
 """
 
 import pandas as pd
 import numpy as np
 import argparse
 import math
+import ast
 from typing import List, Callable, Dict, Tuple
 import xml.etree.ElementTree as ET
 from itertools import combinations
-import simplekml # For KML output
-import geometry # For inverse_geodetic
+import simplekml
+from geometry import inverse_geodetic
+import os
+from matplotlib import colormaps as cm
+import matplotlib.colors as mcolors
 
 # === Constants ===
 PHI = (1 + 5 ** 0.5) / 2
 PI = math.pi
 SQRT2 = math.sqrt(2)
 SQRT3 = math.sqrt(3) 
-TOL = 0.0001 # Default tolerance, used in various places
+TOL = 0.001 # Default tolerance, used in various places
 
 # === KML Parsing (from dot_connecter.py) ===
 def load_points_from_kml(path: str) -> Dict[str, Tuple[float, float]]:
@@ -45,12 +71,12 @@ def load_points_from_kml(path: str) -> Dict[str, Tuple[float, float]]:
         # Find coordinates element safely
         coordinates_element = pm.find('.//kml:Point/kml:coordinates', ns)
         if coordinates_element is None or coordinates_element.text is None:
-            # print(f"Warning: Placemark {pm_idx + 1} skipped, missing coordinates element or text.")
+            print(f"Warning: Placemark {pm_idx + 1} skipped, missing coordinates element or text.")
             continue
         
         coord_text_str = coordinates_element.text.strip()
         if not coord_text_str: # Skip if coordinates string is empty after stripping
-            # print(f"Warning: Placemark {pm_idx + 1} (Name: '{name}') skipped, empty coordinates string.")
+            print(f"Warning: Placemark {pm_idx + 1} (Name: '{name}') skipped, empty coordinates string.")
             continue
 
         if not name: # If name is missing, generate one
@@ -68,7 +94,7 @@ def load_points_from_kml(path: str) -> Dict[str, Tuple[float, float]]:
             lon_str, lat_str, *_ = coord_text_str.split(',') # KML order is lon,lat,alt
             pts[name] = (float(lat_str), float(lon_str)) # Stores as lat,lon
         except ValueError:
-            # print(f"Warning: Could not parse coordinates for Placemark '{name}': {coord_text_str}")
+            print(f"Warning: Could not parse coordinates for Placemark '{name}': {coord_text_str}")
             continue
     print(f"Loaded {len(pts)} points from {path}.")
     return pts
@@ -94,7 +120,7 @@ def generate_all_pairs_dataframe(points: Dict[str, Tuple[float, float]], ellipso
 
             # az_p1_to_p2 is the forward azimuth at p1 towards p2
             # az_p2_to_p1 is the forward azimuth at p2 towards p1
-            az_p1_to_p2, az_p2_to_p1, dist = geometry.inverse_geodetic(lat1, lon1, lat2, lon2, unit='miles', ellipsoid=ellipsoid)
+            az_p1_to_p2, az_p2_to_p1, dist = inverse_geodetic(lat1, lon1, lat2, lon2, unit='miles', ellipsoid=ellipsoid)
 
             az12 = az_p1_to_p2 % 360
             az21 = az_p2_to_p1 % 360
@@ -136,106 +162,6 @@ def mask_whole(series, tol=TOL):
     decimals = np.round((series - np.floor(series)) * 10)
     return (np.abs(series - np.round(series)) <= tol) & (decimals == 0)
 
-# === KML Drawing (already present) ===
-def draw_lines(
-    pair_records: List[Dict[str, any]], 
-    points: Dict[str, Tuple[float, float]], 
-    out_path: str,
-    ellipsoid_calc_used: bool
-):
-    kml = simplekml.Kml(name="Filtered Lines") # Added name to KML root
-    
-    calc_method_str = "Ellipsoidal (WGS84)" if ellipsoid_calc_used else "Spherical"
-    kml.document.description = f"Lines generated using {calc_method_str} calculations."
-
-    # Define color palettes (AABBGGRR format for KML)
-    # Hot: Red, DarkOrange, Orange, Yellow
-    hot_colors = ['FF0000FF', 'FF3A9CD0', 'FF00A5FF', 'FF00FFFF', 'FF6600FF', 'FF00CCEE']
-    # Cool: Blue, Cyan, Green, Chartreuse
-    cool_colors = ['FF33DD00', 'FFBBEE11', 'FFEE5522', 'FFDDFF22', 'FF00DD00', 'FF77FF00']
-    # Mixed: Purple, Magenta, Orchid
-    mixed_colors = ['FFFF0000', 'FFFFFF00', 'FF800A87', 'FF4EAAE4', 'FFAA0077', 'FF9A7037', 'FF4B0082',
-                    'FF7A0A0A', 'FF880099', 'FF998044', 'FF991122', 'FF11BBAA', 'FF1122FF', 'FFEEFFAA']
-    # Neutral: Grey, DarkGrey
-    neutral_colors = ['FFAAAAFF', 'FFFFCCCC']
-
-    # To cycle through colors for unique reason sets
-    color_indices = {
-        "hot": 0,
-        "cool": 0,
-        "mixed": 0,
-        "neutral": 0
-    }
-    style_cache = {} # Maps frozenset(reasons) to {'color': str, 'width': float}
-
-    for record in pair_records:
-        p1_name = record['P1']
-        p2_name = record['P2']
-
-        reason_string = record.get('Reason', "")
-        # Create a canonical key for the set of reasons
-        reasons_set = frozenset(r.strip() for r in reason_string.split(',') if r.strip())
-
-        if not reasons_set: # Should ideally not happen if filter_pairs ensures Reason is populated
-            style = {'color': neutral_colors[color_indices["neutral"] % len(neutral_colors)], 'width': 1.5}
-            color_indices["neutral"] += 1 # Cycle even for default
-        elif reasons_set in style_cache:
-            style = style_cache[reasons_set]
-        else:
-            has_az_reason = any("az" in r.lower() for r in reasons_set) # Case-insensitive check
-            has_dist_reason = any("dist" in r.lower() for r in reasons_set) # Case-insensitive check
-            
-            current_width = 1.5
-            
-            if has_az_reason and has_dist_reason:
-                current_width = 2.5
-                palette_name, palette = "mixed", mixed_colors
-            elif has_az_reason:
-                palette_name, palette = "hot", hot_colors
-            elif has_dist_reason:
-                palette_name, palette = "cool", cool_colors
-            else: # Custom or other non-specific reasons
-                palette_name, palette = "neutral", neutral_colors
-            
-            assigned_color = palette[color_indices[palette_name] % len(palette)]
-            color_indices[palette_name] += 1
-            
-            style = {'color': assigned_color, 'width': current_width}
-            style_cache[reasons_set] = style
-
-        line = kml.newlinestring(name=f"{p1_name} → {p2_name}")
-        lat1, lon1 = points[p1_name]
-        lat2, lon2 = points[p2_name]
-        line.coords = [(lon1, lat1), (lon2, lat2)]
-        line.style.linestyle.color = style['color']
-        line.style.linestyle.width = style['width']
-        
-        description_html = f"""
-        <![CDATA[
-          <b>P1:</b> {record['P1']}<br>
-          <b>P2:</b> {record['P2']}<br>
-          <hr>
-          <b>Distance:</b> {record['Dist']:.3f} miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> {record['Az12']:.3f}°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> {record['BackAz12']:.3f}°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> {record['Az21']:.3f}°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> {record['BackAz21']:.3f}°<br>
-          <hr>
-          <b>Filter Reason(s):</b> {record['Reason']}<br>
-          <hr>
-          <i>Calculation Method: {calc_method_str}</i>
-        ]]>
-        """
-        line.description = description_html
-
-    kml.save(out_path)
-    print(f"Wrote KML with {len(pair_records)} lines to {out_path}.")
-
-
 def filter_pairs(
     df: pd.DataFrame,
     az_targets: list = None,
@@ -266,10 +192,10 @@ def filter_pairs(
             for t in az_targets:
                 if abs(x12 - t) <= az_tol:
                     keep.loc[idx] = True
-                    reasons_dict[idx].append(f"Az12 target:{t:.3f}")
+                    reasons_dict[idx].append(f"Az12 target:{t:.2f}")
                 if abs(x21 - t) <= az_tol:
                     keep.loc[idx] = True
-                    reasons_dict[idx].append(f"Az21 target:{t:.3f}")
+                    reasons_dict[idx].append(f"Az21 target:{t:.2f}")
 
     # Distance close to a special value?
     if dist_targets and len(dist_targets) > 0:
@@ -286,10 +212,10 @@ def filter_pairs(
             for m in az_multiples:
                 if is_multiple(x12, m, az_tol):
                     keep.loc[idx] = True
-                    reasons_dict[idx].append(f"Az12 multiple:{m:.3f}")
+                    reasons_dict[idx].append(f"Az12 multiple:{m:.2f}")
                 if is_multiple(x21, m, az_tol):
                     keep.loc[idx] = True
-                    reasons_dict[idx].append(f"Az21 multiple:{m:.3f}")
+                    reasons_dict[idx].append(f"Az21 multiple:{m:.2f}")
 
     # Distance is a multiple of some special value?
     if dist_multiples and len(dist_multiples) > 0:
@@ -299,7 +225,7 @@ def filter_pairs(
                     keep.loc[idx] = True
                     reasons_dict[idx].append(f"Dist multiple:{m:.4f}")
 
-    # Tenths, halves, wholes filters (now test both Az and Dist by default)
+    # Halves, wholes filters (now test both Az and Dist by default)
     test_az = not dist_only
     test_dist = not az_only
 
@@ -362,27 +288,127 @@ def filter_pairs(
         
     return filtered_df
 
+# === Color utilities ===
+def rgba_to_kml_color(rgba):
+    r, g, b, a = [int(255*x) for x in rgba]
+    return f"{a:02X}{b:02X}{g:02X}{r:02X}"
+
+# === 1. Export mapping from unique reason-sets to user-editable color ids ===
+def export_reason_map_csv(pair_records, path='reason_color_map.csv'):
+    reason_sets = set(
+        frozenset(r.strip() for r in rec.get('Reason', '').split(',') if r.strip())
+        for rec in pair_records
+    )
+
+    if not reason_sets:
+        with open(path, 'w', encoding='utf8') as f:
+            f.write('reason_set,color\n')
+        print(f"No unique reason-sets found. Empty map file created at {path}.")
+        return
+
+    sorted_reason_sets = sorted(list(reason_sets), key=lambda s: repr(sorted(list(s))))
+    map_data = {
+        'reason_set': [repr(sorted(list(rs))) for rs in sorted_reason_sets],
+        'color': [f'color{i:03d}' for i in range(len(sorted_reason_sets))]
+    }
+    df_to_export = pd.DataFrame(map_data)
+    df_to_export.to_csv(path, index=False)
+    print(f"Exported {len(df_to_export)} unique reason-sets to {path}. Assign colors as KML hex or names and re-import.")
+
+# === 2. Read user-edited color map and use for KML coloring ===
+def load_reason_map(path='reason_color_map.csv'):
+    mapping = {}
+    df = pd.read_csv(path)
+    for _, row in df.iterrows():
+        key = frozenset(ast.literal_eval(row['reason_set']))
+        mapping[key] = row['color']
+    return mapping
+
+def get_vivid_colors(colormap_name, n):
+    cmap = cm[colormap_name]
+    if n == 1:
+        return [cmap(0.75)] # More vivid
+    return [cmap(i/(n-1)) for i in range(n)]
+
+def get_grbl_colors(n):
+    if n == 1:
+        return [cm['Blues'](0.6)]
+    half = n // 2
+    greens = [cm['Greens'](i / max(half-1, 1)) for i in range(half)] if half > 0 else []
+    blues = [cm['Blues'](i / max(n-half-1, 1)) for i in range(n-half)] if (n-half) > 0 else []
+    return greens + blues
+
+# === KML Line Drawing ===
+def draw_lines(
+    pair_records: List[Dict[str, any]], 
+    points: Dict[str, Tuple[float, float]], 
+    out_path: str,
+    ellipsoid_calc_used: bool, # This parameter is now passed from main
+    reason_color_map_path: str
+):
+    kml = simplekml.Kml(name="Filtered Lines")
+    calc_method_str = "Ellipsoidal (WGS84)" if ellipsoid_calc_used else "Spherical"
+    kml.document.description = f"Lines generated using {calc_method_str} calculations."
+
+    # The decision to create the map is now handled in main(). This function just loads and uses it.
+    reason_to_color = load_reason_map(reason_color_map_path)
+
+    for rec in pair_records:
+        p1_name = rec['P1']
+        p2_name = rec['P2']
+        reason_string = rec.get('Reason', "")
+        reasons_set = frozenset(r.strip() for r in reason_string.split(',') if r.strip())
+        color = reason_to_color.get(reasons_set, 'FFAAAAFF')
+        width = 2.5 if len(reasons_set) > 1 else 1.5
+        line = kml.newlinestring(name=f"{p1_name} → {p2_name}")
+        lat1, lon1 = points[p1_name]
+        lat2, lon2 = points[p2_name]
+        line.coords = [(lon1, lat1), (lon2, lat2)]
+        line.style.linestyle.color = color
+        line.style.linestyle.width = width
+        description_html = f"""
+        <![CDATA[
+          <b>P1:</b> {rec['P1']}<br>
+          <b>P2:</b> {rec['P2']}<br>
+          <hr>
+          <b>Distance:</b> {rec['Dist']:.3f} miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> {rec['Az12']:.3f}°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> {rec['BackAz12']:.3f}°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> {rec['Az21']:.3f}°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> {rec['BackAz21']:.3f}°<br>
+          <hr>
+          <b>Filter Reason(s):</b> {rec['Reason']}<br>
+          <hr>
+          <i>Calculation Method: {calc_method_str}</i>
+        ]]>
+        """
+        line.description = description_html
+    kml.save(out_path)
+    print(f"Wrote KML with {len(pair_records)} lines to {out_path}.")
+    
 def main():
     parser = argparse.ArgumentParser(description="Filter azimuth/distance pairs by modular criteria.")
     parser.add_argument("input_kml", help="Input KML file with placemarks")
     parser.add_argument("output_kml", help="Output KML file with lines for filtered pairs")
     parser.add_argument("--out", help="Optional CSV file for saving filtered pair data (Az, Dist, Reason)", default=None)
-    parser.add_argument("--az-targets", nargs='*', type=float, default=None, help="Azimuths of interest (deg)")
-    parser.add_argument("--az-tol", type=float, default=TOL, help="Tolerance for azimuth match [default: 0.001]")
-    parser.add_argument("--dist-targets", nargs='*', type=float, default=None, help="Distances of interest (miles)")
-    parser.add_argument("--dist-tol", type=float, default=TOL, help="Tolerance for distance match [default: 0.001]")
-    parser.add_argument("--az-multiples", nargs='*', type=float, default=None, help="Azimuth multiples to match")
-    parser.add_argument("--dist-multiples", nargs='*', type=float, default=None, help="Distance multiples to match")
-    parser.add_argument("--factor-targets", nargs='*', type=float, default=None, help="Distance is a factor of each TARGET (within tolerance)")
-    parser.add_argument("--factor-tol", type=float, default=TOL, help="Tolerance for --factor-targets checks [default: 0.001]")
-    parser.add_argument("--half", action='store_true', help="Filter for distances or azimuths ending in .5 (exclusive)")
-    parser.add_argument("--whole", action='store_true', help="Filter for distances or azimuths ending in .0 (exclusive)")
+    parser.add_argument("--export-color-map", action='store_true', help="Export the reason-to-color map CSV and exit. Re-run without this flag to generate KML.")
     parser.add_argument("--az-only", action='store_true', help="Restrict --half/--whole to Az only")
     parser.add_argument("--dist-only", action='store_true', help="Restrict --half/--whole to Dist only")
-    parser.add_argument(
-        '--spherical', action='store_true',
-        help='Use spherical (not ellipsoidal) calculations for Az/Dist'
-    )
+    parser.add_argument("--half", action='store_true', help="Filter for distances or azimuths ending in .5 (exclusive)")
+    parser.add_argument("--whole", action='store_true', help="Filter for distances or azimuths ending in .0 (exclusive)")
+    parser.add_argument("--az-tol", type=float, default=TOL, help="Tolerance for azimuth match [default: 0.001]")
+    parser.add_argument("--az-targets", nargs='*', type=float, default=None, help="Azimuths of interest (deg)")
+    parser.add_argument("--az-multiples", nargs='*', type=float, default=None, help="Azimuth multiples to match")
+    parser.add_argument("--dist-tol", type=float, default=TOL, help="Tolerance for distance match [default: 0.001]")
+    parser.add_argument("--dist-targets", nargs='*', type=float, default=None, help="Distances of interest (miles)")
+    parser.add_argument("--dist-multiples", nargs='*', type=float, default=None, help="Distance multiples to match")
+    parser.add_argument("--factor-tol", type=float, default=TOL, help="Tolerance for --factor-targets checks [default: 0.001]")
+    parser.add_argument("--factor-targets", nargs='*', type=float, default=None, help="Distance is a factor of each TARGET (within tolerance)")
+    parser.add_argument('--spherical', action='store_true', help='Use spherical (not ellipsoidal) calculations for Az/Dist')
     args = parser.parse_args()
 
     def to_float_list(seq): # Helper function, can be kept local to main or moved
@@ -430,20 +456,20 @@ def main():
     else:
         # Filters are active, apply them
         processed_df = filter_pairs(
-            all_pairs_df,
-            az_targets=parsed_az_targets,
-        az_tol=args.az_tol,
-            dist_targets=parsed_dist_targets,
-        dist_tol=args.dist_tol,
-            az_multiples=parsed_az_multiples,
-            dist_multiples=parsed_dist_multiples,
-            factor_targets=parsed_factor_targets,
-        factor_tol=args.factor_tol,
-        half=args.half,
-        whole=args.whole,
-        az_only=args.az_only,
-        dist_only=args.dist_only
-    )
+                        all_pairs_df,
+                        az_targets=parsed_az_targets,
+                        az_tol=args.az_tol,
+                        dist_targets=parsed_dist_targets,
+                        dist_tol=args.dist_tol,
+                        az_multiples=parsed_az_multiples,
+                        dist_multiples=parsed_dist_multiples,
+                        factor_targets=parsed_factor_targets,
+                        factor_tol=args.factor_tol,
+                        half=args.half,
+                        whole=args.whole,
+                        az_only=args.az_only,
+                        dist_only=args.dist_only
+        )
         print(f"Selected {len(processed_df)} out of {len(all_pairs_df)} total calculated pairs.")
 
     if args.out:
@@ -462,16 +488,28 @@ def main():
     if not processed_df.empty:
         # Convert filtered DataFrame rows to a list of dictionaries
         pair_records_for_kml = processed_df.to_dict(orient='records')
-        # Sort records by 'Reason' for grouped KML output
+        color_map_path = 'reason_color_map.csv' # Could also be made a command-line arg
+
+        # New explicit workflow for color map
+        if args.export_color_map:
+            print("Exporting color map...")
+            export_reason_map_csv(pair_records_for_kml, color_map_path)
+            print(f"Color map exported to '{color_map_path}'. Edit this file, then rerun without --export-color-map.")
+            return # Exit after exporting
+
+        if not os.path.exists(color_map_path):
+            print(f"\nError: Color map '{color_map_path}' not found.")
+            print(f"Please run the script with the --export-color-map flag first to generate it.")
+            return
+
+        # Sort records for potentially more organized KML output
         pair_records_for_kml.sort(key=lambda x: x.get('Reason', ''))
-        draw_lines(pair_records_for_kml, points_data, args.output_kml, ellipsoid_calc_used=not args.spherical)
+        draw_lines(pair_records_for_kml, points_data, args.output_kml, ellipsoid_calc_used=not args.spherical, reason_color_map_path=color_map_path)
     else:
-        # KML not created or empty
         if filters_active:
             print(f"No lines to draw as no pairs matched the filter criteria. KML file '{args.output_kml}' will not be created with content.")
         else: # No filters active, but all_pairs_df was empty (e.g. <2 input points)
             print(f"No lines to draw as no pairs could be generated from the input. KML file '{args.output_kml}' will not be created with content.")
-
 
 if __name__ == "__main__":
     main()

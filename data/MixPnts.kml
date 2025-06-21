@@ -20,6 +20,14 @@
 		<SimpleField type="double" name="ALT"><displayName>&lt;b&gt;ALT&lt;/b&gt;</displayName>
 </SimpleField>
 	</Schema>
+	<Schema name="updates" id="S_updates_SDD">
+		<SimpleField type="string" name="LOC"><displayName>&lt;b&gt;LOC&lt;/b&gt;</displayName>
+</SimpleField>
+		<SimpleField type="double" name="LAT"><displayName>&lt;b&gt;LAT&lt;/b&gt;</displayName>
+</SimpleField>
+		<SimpleField type="double" name="LON"><displayName>&lt;b&gt;LON&lt;/b&gt;</displayName>
+</SimpleField>
+	</Schema>
 	<Schema name="vertices" id="S_vertices_SDD0">
 		<SimpleField type="string" name="V"><displayName>&lt;b&gt;V&lt;/b&gt;</displayName>
 </SimpleField>
@@ -28,6 +36,30 @@
 		<SimpleField type="double" name="Lon"><displayName>&lt;b&gt;Lon&lt;/b&gt;</displayName>
 </SimpleField>
 	</Schema>
+	<Style id="hlightPointStyle">
+		<IconStyle>
+			<color>e6ffffff</color>
+			<scale>0.8</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle_highlight.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>ccffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<BalloonStyle>
+			<text><![CDATA[<table border="0">
+  <tr><td><b>LOC</b></td><td>$[updates/LOC]</td></tr>
+  <tr><td><b>LAT</b></td><td>$[updates/LAT]</td></tr>
+  <tr><td><b>LON</b></td><td>$[updates/LON]</td></tr>
+</table>
+]]></text>
+		</BalloonStyle>
+		<LineStyle>
+			<width>2.5</width>
+		</LineStyle>
+	</Style>
 	<Style id="hlightPointStyle0100">
 		<IconStyle>
 			<color>e60000ff</color>
@@ -90,16 +122,6 @@
 		<Pair>
 			<key>highlight</key>
 			<styleUrl>#sh_cross-hairs_highlight3</styleUrl>
-		</Pair>
-	</StyleMap>
-	<StyleMap id="msn_cross-hairs4">
-		<Pair>
-			<key>normal</key>
-			<styleUrl>#sn_cross-hairs1</styleUrl>
-		</Pair>
-		<Pair>
-			<key>highlight</key>
-			<styleUrl>#sh_cross-hairs_highlight1</styleUrl>
 		</Pair>
 	</StyleMap>
 	<StyleMap id="msn_firedept00">
@@ -242,10 +264,60 @@
 			<styleUrl>#sh_placemark_circle_highlight9</styleUrl>
 		</Pair>
 	</StyleMap>
+	<StyleMap id="msn_placemark_circle13231">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_placemark_circle104102</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_placemark_circle_highlight15600</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_placemark_circle13232">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_placemark_circle104100</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_placemark_circle_highlight15603</styleUrl>
+		</Pair>
+	</StyleMap>
 	<StyleMap id="msn_placemark_circle1323">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_placemark_circle1041</styleUrl>
+			<styleUrl>#sn_placemark_circle10410</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_placemark_circle_highlight15602</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_placemark_circle13233">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_placemark_circle104103</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_placemark_circle_highlight1560</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_placemark_circle13230">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_placemark_circle104101</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_placemark_circle_highlight15601</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_placemark_circle13234">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_placemark_circle10413</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
@@ -459,7 +531,7 @@
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_shaded_dot</styleUrl>
+			<styleUrl>#sh_shaded_dot1</styleUrl>
 		</Pair>
 	</StyleMap>
 	<StyleMap id="msn_shaded_dot0">
@@ -509,7 +581,7 @@
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_shaded_dot1</styleUrl>
+			<styleUrl>#sh_shaded_dot110</styleUrl>
 		</Pair>
 	</StyleMap>
 	<StyleMap id="msn_shaded_dot10">
@@ -555,7 +627,7 @@
 	<StyleMap id="msn_shaded_dot13">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_shaded_dot</styleUrl>
+			<styleUrl>#sn_shaded_dot1</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
@@ -725,6 +797,16 @@
 	<StyleMap id="msn_shaded_dot4">
 		<Pair>
 			<key>normal</key>
+			<styleUrl>#sn_shaded_dot</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_shaded_dot</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_shaded_dot40">
+		<Pair>
+			<key>normal</key>
 			<styleUrl>#sn_shaded_dot18</styleUrl>
 		</Pair>
 		<Pair>
@@ -775,7 +857,7 @@
 	<StyleMap id="msn_shaded_dot8">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_shaded_dot1</styleUrl>
+			<styleUrl>#sn_shaded_dot12</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
@@ -825,16 +907,6 @@
 	<StyleMap id="msn_target">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_target0</styleUrl>
-		</Pair>
-		<Pair>
-			<key>highlight</key>
-			<styleUrl>#sh_target0</styleUrl>
-		</Pair>
-	</StyleMap>
-	<StyleMap id="msn_target0">
-		<Pair>
-			<key>normal</key>
 			<styleUrl>#sn_target</styleUrl>
 		</Pair>
 		<Pair>
@@ -842,14 +914,24 @@
 			<styleUrl>#sh_target</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_target1">
+	<StyleMap id="msn_target0">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_target1</styleUrl>
+			<styleUrl>#sn_target2</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_target1</styleUrl>
+			<styleUrl>#sh_target0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_target3">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_target3</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_target2</styleUrl>
 		</Pair>
 	</StyleMap>
 	<StyleMap id="msn_track">
@@ -865,11 +947,41 @@
 	<StyleMap id="msn_track0">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_track0</styleUrl>
+			<styleUrl>#sn_track00</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
 			<styleUrl>#sh_track0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_track1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_track0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_track1</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_triangle1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_triangle0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_triangle0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_triangle">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_triangle</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_triangle</styleUrl>
 		</Pair>
 	</StyleMap>
 	<StyleMap id="msn_triangle0">
@@ -882,27 +994,17 @@
 			<styleUrl>#sh_triangle3</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_triangle">
+	<StyleMap id="msn_triangle01">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_triangle0</styleUrl>
-		</Pair>
-		<Pair>
-			<key>highlight</key>
-			<styleUrl>#sh_triangle</styleUrl>
-		</Pair>
-	</StyleMap>
-	<StyleMap id="msn_triangle00">
-		<Pair>
-			<key>normal</key>
-			<styleUrl>#sn_triangle</styleUrl>
+			<styleUrl>#sn_triangle00</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
 			<styleUrl>#sh_triangle4</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_triangle1">
+	<StyleMap id="msn_triangle10">
 		<Pair>
 			<key>normal</key>
 			<styleUrl>#sn_triangle2</styleUrl>
@@ -912,7 +1014,7 @@
 			<styleUrl>#sh_triangle00</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_triangle10">
+	<StyleMap id="msn_triangle100">
 		<Pair>
 			<key>normal</key>
 			<styleUrl>#sn_triangle6</styleUrl>
@@ -922,16 +1024,6 @@
 			<styleUrl>#sh_triangle01</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_triangle2">
-		<Pair>
-			<key>normal</key>
-			<styleUrl>#sn_triangle20</styleUrl>
-		</Pair>
-		<Pair>
-			<key>highlight</key>
-			<styleUrl>#sh_triangle2</styleUrl>
-		</Pair>
-	</StyleMap>
 	<StyleMap id="msn_triangle3">
 		<Pair>
 			<key>normal</key>
@@ -939,7 +1031,7 @@
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_triangle0</styleUrl>
+			<styleUrl>#sh_triangle6</styleUrl>
 		</Pair>
 	</StyleMap>
 	<StyleMap id="msn_volcano">
@@ -962,6 +1054,30 @@
 			<styleUrl>#sh_volcano</styleUrl>
 		</Pair>
 	</StyleMap>
+	<Style id="normPointStyle">
+		<IconStyle>
+			<color>e6ffffff</color>
+			<scale>0.8</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>ccffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<BalloonStyle>
+			<text><![CDATA[<table border="0">
+  <tr><td><b>LOC</b></td><td>$[updates/LOC]</td></tr>
+  <tr><td><b>LAT</b></td><td>$[updates/LAT]</td></tr>
+  <tr><td><b>LON</b></td><td>$[updates/LON]</td></tr>
+</table>
+]]></text>
+		</BalloonStyle>
+		<LineStyle>
+			<width>2.5</width>
+		</LineStyle>
+	</Style>
 	<Style id="normPointStyle000">
 		<IconStyle>
 			<color>e60000ff</color>
@@ -996,6 +1112,16 @@
 			<width>3</width>
 		</LineStyle>
 	</Style>
+	<StyleMap id="pointStyleMap">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#normPointStyle</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#hlightPointStyle</styleUrl>
+		</Pair>
+	</StyleMap>
 	<StyleMap id="pointStyleMap00">
 		<Pair>
 			<key>normal</key>
@@ -1057,22 +1183,6 @@
 		<LineStyle>
 			<color>ccffffff</color>
 			<width>0.5</width>
-		</LineStyle>
-	</Style>
-	<Style id="sh_cross-hairs_highlight1">
-		<IconStyle>
-			<color>b30000ff</color>
-			<scale>0.590909</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/cross-hairs_highlight.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>b3ffffff</color>
-			<scale>0.6</scale>
-		</LabelStyle>
-		<LineStyle>
-			<width>2.5</width>
 		</LineStyle>
 	</Style>
 	<Style id="sh_cross-hairs_highlight3">
@@ -1157,10 +1267,6 @@
 			<color>c9ffffff</color>
 			<scale>0.7</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
-		<ListStyle>
-		</ListStyle>
 		<LineStyle>
 			<color>ccffffff</color>
 			<width>0.5</width>
@@ -1396,6 +1502,116 @@
 		<LineStyle>
 			<color>ffffaad2</color>
 			<width>0.5</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>ffffaad2</color>
+		</PolyStyle>
+	</Style>
+	<Style id="sh_placemark_circle_highlight15602">
+		<IconStyle>
+			<color>e60000ff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>e6ffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<ListStyle>
+		</ListStyle>
+		<LineStyle>
+			<color>e6ffffff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>ffffaad2</color>
+		</PolyStyle>
+	</Style>
+	<Style id="sh_placemark_circle_highlight15600">
+		<IconStyle>
+			<color>e60000ff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>e6ffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<ListStyle>
+		</ListStyle>
+		<LineStyle>
+			<color>e6ffffff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>ffffaad2</color>
+		</PolyStyle>
+	</Style>
+	<Style id="sh_placemark_circle_highlight15601">
+		<IconStyle>
+			<color>e60000ff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>e6ffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<ListStyle>
+		</ListStyle>
+		<LineStyle>
+			<color>e6ffffff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>ffffaad2</color>
+		</PolyStyle>
+	</Style>
+	<Style id="sh_placemark_circle_highlight15603">
+		<IconStyle>
+			<color>e60000ff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>e6ffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<ListStyle>
+		</ListStyle>
+		<LineStyle>
+			<color>e6ffffff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>ffffaad2</color>
+		</PolyStyle>
+	</Style>
+	<Style id="sh_placemark_circle_highlight1560">
+		<IconStyle>
+			<color>e60000ff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>e6ffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<ListStyle>
+		</ListStyle>
+		<LineStyle>
+			<color>e6ffffff</color>
+			<width>3</width>
 		</LineStyle>
 		<PolyStyle>
 			<color>ffffaad2</color>
@@ -1816,7 +2032,7 @@
 	</Style>
 	<Style id="sh_shaded_dot1">
 		<IconStyle>
-			<color>f200ffff</color>
+			<color>f2ffff00</color>
 			<scale>0.709093</scale>
 			<Icon>
 				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
@@ -1869,6 +2085,23 @@
 	<Style id="sh_shaded_dot1000">
 		<IconStyle>
 			<color>f2ffff00</color>
+			<scale>0.709093</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
+	<Style id="sh_shaded_dot110">
+		<IconStyle>
+			<color>f200ffff</color>
 			<scale>0.709093</scale>
 			<Icon>
 				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
@@ -2376,7 +2609,7 @@
 			<color>ff7f0000</color>
 		</PolyStyle>
 	</Style>
-	<Style id="sh_target0">
+	<Style id="sh_target">
 		<IconStyle>
 			<color>e6ffffff</color>
 			<scale>0.827273</scale>
@@ -2388,14 +2621,12 @@
 			<color>c9ffffff</color>
 			<scale>0.6</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
 		<LineStyle>
 			<color>e6ffffff</color>
 			<width>2.5</width>
 		</LineStyle>
 	</Style>
-	<Style id="sh_target">
+	<Style id="sh_target0">
 		<IconStyle>
 			<color>bfffffff</color>
 			<scale>0.709091</scale>
@@ -2407,14 +2638,12 @@
 			<color>e0ffffff</color>
 			<scale>0.7</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
 		<LineStyle>
 			<color>e6ffffff</color>
 			<width>2.5</width>
 		</LineStyle>
 	</Style>
-	<Style id="sh_target1">
+	<Style id="sh_target2">
 		<IconStyle>
 			<color>e6ffffff</color>
 			<scale>0.827273</scale>
@@ -2426,8 +2655,6 @@
 			<color>c9ffffff</color>
 			<scale>0.6</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
 		<LineStyle>
 			<color>e6ffffff</color>
 			<width>2</width>
@@ -2469,7 +2696,25 @@
 			<width>2.5</width>
 		</LineStyle>
 	</Style>
-	<Style id="sh_triangle0">
+	<Style id="sh_track1">
+		<IconStyle>
+			<color>b3ffffff</color>
+			<scale>0.945455</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/track.png</href>
+			</Icon>
+			<hotSpot x="32" y="32" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LabelStyle>
+			<color>bfffffff</color>
+			<scale>0.5</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ccffffff</color>
+			<width>2.5</width>
+		</LineStyle>
+	</Style>
+	<Style id="sh_triangle">
 		<IconStyle>
 			<color>e6ffffff</color>
 			<scale>0.945455</scale>
@@ -2481,12 +2726,14 @@
 			<color>bfffffff</color>
 			<scale>0.5</scale>
 		</LabelStyle>
+		<BalloonStyle>
+		</BalloonStyle>
 		<LineStyle>
 			<color>ccffffff</color>
 			<width>1.5</width>
 		</LineStyle>
 	</Style>
-	<Style id="sh_triangle">
+	<Style id="sh_triangle0">
 		<IconStyle>
 			<color>e6ffaaff</color>
 			<scale>0.827273</scale>
@@ -2498,8 +2745,6 @@
 			<color>bfffffff</color>
 			<scale>0.5</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
 		<LineStyle>
 			<color>f2ffaaff</color>
 			<width>3.3</width>
@@ -2539,23 +2784,6 @@
 			<width>1.5</width>
 		</LineStyle>
 	</Style>
-	<Style id="sh_triangle2">
-		<IconStyle>
-			<color>e6ffffff</color>
-			<scale>0.945455</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/triangle.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>bfffffff</color>
-			<scale>0.5</scale>
-		</LabelStyle>
-		<LineStyle>
-			<color>ccffffff</color>
-			<width>1.5</width>
-		</LineStyle>
-	</Style>
 	<Style id="sh_triangle3">
 		<IconStyle>
 			<color>e6ffffff</color>
@@ -2574,6 +2802,23 @@
 		</LineStyle>
 	</Style>
 	<Style id="sh_triangle4">
+		<IconStyle>
+			<color>e6ffffff</color>
+			<scale>0.945455</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/triangle.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>bfffffff</color>
+			<scale>0.5</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ccffffff</color>
+			<width>1.5</width>
+		</LineStyle>
+	</Style>
+	<Style id="sh_triangle6">
 		<IconStyle>
 			<color>e6ffffff</color>
 			<scale>0.945455</scale>
@@ -2660,22 +2905,6 @@
 			<width>1.5</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_cross-hairs1">
-		<IconStyle>
-			<color>b30000ff</color>
-			<scale>0.5</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/cross-hairs.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>b3ffffff</color>
-			<scale>0.6</scale>
-		</LabelStyle>
-		<LineStyle>
-			<width>2.5</width>
-		</LineStyle>
-	</Style>
 	<Style id="sn_firedept000">
 		<IconStyle>
 			<color>ff00ffff</color>
@@ -2740,10 +2969,6 @@
 			<color>c9ffffff</color>
 			<scale>0.7</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
-		<ListStyle>
-		</ListStyle>
 		<LineStyle>
 			<color>ccffffff</color>
 			<width>0.5</width>
@@ -2887,7 +3112,117 @@
 			<colorMode>random</colorMode>
 		</PolyStyle>
 	</Style>
-	<Style id="sn_placemark_circle1041">
+	<Style id="sn_placemark_circle104102">
+		<IconStyle>
+			<color>e60000ff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>e6ffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<ListStyle>
+		</ListStyle>
+		<LineStyle>
+			<color>e6ffffff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>ffffaad2</color>
+		</PolyStyle>
+	</Style>
+	<Style id="sn_placemark_circle104103">
+		<IconStyle>
+			<color>e60000ff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>e6ffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<ListStyle>
+		</ListStyle>
+		<LineStyle>
+			<color>e6ffffff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>ffffaad2</color>
+		</PolyStyle>
+	</Style>
+	<Style id="sn_placemark_circle104101">
+		<IconStyle>
+			<color>e60000ff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>e6ffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<ListStyle>
+		</ListStyle>
+		<LineStyle>
+			<color>e6ffffff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>ffffaad2</color>
+		</PolyStyle>
+	</Style>
+	<Style id="sn_placemark_circle10410">
+		<IconStyle>
+			<color>e60000ff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>e6ffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<ListStyle>
+		</ListStyle>
+		<LineStyle>
+			<color>e6ffffff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>ffffaad2</color>
+		</PolyStyle>
+	</Style>
+	<Style id="sn_placemark_circle104100">
+		<IconStyle>
+			<color>e60000ff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>e6ffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<ListStyle>
+		</ListStyle>
+		<LineStyle>
+			<color>e6ffffff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>ffffaad2</color>
+		</PolyStyle>
+	</Style>
+	<Style id="sn_placemark_circle10413">
 		<IconStyle>
 			<color>a600ff00</color>
 			<scale>0.4</scale>
@@ -3534,6 +3869,23 @@
 			<width>1.2</width>
 		</LineStyle>
 	</Style>
+	<Style id="sn_shaded_dot12">
+		<IconStyle>
+			<color>f2ffff00</color>
+			<scale>0.6</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>b3ffffff</color>
+			<scale>0.4</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ffffb205</color>
+			<width>1.2</width>
+		</LineStyle>
+	</Style>
 	<Style id="sn_shaded_dot13">
 		<IconStyle>
 			<color>f2ffff00</color>
@@ -3959,7 +4311,7 @@
 			<width>2</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_target0">
+	<Style id="sn_target">
 		<IconStyle>
 			<color>e6ffffff</color>
 			<scale>0.7</scale>
@@ -3971,33 +4323,12 @@
 			<color>c9ffffff</color>
 			<scale>0.6</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
 		<LineStyle>
 			<color>e6ffffff</color>
 			<width>2.5</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_target1">
-		<IconStyle>
-			<color>e6ffffff</color>
-			<scale>0.7</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/target.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>c9ffffff</color>
-			<scale>0.6</scale>
-		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
-		<LineStyle>
-			<color>e6ffffff</color>
-			<width>2</width>
-		</LineStyle>
-	</Style>
-	<Style id="sn_target">
+	<Style id="sn_target2">
 		<IconStyle>
 			<color>bfffffff</color>
 			<scale>0.6</scale>
@@ -4009,11 +4340,26 @@
 			<color>e0ffffff</color>
 			<scale>0.7</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
 		<LineStyle>
 			<color>e6ffffff</color>
 			<width>2.5</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_target3">
+		<IconStyle>
+			<color>e6ffffff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/target.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>c9ffffff</color>
+			<scale>0.6</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>e6ffffff</color>
+			<width>2</width>
 		</LineStyle>
 	</Style>
 	<Style id="sn_track">
@@ -4052,13 +4398,14 @@
 			<width>2.5</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_triangle">
+	<Style id="sn_track00">
 		<IconStyle>
-			<color>e6ffffff</color>
+			<color>b3ffffff</color>
 			<scale>0.8</scale>
 			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/triangle.png</href>
+				<href>http://maps.google.com/mapfiles/kml/shapes/track.png</href>
 			</Icon>
+			<hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
 		</IconStyle>
 		<LabelStyle>
 			<color>bfffffff</color>
@@ -4066,7 +4413,7 @@
 		</LabelStyle>
 		<LineStyle>
 			<color>ccffffff</color>
-			<width>1.5</width>
+			<width>2.5</width>
 		</LineStyle>
 	</Style>
 	<Style id="sn_triangle0">
@@ -4081,14 +4428,31 @@
 			<color>bfffffff</color>
 			<scale>0.5</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
 		<LineStyle>
 			<color>f2ffaaff</color>
 			<width>3.3</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_triangle2">
+	<Style id="sn_triangle">
+		<IconStyle>
+			<color>e6ffffff</color>
+			<scale>0.8</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/triangle.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>bfffffff</color>
+			<scale>0.5</scale>
+		</LabelStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+		<LineStyle>
+			<color>ccffffff</color>
+			<width>1.5</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_triangle00">
 		<IconStyle>
 			<color>e6ffffff</color>
 			<scale>0.8</scale>
@@ -4105,7 +4469,7 @@
 			<width>1.5</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_triangle20">
+	<Style id="sn_triangle2">
 		<IconStyle>
 			<color>e6ffffff</color>
 			<scale>0.8</scale>
@@ -4211,10 +4575,8 @@
 	</Style>
 	<Folder>
 		<name>MixPnts</name>
-		<visibility>0</visibility>
 		<Placemark>
 			<name>K</name>
-			<visibility>0</visibility>
 			<styleUrl>#msn_target</styleUrl>
 			<ExtendedData>
 				<SchemaData schemaUrl="#S_centerpnts_SDD0">
@@ -4231,7 +4593,6 @@
 		</Placemark>
 		<Placemark>
 			<name>J</name>
-			<visibility>0</visibility>
 			<Camera>
 				<longitude>-77.03659196640794</longitude>
 				<latitude>38.8898082232756</latitude>
@@ -4241,7 +4602,7 @@
 				<roll>10.36020002336397</roll>
 				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 			</Camera>
-			<styleUrl>#msn_target1</styleUrl>
+			<styleUrl>#msn_target3</styleUrl>
 			<Point>
 				<extrude>1</extrude>
 				<altitudeMode>relativeToGround</altitudeMode>
@@ -4251,7 +4612,6 @@
 		</Placemark>
 		<Placemark>
 			<name>Hk</name>
-			<visibility>0</visibility>
 			<styleUrl>#msn_cross-hairs</styleUrl>
 			<ExtendedData>
 				<SchemaData schemaUrl="#S_trypoints_SDDD0">
@@ -4267,32 +4627,10 @@
 				<coordinates>-77.051444,38.8951366,1</coordinates>
 			</Point>
 		</Placemark>
-		<Placemark>
-			<name>NOa</name>
-			<visibility>0</visibility>
-			<LookAt>
-				<longitude>-77.06708911060748</longitude>
-				<latitude>38.92156126922538</latitude>
-				<altitude>0</altitude>
-				<heading>-179.2219842926249</heading>
-				<tilt>0</tilt>
-				<range>165.4793027074781</range>
-				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-			</LookAt>
-			<styleUrl>#msn_shaded_dot17</styleUrl>
-			<Point>
-				<extrude>1</extrude>
-				<altitudeMode>relativeToGround</altitudeMode>
-				<gx:drawOrder>1</gx:drawOrder>
-				<coordinates>-77.06705128052432,38.92154464050518,66</coordinates>
-			</Point>
-		</Placemark>
 		<Folder>
 			<name>Pen</name>
-			<visibility>0</visibility>
 			<Placemark>
 				<name>P</name>
-				<visibility>0</visibility>
 				<styleUrl>#msn_star30</styleUrl>
 				<ExtendedData>
 					<SchemaData schemaUrl="#S_centerpnts_SDD0">
@@ -4308,7 +4646,6 @@
 			</Placemark>
 			<Placemark>
 				<name>PenE</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.05323606683109</longitude>
 					<latitude>38.87063082083093</latitude>
@@ -4326,7 +4663,6 @@
 			</Placemark>
 			<Placemark>
 				<name>PenF</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.05557683691221</longitude>
 					<latitude>38.86885959233766</latitude>
@@ -4344,7 +4680,6 @@
 			</Placemark>
 			<Placemark>
 				<name>PenG</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.05487251816601</longitude>
 					<latitude>38.8729113385552</latitude>
@@ -4362,7 +4697,6 @@
 			</Placemark>
 			<Placemark>
 				<name>PenB</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.05627847833425</longitude>
 					<latitude>38.87269935276353</latitude>
@@ -4381,7 +4715,6 @@
 			</Placemark>
 			<Placemark>
 				<name>PenA</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.05798003913954</longitude>
 					<latitude>38.87262288068033</latitude>
@@ -4399,7 +4732,6 @@
 			</Placemark>
 			<Placemark>
 				<name>PenD</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.05838184793768</longitude>
 					<latitude>38.87008913971716</latitude>
@@ -4417,7 +4749,6 @@
 			</Placemark>
 			<Placemark>
 				<name>PenC</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.05604559034877</longitude>
 					<latitude>38.87565543473433</latitude>
@@ -4434,13 +4765,30 @@
 					<coordinates>-77.05693269848774,38.87621612361609,44</coordinates>
 				</Point>
 			</Placemark>
+			<Placemark>
+				<name>NOa</name>
+				<LookAt>
+					<longitude>-77.06708911060748</longitude>
+					<latitude>38.92156126922538</latitude>
+					<altitude>0</altitude>
+					<heading>-179.2219842926249</heading>
+					<tilt>0</tilt>
+					<range>165.4793027074781</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_shaded_dot17</styleUrl>
+				<Point>
+					<extrude>1</extrude>
+					<altitudeMode>relativeToGround</altitudeMode>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.06705128052432,38.92154464050518,66</coordinates>
+				</Point>
+			</Placemark>
 		</Folder>
 		<Folder>
 			<name>G</name>
-			<visibility>0</visibility>
 			<Placemark>
 				<name>M</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.03501869930255</longitude>
 					<latitude>38.88956781797305</latitude>
@@ -4460,7 +4808,6 @@
 			</Placemark>
 			<Placemark>
 				<name>MV</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.01151395666083</longitude>
 					<latitude>38.67680549537881</latitude>
@@ -4480,7 +4827,6 @@
 			</Placemark>
 			<Placemark>
 				<name>MVa</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.01553001263557</longitude>
 					<latitude>38.74209769830739</latitude>
@@ -4498,7 +4844,6 @@
 			</Placemark>
 			<Placemark>
 				<name>HighWa</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.05983733613799</longitude>
 					<latitude>38.81035845597214</latitude>
@@ -4517,7 +4862,6 @@
 			</Placemark>
 			<Placemark>
 				<name>HighWb</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.06780948787289</longitude>
 					<latitude>38.80924338946613</latitude>
@@ -4536,7 +4880,6 @@
 			</Placemark>
 			<Placemark>
 				<name>HighWc</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.06743172667611</longitude>
 					<latitude>38.80763288358009</latitude>
@@ -4555,30 +4898,120 @@
 		</Folder>
 		<Folder>
 			<name>WH</name>
-			<visibility>0</visibility>
 			<Placemark>
-				<name>WH</name>
-				<visibility>0</visibility>
+				<name>WHs</name>
 				<LookAt>
-					<longitude>-77.03648887226197</longitude>
-					<latitude>38.89792961431181</latitude>
+					<longitude>-77.03591379013554</longitude>
+					<latitude>38.89739819100205</latitude>
 					<altitude>0</altitude>
-					<heading>-88.69016022932</heading>
-					<tilt>0</tilt>
-					<range>117.0005113796477</range>
+					<heading>3.111380260807727</heading>
+					<tilt>3.600046908562747</tilt>
+					<range>142.5483293546443</range>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</LookAt>
-				<styleUrl>#msn_cross-hairs4</styleUrl>
+				<styleUrl>#msn_placemark_circle1323</styleUrl>
 				<Point>
 					<extrude>1</extrude>
 					<altitudeMode>relativeToGround</altitudeMode>
 					<gx:drawOrder>1</gx:drawOrder>
-					<coordinates>-77.036569,38.89778875877805,1</coordinates>
+					<coordinates>-77.036569,38.897561,3</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>WHn</name>
+				<open>1</open>
+				<LookAt>
+					<longitude>-77.03642617075405</longitude>
+					<latitude>38.89822175349804</latitude>
+					<altitude>0</altitude>
+					<heading>178.6846402115557</heading>
+					<tilt>27.86670035911539</tilt>
+					<range>126.5830665680666</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_placemark_circle13230</styleUrl>
+				<Point>
+					<extrude>1</extrude>
+					<altitudeMode>relativeToGround</altitudeMode>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.036569,38.89787121557463,3</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>WHa</name>
+				<LookAt>
+					<longitude>-77.03651621621127</longitude>
+					<latitude>38.89865209193258</latitude>
+					<altitude>0</altitude>
+					<heading>-0.00993814937381826</heading>
+					<tilt>0</tilt>
+					<range>139.6073395455507</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_placemark_circle13232</styleUrl>
+				<Point>
+					<altitudeMode>relativeToGround</altitudeMode>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.036569,38.89828563763562,3</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>WHb</name>
+				<LookAt>
+					<longitude>-77.03654393908691</longitude>
+					<latitude>38.89607935164245</latitude>
+					<altitude>0</altitude>
+					<heading>-0.009955512547251256</heading>
+					<tilt>0</tilt>
+					<range>50.47388692784874</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_placemark_circle13233</styleUrl>
+				<Point>
+					<extrude>1</extrude>
+					<altitudeMode>relativeToGround</altitudeMode>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.03656881060775,38.89609664728791,3</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>WHc</name>
+				<LookAt>
+					<longitude>-77.03647601329695</longitude>
+					<latitude>38.89662641689497</latitude>
+					<altitude>0</altitude>
+					<heading>169.0884088847258</heading>
+					<tilt>37.60107635621034</tilt>
+					<range>118.7197241125305</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_placemark_circle13233</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.03611695727467,38.89666242649749,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>WHe</name>
+				<open>1</open>
+				<LookAt>
+					<longitude>-77.03737606385013</longitude>
+					<latitude>38.8996999855995</latitude>
+					<altitude>0</altitude>
+					<heading>-88.6907173579103</heading>
+					<tilt>0</tilt>
+					<range>148.1832284532262</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_placemark_circle13231</styleUrl>
+				<Point>
+					<altitudeMode>relativeToGround</altitudeMode>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.037723,38.9,3</coordinates>
 				</Point>
 			</Placemark>
 			<Placemark>
 				<name>WHz</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.03341716121511</longitude>
 					<latitude>38.89639964634095</latitude>
@@ -4588,40 +5021,37 @@
 					<range>297.9899913481177</range>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</LookAt>
-				<styleUrl>#msn_triangle2</styleUrl>
+				<styleUrl>#msn_placemark_circle13233</styleUrl>
 				<Point>
+					<altitudeMode>relativeToGround</altitudeMode>
 					<gx:drawOrder>1</gx:drawOrder>
-					<coordinates>-77.03431133703796,38.89597663639302,0</coordinates>
+					<coordinates>-77.03431133703796,38.89597663639302,3</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>WH SEcnr</name>
+				<open>1</open>
+				<LookAt>
+					<longitude>-77.03640127584772</longitude>
+					<latitude>38.89786370279429</latitude>
+					<altitude>0</altitude>
+					<heading>-134.3333860893028</heading>
+					<tilt>0</tilt>
+					<range>178.5470349118883</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_placemark_circle13233</styleUrl>
+				<Point>
+					<altitudeMode>relativeToGround</altitudeMode>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.03626431326734,38.89753757777559,3</coordinates>
 				</Point>
 			</Placemark>
 		</Folder>
 		<Folder>
 			<name>Capitol</name>
-			<visibility>0</visibility>
 			<Placemark>
 				<name>Cap</name>
-				<visibility>0</visibility>
-				<LookAt>
-					<longitude>-77.00880523001071</longitude>
-					<latitude>38.88990543090053</latitude>
-					<altitude>0</altitude>
-					<heading>0.007467212844387712</heading>
-					<tilt>0</tilt>
-					<range>153.6665464494</range>
-					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-				</LookAt>
-				<styleUrl>#msn_triangle2</styleUrl>
-				<Point>
-					<extrude>1</extrude>
-					<altitudeMode>relativeToGround</altitudeMode>
-					<gx:drawOrder>1</gx:drawOrder>
-					<coordinates>-77.009227,38.889801,160</coordinates>
-				</Point>
-			</Placemark>
-			<Placemark>
-				<name>CapK</name>
-				<visibility>0</visibility>
-				<open>1</open>
 				<LookAt>
 					<longitude>-77.00880523001071</longitude>
 					<latitude>38.88990543090053</latitude>
@@ -4636,12 +5066,31 @@
 					<extrude>1</extrude>
 					<altitudeMode>relativeToGround</altitudeMode>
 					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.009227,38.889801,160</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>CapK</name>
+				<open>1</open>
+				<LookAt>
+					<longitude>-77.00880523001071</longitude>
+					<latitude>38.88990543090053</latitude>
+					<altitude>0</altitude>
+					<heading>0.007467212844387712</heading>
+					<tilt>0</tilt>
+					<range>153.6665464494</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_triangle1</styleUrl>
+				<Point>
+					<extrude>1</extrude>
+					<altitudeMode>relativeToGround</altitudeMode>
+					<gx:drawOrder>1</gx:drawOrder>
 					<coordinates>-77.00904745,38.889801,79.99999999999999</coordinates>
 				</Point>
 			</Placemark>
 			<Placemark>
 				<name>CCnrA</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.00862789013513</longitude>
 					<latitude>38.88885088649439</latitude>
@@ -4659,7 +5108,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H71</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.00849024295478</longitude>
 					<latitude>38.89008409737497</latitude>
@@ -4669,7 +5117,7 @@
 					<roll>84.8079243107949</roll>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</Camera>
-				<styleUrl>#msn_triangle10</styleUrl>
+				<styleUrl>#msn_triangle100</styleUrl>
 				<Point>
 					<extrude>1</extrude>
 					<altitudeMode>relativeToGround</altitudeMode>
@@ -4679,7 +5127,6 @@
 			</Placemark>
 			<Placemark>
 				<name>CFa</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.01272180156393</longitude>
 					<latitude>38.89051425647678</latitude>
@@ -4698,7 +5145,6 @@
 			</Placemark>
 			<Placemark>
 				<name>CFb</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.01211659304602</longitude>
 					<latitude>38.88899919410375</latitude>
@@ -4717,7 +5163,6 @@
 			</Placemark>
 			<Placemark>
 				<name>CFc</name>
-				<visibility>0</visibility>
 				<open>1</open>
 				<Camera>
 					<longitude>-77.0128435898018</longitude>
@@ -4728,7 +5173,7 @@
 					<roll>82.93833762307538</roll>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</Camera>
-				<styleUrl>#msn_triangle10</styleUrl>
+				<styleUrl>#msn_triangle100</styleUrl>
 				<Point>
 					<altitudeMode>relativeToGround</altitudeMode>
 					<gx:drawOrder>1</gx:drawOrder>
@@ -4737,7 +5182,6 @@
 			</Placemark>
 			<Placemark>
 				<name>CFd</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.00566128694994</longitude>
 					<latitude>38.88867166293691</latitude>
@@ -4747,7 +5191,7 @@
 					<range>148.0044651593322</range>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</LookAt>
-				<styleUrl>#msn_triangle1</styleUrl>
+				<styleUrl>#msn_triangle10</styleUrl>
 				<Point>
 					<gx:drawOrder>1</gx:drawOrder>
 					<coordinates>-77.00578323852076,38.88868978460074,0</coordinates>
@@ -4755,7 +5199,6 @@
 			</Placemark>
 			<Placemark>
 				<name>CFe</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.01042547798329</longitude>
 					<latitude>38.88978812499263</latitude>
@@ -4774,7 +5217,6 @@
 			</Placemark>
 			<Placemark>
 				<name>CFf</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.00458065680235</longitude>
 					<latitude>38.88840956929891</latitude>
@@ -4794,7 +5236,6 @@
 			</Placemark>
 			<Placemark>
 				<name>CFg</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.0089940937104</longitude>
 					<latitude>38.89371620082243</latitude>
@@ -4804,7 +5245,7 @@
 					<roll>4.295694251411208</roll>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</Camera>
-				<styleUrl>#msn_triangle10</styleUrl>
+				<styleUrl>#msn_triangle100</styleUrl>
 				<Point>
 					<gx:drawOrder>1</gx:drawOrder>
 					<coordinates>-77.00907795602103,38.89361386946052,0</coordinates>
@@ -4812,7 +5253,6 @@
 			</Placemark>
 			<Placemark>
 				<name>CptA</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.00761689215913</longitude>
 					<latitude>38.89092706621904</latitude>
@@ -4822,7 +5262,7 @@
 					<roll>35.97319801750558</roll>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</Camera>
-				<styleUrl>#msn_triangle00</styleUrl>
+				<styleUrl>#msn_triangle01</styleUrl>
 				<Point>
 					<gx:drawOrder>1</gx:drawOrder>
 					<coordinates>-77.0072678806584,38.89077979476803,0</coordinates>
@@ -4830,7 +5270,6 @@
 			</Placemark>
 			<Placemark>
 				<name>CptB</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.01004114819862</longitude>
 					<latitude>38.88566492075516</latitude>
@@ -4840,7 +5279,7 @@
 					<roll>-45.09176574580417</roll>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</Camera>
-				<styleUrl>#msn_triangle10</styleUrl>
+				<styleUrl>#msn_triangle100</styleUrl>
 				<Point>
 					<gx:drawOrder>1</gx:drawOrder>
 					<coordinates>-77.00988737303246,38.88556174596554,0</coordinates>
@@ -4848,7 +5287,6 @@
 			</Placemark>
 			<Placemark>
 				<name>SCa</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.00493995538302</longitude>
 					<latitude>38.8903064036882</latitude>
@@ -4868,7 +5306,6 @@
 			</Placemark>
 			<Placemark>
 				<name>SCb</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.00465872944672</longitude>
 					<latitude>38.89071706834704</latitude>
@@ -4889,10 +5326,89 @@
 		</Folder>
 		<Folder>
 			<name>Q</name>
-			<visibility>0</visibility>
+			<Placemark>
+				<name>elEc</name>
+				<styleUrl>#pointStyleMap</styleUrl>
+				<ExtendedData>
+					<SchemaData schemaUrl="#S_updates_SDD">
+						<SimpleData name="LOC">eLEc</SimpleData>
+						<SimpleData name="LAT">38.8928</SimpleData>
+						<SimpleData name="LON">-77.0403</SimpleData>
+					</SchemaData>
+				</ExtendedData>
+				<Point>
+					<extrude>1</extrude>
+					<altitudeMode>relativeToGround</altitudeMode>
+					<coordinates>-77.04033404260801,38.89278681802996,15</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>elSc</name>
+				<styleUrl>#pointStyleMap</styleUrl>
+				<ExtendedData>
+					<SchemaData schemaUrl="#S_updates_SDD">
+						<SimpleData name="LOC">eLSc</SimpleData>
+						<SimpleData name="LAT">38.8928</SimpleData>
+						<SimpleData name="LON">-77.0406</SimpleData>
+					</SchemaData>
+				</ExtendedData>
+				<Point>
+					<extrude>1</extrude>
+					<altitudeMode>relativeToGround</altitudeMode>
+					<coordinates>-77.04058603,38.89284818820199,15</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>elNc</name>
+				<styleUrl>#pointStyleMap</styleUrl>
+				<ExtendedData>
+					<SchemaData schemaUrl="#S_updates_SDD">
+						<SimpleData name="LOC">eLNc</SimpleData>
+						<SimpleData name="LAT">38.8934</SimpleData>
+						<SimpleData name="LON">-77.041</SimpleData>
+					</SchemaData>
+				</ExtendedData>
+				<Point>
+					<extrude>1</extrude>
+					<altitudeMode>relativeToGround</altitudeMode>
+					<coordinates>-77.04098558,38.89344928705847,15</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>elWc</name>
+				<styleUrl>#pointStyleMap</styleUrl>
+				<ExtendedData>
+					<SchemaData schemaUrl="#S_updates_SDD">
+						<SimpleData name="LOC">elWc</SimpleData>
+						<SimpleData name="LAT">38.8932</SimpleData>
+						<SimpleData name="LON">-77.0411</SimpleData>
+					</SchemaData>
+				</ExtendedData>
+				<Point>
+					<extrude>1</extrude>
+					<altitudeMode>relativeToGround</altitudeMode>
+					<coordinates>-77.04113191993082,38.89317145702438,15</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Cavg</name>
+				<snippet></snippet>
+				<styleUrl>#pointStyleMap00</styleUrl>
+				<ExtendedData>
+					<SchemaData schemaUrl="#S_centerpnts_SDD0">
+						<SimpleData name="LOC">CWN</SimpleData>
+						<SimpleData name="LAT">38.8932</SimpleData>
+						<SimpleData name="LON">-77.041</SimpleData>
+					</SchemaData>
+				</ExtendedData>
+				<Point>
+					<extrude>1</extrude>
+					<altitudeMode>relativeToGround</altitudeMode>
+					<coordinates>-77.04077541312266,38.89307792552204,1</coordinates>
+				</Point>
+			</Placemark>
 			<Placemark>
 				<name>B</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.00849352356889</longitude>
 					<latitude>38.89347235899669</latitude>
@@ -4911,80 +5427,7 @@
 				</Point>
 			</Placemark>
 			<Placemark>
-				<name>Sc</name>
-				<visibility>0</visibility>
-				<styleUrl>#pointStyleMap2</styleUrl>
-				<ExtendedData>
-					<SchemaData schemaUrl="#S_trypoints_SDDD0">
-						<SimpleData name="LOC">Sc</SimpleData>
-						<SimpleData name="LAT">38.8927</SimpleData>
-						<SimpleData name="LON">-77.0406</SimpleData>
-						<SimpleData name="ALT">15</SimpleData>
-					</SchemaData>
-				</ExtendedData>
-				<Point>
-					<extrude>1</extrude>
-					<altitudeMode>relativeToGround</altitudeMode>
-					<coordinates>-77.04058603,38.89269952,121</coordinates>
-				</Point>
-			</Placemark>
-			<Placemark>
-				<name>Ec</name>
-				<visibility>0</visibility>
-				<styleUrl>#pointStyleMap2</styleUrl>
-				<ExtendedData>
-					<SchemaData schemaUrl="#S_trypoints_SDDD0">
-						<SimpleData name="LOC">Ec</SimpleData>
-						<SimpleData name="LAT">38.8928</SimpleData>
-						<SimpleData name="LON">-77.0407</SimpleData>
-						<SimpleData name="ALT">15</SimpleData>
-					</SchemaData>
-				</ExtendedData>
-				<Point>
-					<extrude>1</extrude>
-					<altitudeMode>relativeToGround</altitudeMode>
-					<coordinates>-77.0406797,38.89278669999997,121</coordinates>
-				</Point>
-			</Placemark>
-			<Placemark>
-				<name>Nc</name>
-				<visibility>0</visibility>
-				<styleUrl>#pointStyleMap2</styleUrl>
-				<ExtendedData>
-					<SchemaData schemaUrl="#S_trypoints_SDDD0">
-						<SimpleData name="LOC">Nc</SimpleData>
-						<SimpleData name="LAT">38.8936</SimpleData>
-						<SimpleData name="LON">-77.041</SimpleData>
-						<SimpleData name="ALT">15</SimpleData>
-					</SchemaData>
-				</ExtendedData>
-				<Point>
-					<extrude>1</extrude>
-					<altitudeMode>relativeToGround</altitudeMode>
-					<coordinates>-77.04098558,38.89359614000001,121</coordinates>
-				</Point>
-			</Placemark>
-			<Placemark>
-				<name>Wc</name>
-				<visibility>0</visibility>
-				<styleUrl>#pointStyleMap2</styleUrl>
-				<ExtendedData>
-					<SchemaData schemaUrl="#S_trypoints_SDDD0">
-						<SimpleData name="LOC">Wc</SimpleData>
-						<SimpleData name="LAT">38.8932</SimpleData>
-						<SimpleData name="LON">-77.0408</SimpleData>
-						<SimpleData name="ALT">15</SimpleData>
-					</SchemaData>
-				</ExtendedData>
-				<Point>
-					<extrude>1</extrude>
-					<altitudeMode>relativeToGround</altitudeMode>
-					<coordinates>-77.04078625,38.89317136999999,121</coordinates>
-				</Point>
-			</Placemark>
-			<Placemark>
 				<name>Sb</name>
-				<visibility>0</visibility>
 				<styleUrl>#pointStyleMap2</styleUrl>
 				<ExtendedData>
 					<SchemaData schemaUrl="#S_trypoints_SDDD0">
@@ -5002,7 +5445,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Eb</name>
-				<visibility>0</visibility>
 				<styleUrl>#pointStyleMap2</styleUrl>
 				<ExtendedData>
 					<SchemaData schemaUrl="#S_trypoints_SDDD0">
@@ -5020,7 +5462,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Nb</name>
-				<visibility>0</visibility>
 				<styleUrl>#pointStyleMap2</styleUrl>
 				<ExtendedData>
 					<SchemaData schemaUrl="#S_trypoints_SDDD0">
@@ -5038,7 +5479,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Wb</name>
-				<visibility>0</visibility>
 				<styleUrl>#pointStyleMap2</styleUrl>
 				<ExtendedData>
 					<SchemaData schemaUrl="#S_trypoints_SDDD0">
@@ -5055,64 +5495,7 @@
 				</Point>
 			</Placemark>
 			<Placemark>
-				<name>Cavg</name>
-				<visibility>0</visibility>
-				<snippet></snippet>
-				<styleUrl>#pointStyleMap00</styleUrl>
-				<ExtendedData>
-					<SchemaData schemaUrl="#S_centerpnts_SDD0">
-						<SimpleData name="LOC">CWN</SimpleData>
-						<SimpleData name="LAT">38.8932</SimpleData>
-						<SimpleData name="LON">-77.041</SimpleData>
-					</SchemaData>
-				</ExtendedData>
-				<Point>
-					<extrude>1</extrude>
-					<altitudeMode>relativeToGround</altitudeMode>
-					<coordinates>-77.04077541312266,38.89307792552204,1</coordinates>
-				</Point>
-			</Placemark>
-			<Placemark>
-				<name>L</name>
-				<visibility>0</visibility>
-				<LookAt>
-					<longitude>-77.05016576048955</longitude>
-					<latitude>38.88915819504923</latitude>
-					<altitude>82.33954900064327</altitude>
-					<heading>-96.90039993070735</heading>
-					<tilt>2.639721059917328</tilt>
-					<range>89.70089638329672</range>
-					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-				</LookAt>
-				<styleUrl>#msn_track0</styleUrl>
-				<Point>
-					<extrude>1</extrude>
-					<altitudeMode>relativeToGround</altitudeMode>
-					<gx:drawOrder>1</gx:drawOrder>
-					<coordinates>-77.05018442793092,38.88927319319802,97</coordinates>
-				</Point>
-			</Placemark>
-			<Placemark>
-				<name>La</name>
-				<visibility>0</visibility>
-				<Camera>
-					<longitude>-77.05140748618392</longitude>
-					<latitude>38.88830578072321</latitude>
-					<altitude>296.3929049289503</altitude>
-					<heading>3.103811590333725</heading>
-					<tilt>0.2705637756258746</tilt>
-					<roll>5.399406453411737</roll>
-					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-				</Camera>
-				<styleUrl>#msn_track</styleUrl>
-				<Point>
-					<gx:drawOrder>1</gx:drawOrder>
-					<coordinates>-77.05145152722608,38.88816903625909,0</coordinates>
-				</Point>
-			</Placemark>
-			<Placemark>
 				<name>Bs</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.00917392065172</longitude>
 					<latitude>38.89287893334985</latitude>
@@ -5130,13 +5513,82 @@
 					<coordinates>-77.00888999999999,38.892752,1</coordinates>
 				</Point>
 			</Placemark>
+			<Placemark>
+				<name>L</name>
+				<LookAt>
+					<longitude>-77.05034254307265</longitude>
+					<latitude>38.88914094899145</latitude>
+					<altitude>0</altitude>
+					<heading>-92.06093464414785</heading>
+					<tilt>20.19296905321517</tilt>
+					<range>297.9512281050887</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_track0</styleUrl>
+				<Point>
+					<extrude>1</extrude>
+					<altitudeMode>relativeToGround</altitudeMode>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.05018996185001,38.889309435739,97</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>La</name>
+				<Camera>
+					<longitude>-77.05140748618392</longitude>
+					<latitude>38.88830578072321</latitude>
+					<altitude>296.3929049289503</altitude>
+					<heading>3.103811590333725</heading>
+					<tilt>0.2705637756258746</tilt>
+					<roll>5.399406453411737</roll>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</Camera>
+				<styleUrl>#msn_track1</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.05145152722608,38.88816903625909,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Lz</name>
+				<open>1</open>
+				<LookAt>
+					<longitude>-77.05230754168156</longitude>
+					<latitude>38.88959075037947</latitude>
+					<altitude>0</altitude>
+					<heading>97.40406371115637</heading>
+					<tilt>0</tilt>
+					<range>244.9291093878548</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_track</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.05220920463091,38.88921687259635,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Lcnr</name>
+				<LookAt>
+					<longitude>-77.04963028273528</longitude>
+					<latitude>38.88915790290901</latitude>
+					<altitude>0</altitude>
+					<heading>-82.02634295134845</heading>
+					<tilt>57.60000698879788</tilt>
+					<range>57.62919171981434</range>
+					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+				</LookAt>
+				<styleUrl>#msn_track</styleUrl>
+				<Point>
+					<gx:drawOrder>1</gx:drawOrder>
+					<coordinates>-77.04994269848781,38.88906071490013,0</coordinates>
+				</Point>
+			</Placemark>
 		</Folder>
 		<Folder>
 			<name>CP</name>
-			<visibility>0</visibility>
 			<Placemark>
 				<name>Gs1</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.12046135763332</longitude>
 					<latitude>38.93634365827166</latitude>
@@ -5154,7 +5606,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Gs2</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.96746601681227</longitude>
 					<latitude>38.86630625016229</latitude>
@@ -5172,7 +5623,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Gs3</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.00096099808884</longitude>
 					<latitude>38.93480878395779</latitude>
@@ -5190,7 +5640,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Gs4</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.09366635428121</longitude>
 					<latitude>38.91303993937362</latitude>
@@ -5209,7 +5658,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Gs5</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.97530113335215</longitude>
 					<latitude>38.90433120417811</latitude>
@@ -5227,7 +5675,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Gs6</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.11308504176974</longitude>
 					<latitude>38.94337953103705</latitude>
@@ -5245,7 +5692,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Gs7</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.11694412297001</longitude>
 					<latitude>38.91593726511101</latitude>
@@ -5263,7 +5709,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Gs8</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.0427952788842</longitude>
 					<latitude>38.89118565895257</latitude>
@@ -5281,7 +5726,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Gs9</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.03176235010311</longitude>
 					<latitude>38.79278906251742</latitude>
@@ -5298,26 +5742,7 @@
 				</Point>
 			</Placemark>
 			<Placemark>
-				<name>I010</name>
-				<visibility>0</visibility>
-				<LookAt>
-					<longitude>-77.03651621621127</longitude>
-					<latitude>38.89865209193258</latitude>
-					<altitude>0</altitude>
-					<heading>-0.00993814937381826</heading>
-					<tilt>0</tilt>
-					<range>139.6073395455507</range>
-					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-				</LookAt>
-				<styleUrl>#msn_placemark_circle1323</styleUrl>
-				<Point>
-					<gx:drawOrder>1</gx:drawOrder>
-					<coordinates>-77.03657097283033,38.89828563763562,0</coordinates>
-				</Point>
-			</Placemark>
-			<Placemark>
 				<name>I014</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.03184836970844</longitude>
 					<latitude>38.906394377704</latitude>
@@ -5327,7 +5752,7 @@
 					<range>390.7980475662044</range>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</LookAt>
-				<styleUrl>#msn_placemark_circle1323</styleUrl>
+				<styleUrl>#msn_placemark_circle13234</styleUrl>
 				<Point>
 					<gx:drawOrder>1</gx:drawOrder>
 					<coordinates>-77.03197530601018,38.90564871624386,0</coordinates>
@@ -5335,7 +5760,6 @@
 			</Placemark>
 			<Placemark>
 				<name>I079</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.05000688327753</longitude>
 					<latitude>38.9027930813843</latitude>
@@ -5353,7 +5777,6 @@
 			</Placemark>
 			<Placemark>
 				<name>I069</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.00660788277574</longitude>
 					<latitude>38.8964374667835</latitude>
@@ -5371,7 +5794,6 @@
 			</Placemark>
 			<Placemark>
 				<name>KS</name>
-				<visibility>0</visibility>
 				<styleUrl>#msn_star0</styleUrl>
 				<ExtendedData>
 					<SchemaData schemaUrl="#S_vertices_SDD0">
@@ -5388,7 +5810,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk01</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.00316628917777</longitude>
 					<latitude>38.80499373772418</latitude>
@@ -5407,7 +5828,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk02</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-76.98035976192544</longitude>
 					<latitude>38.83603814150242</latitude>
@@ -5426,7 +5846,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk03</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.03656021799813</longitude>
 					<latitude>38.80038402231648</latitude>
@@ -5445,7 +5864,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk04</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.9963935152293</longitude>
 					<latitude>38.93747853860295</latitude>
@@ -5464,7 +5882,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk05</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.0107625914643</longitude>
 					<latitude>38.9419437798145</latitude>
@@ -5483,7 +5900,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk06</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.95932634155616</longitude>
 					<latitude>38.92596145503213</latitude>
@@ -5493,7 +5909,7 @@
 					<range>254.8978639676916</range>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</LookAt>
-				<styleUrl>#msn_shaded_dot4</styleUrl>
+				<styleUrl>#msn_shaded_dot40</styleUrl>
 				<Point>
 					<extrude>1</extrude>
 					<gx:drawOrder>1</gx:drawOrder>
@@ -5502,7 +5918,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk08</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.07823204717197</longitude>
 					<latitude>38.85833740497007</latitude>
@@ -5521,7 +5936,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk09</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.08936885361041</longitude>
 					<latitude>38.92174671864755</latitude>
@@ -5540,7 +5954,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk10</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.958791679665</longitude>
 					<latitude>38.8604708091387</latitude>
@@ -5558,7 +5971,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk23a</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.9756129672292</longitude>
 					<latitude>38.90879981207846</latitude>
@@ -5577,7 +5989,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk23b</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.97379382826549</longitude>
 					<latitude>38.90996037798163</latitude>
@@ -5596,7 +6007,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk23c</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.97232538549454</longitude>
 					<latitude>38.90971835087055</latitude>
@@ -5615,7 +6025,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk11</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.13518426561917</longitude>
 					<latitude>38.89492887345666</latitude>
@@ -5634,7 +6043,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk12</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.94288388096963</longitude>
 					<latitude>38.88872450457901</latitude>
@@ -5653,7 +6061,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk13</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.03409487841178</longitude>
 					<latitude>38.97814116425268</latitude>
@@ -5672,7 +6079,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk14</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.03555267426799</longitude>
 					<latitude>38.92073357248053</latitude>
@@ -5690,7 +6096,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk15</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.04134441048302</longitude>
 					<latitude>38.93597369669546</latitude>
@@ -5708,7 +6113,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk16</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.02620372784799</longitude>
 					<latitude>38.96028089136477</latitude>
@@ -5727,7 +6131,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk17</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.01161168290476</longitude>
 					<latitude>38.95994438021409</latitude>
@@ -5746,7 +6149,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk18</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.9773469432769</longitude>
 					<latitude>38.93491302641448</latitude>
@@ -5765,7 +6167,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk19</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.04623718108624</longitude>
 					<latitude>38.98917896631466</latitude>
@@ -5784,7 +6185,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk20</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.00111253956906</longitude>
 					<latitude>38.82260437012281</latitude>
@@ -5803,7 +6203,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk21</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.9402513476077</longitude>
 					<latitude>38.87276503844644</latitude>
@@ -5822,7 +6221,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk22</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.07614950080625</longitude>
 					<latitude>38.93627800198553</latitude>
@@ -5841,7 +6239,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chj24</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.06919269836632</longitude>
 					<latitude>38.97141668635098</latitude>
@@ -5860,7 +6257,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk25</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.0357434076776</longitude>
 					<latitude>38.92125487474832</latitude>
@@ -5879,7 +6275,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk26</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-76.91683729777472</longitude>
 					<latitude>38.88692262478069</latitude>
@@ -5898,7 +6293,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk27</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.07249206017678</longitude>
 					<latitude>38.97140312932499</latitude>
@@ -5917,7 +6311,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk28</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.07764062386367</longitude>
 					<latitude>38.95416596547847</latitude>
@@ -5935,7 +6328,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk30</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.14394880660899</longitude>
 					<latitude>38.87128844200102</latitude>
@@ -5953,7 +6345,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk31</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.10370993227478</longitude>
 					<latitude>38.84579579276893</latitude>
@@ -5971,7 +6362,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk32</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.05186147570168</longitude>
 					<latitude>38.95830727578173</latitude>
@@ -5989,7 +6379,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk34</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.01894335789903</longitude>
 					<latitude>38.93658969833891</latitude>
@@ -6007,7 +6396,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk35</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.05078266486171</longitude>
 					<latitude>38.89399847534244</latitude>
@@ -6026,7 +6414,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk36</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.99351803058303</longitude>
 					<latitude>38.91161601637247</latitude>
@@ -6044,7 +6431,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk37</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.12620916495935</longitude>
 					<latitude>38.93503112014248</latitude>
@@ -6062,7 +6448,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk38</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.01031170328987</longitude>
 					<latitude>38.86043390847013</latitude>
@@ -6080,7 +6465,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk39</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.91221815122178</longitude>
 					<latitude>38.89786661130552</latitude>
@@ -6098,7 +6482,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk40</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.89903494275993</longitude>
 					<latitude>38.89220701665841</latitude>
@@ -6116,7 +6499,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk41</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.9577059353052</longitude>
 					<latitude>38.91253063611014</latitude>
@@ -6134,7 +6516,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk42</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.07197282739573</longitude>
 					<latitude>38.9295212229209</latitude>
@@ -6152,7 +6533,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk43</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.01883426995731</longitude>
 					<latitude>38.94295599983353</latitude>
@@ -6170,7 +6550,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk44</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.04306648888495</longitude>
 					<latitude>38.90917834822989</latitude>
@@ -6188,7 +6567,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk45</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.02193262478927</longitude>
 					<latitude>38.947542257579</latitude>
@@ -6206,7 +6584,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk46</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.07410628491749</longitude>
 					<latitude>38.87665929004182</latitude>
@@ -6224,7 +6601,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk47</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.00541102114673</longitude>
 					<latitude>38.94832347001736</latitude>
@@ -6242,7 +6618,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk48</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.03716625953145</longitude>
 					<latitude>38.90729003348549</latitude>
@@ -6260,7 +6635,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk49</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.03112891336114</longitude>
 					<latitude>38.91059840622664</latitude>
@@ -6278,7 +6652,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk50</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.07940474852961</longitude>
 					<latitude>38.88480193576787</latitude>
@@ -6296,7 +6669,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk51</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-76.99025002232317</longitude>
 					<latitude>38.88977128208924</latitude>
@@ -6314,7 +6686,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk52</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-76.99940103492473</longitude>
 					<latitude>38.89309416868529</latitude>
@@ -6332,7 +6703,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk53</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.00936059070111</longitude>
 					<latitude>38.87120856199505</latitude>
@@ -6350,7 +6720,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk54</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.04366512306242</longitude>
 					<latitude>38.68915034774525</latitude>
@@ -6368,7 +6737,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk55</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.03420557696289</longitude>
 					<latitude>38.71058967484698</latitude>
@@ -6386,7 +6754,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk57</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.06541789023898</longitude>
 					<latitude>38.83304255757004</latitude>
@@ -6404,7 +6771,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk58</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.05973443435811</longitude>
 					<latitude>38.84729223503633</latitude>
@@ -6422,7 +6788,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk59</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.0414643894528</longitude>
 					<latitude>39.00870486443663</latitude>
@@ -6440,7 +6805,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk60</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.03759535280709</longitude>
 					<latitude>39.00551378632318</latitude>
@@ -6458,7 +6822,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk61</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.02288479282552</longitude>
 					<latitude>38.90339960231267</latitude>
@@ -6476,7 +6839,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk62</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.02056984958334</longitude>
 					<latitude>38.90480602846644</latitude>
@@ -6494,7 +6856,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Chk63</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.03653714488557</longitude>
 					<latitude>38.90001631282068</latitude>
@@ -6513,10 +6874,8 @@
 		</Folder>
 		<Folder>
 			<name>River</name>
-			<visibility>0</visibility>
 			<Placemark>
 				<name>PO</name>
-				<visibility>0</visibility>
 				<styleUrl>#msn_placemark_circle030</styleUrl>
 				<ExtendedData>
 					<SchemaData schemaUrl="#S_trypoints_SDDD0">
@@ -6534,7 +6893,6 @@
 			</Placemark>
 			<Placemark>
 				<name>AN</name>
-				<visibility>0</visibility>
 				<styleUrl>#msn_placemark_circle030</styleUrl>
 				<ExtendedData>
 					<SchemaData schemaUrl="#S_trypoints_SDDD0">
@@ -6552,7 +6910,6 @@
 			</Placemark>
 			<Placemark>
 				<name>RC</name>
-				<visibility>0</visibility>
 				<styleUrl>#msn_placemark_circle030</styleUrl>
 				<ExtendedData>
 					<SchemaData schemaUrl="#S_trypoints_SDDD0">
@@ -6570,7 +6927,6 @@
 			</Placemark>
 			<Placemark>
 				<name>RCrkA</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.05769375280151</longitude>
 					<latitude>38.90002752579751</latitude>
@@ -6589,7 +6945,6 @@
 			</Placemark>
 			<Placemark>
 				<name>RCrkB</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.05926395936925</longitude>
 					<latitude>38.90101019653491</latitude>
@@ -6608,7 +6963,6 @@
 			</Placemark>
 			<Placemark>
 				<name>POOthr2a</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.04273337017663</longitude>
 					<latitude>38.86362931723426</latitude>
@@ -6626,7 +6980,6 @@
 			</Placemark>
 			<Placemark>
 				<name>POOthr2c</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.08165216993532</longitude>
 					<latitude>38.9042481057935</latitude>
@@ -6644,7 +6997,6 @@
 			</Placemark>
 			<Placemark>
 				<name>AnOthr02</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.95747668374891</longitude>
 					<latitude>38.90595317639433</latitude>
@@ -6662,7 +7014,6 @@
 			</Placemark>
 			<Placemark>
 				<name>AnOthr01</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-76.99450657323079</longitude>
 					<latitude>38.86894437096073</latitude>
@@ -6680,7 +7031,6 @@
 			</Placemark>
 			<Placemark>
 				<name>POOthr3b</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.03988891623662</longitude>
 					<latitude>38.7914162568449</latitude>
@@ -6698,7 +7048,6 @@
 			</Placemark>
 			<Placemark>
 				<name>POOthr3a</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.04186194065976</longitude>
 					<latitude>38.78579121475085</latitude>
@@ -6716,7 +7065,6 @@
 			</Placemark>
 			<Placemark>
 				<name>RCOthr3a</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.03790278741488</longitude>
 					<latitude>38.99204639882231</latitude>
@@ -6734,7 +7082,6 @@
 			</Placemark>
 			<Placemark>
 				<name>OtrA</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.9514272785004</longitude>
 					<latitude>38.92652195225016</latitude>
@@ -6752,7 +7099,6 @@
 			</Placemark>
 			<Placemark>
 				<name>OtrB</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.99107561777619</longitude>
 					<latitude>38.95665179617447</latitude>
@@ -6770,7 +7116,6 @@
 			</Placemark>
 			<Placemark>
 				<name>OtrC</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.98215609490362</longitude>
 					<latitude>38.95460188862663</latitude>
@@ -6788,7 +7133,6 @@
 			</Placemark>
 			<Placemark>
 				<name>OtrD</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.91415114493701</longitude>
 					<latitude>38.89009411047826</latitude>
@@ -6806,7 +7150,6 @@
 			</Placemark>
 			<Placemark>
 				<name>RK</name>
-				<visibility>0</visibility>
 				<styleUrl>#msn_placemark_circle030</styleUrl>
 				<ExtendedData>
 					<SchemaData schemaUrl="#S_trypoints_SDDD0">
@@ -6825,10 +7168,8 @@
 		</Folder>
 		<Folder>
 			<name>Hills</name>
-			<visibility>0</visibility>
 			<Placemark>
 				<name>H11</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.00443838855342</longitude>
 					<latitude>38.91469988398221</latitude>
@@ -6848,7 +7189,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H22</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.06002158725704</longitude>
 					<latitude>38.92836988001681</latitude>
@@ -6868,7 +7208,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H33</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.11303539008838</longitude>
 					<latitude>38.92065428536915</latitude>
@@ -6888,27 +7227,25 @@
 			</Placemark>
 			<Placemark>
 				<name>H44</name>
-				<visibility>0</visibility>
 				<LookAt>
-					<longitude>-77.11431129672067</longitude>
-					<latitude>38.90268351679772</latitude>
+					<longitude>-77.11163528397542</longitude>
+					<latitude>38.90261493395718</latitude>
 					<altitude>0</altitude>
-					<heading>-76.90180974958542</heading>
-					<tilt>50.91671061573109</tilt>
-					<range>749.3049725608621</range>
+					<heading>-64.40520102686101</heading>
+					<tilt>9.734116671518553</tilt>
+					<range>730.1470728372173</range>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</LookAt>
-				<styleUrl>#msn_shaded_dot170</styleUrl>
+				<styleUrl>#msn_shaded_dot4</styleUrl>
 				<Point>
 					<extrude>1</extrude>
 					<altitudeMode>relativeToGround</altitudeMode>
 					<gx:drawOrder>1</gx:drawOrder>
-					<coordinates>-77.1123682030325,38.90301800526387,66</coordinates>
+					<coordinates>-77.11259304457337,38.90361498656535,66</coordinates>
 				</Point>
 			</Placemark>
 			<Placemark>
 				<name>H66</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.10101368579197</longitude>
 					<latitude>38.90516878875509</latitude>
@@ -6928,7 +7265,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H77</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.03776173775044</longitude>
 					<latitude>38.89772181369853</latitude>
@@ -6948,7 +7284,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H88</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.00536040864864</longitude>
 					<latitude>38.84961112265357</latitude>
@@ -6968,7 +7303,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H99</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.00132655753045</longitude>
 					<latitude>38.88900516216471</latitude>
@@ -6986,7 +7320,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H67</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.08922930421467</longitude>
 					<latitude>38.91550877252504</latitude>
@@ -7006,7 +7339,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H69</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.0722267041271</longitude>
 					<latitude>38.87685920939965</latitude>
@@ -7026,7 +7358,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H70</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.0715408469804</longitude>
 					<latitude>38.87440682362214</latitude>
@@ -7046,7 +7377,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H70a</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.06760781756806</longitude>
 					<latitude>38.87134974999706</latitude>
@@ -7066,7 +7396,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H70b</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.97879868284055</longitude>
 					<latitude>38.91011916480099</latitude>
@@ -7084,7 +7413,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H81</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.93117767937731</longitude>
 					<latitude>38.88611940091499</latitude>
@@ -7104,7 +7432,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H86</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.99537065299157</longitude>
 					<latitude>38.81048044830791</latitude>
@@ -7124,7 +7451,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H98</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.03895402833915</longitude>
 					<latitude>38.94510346047178</latitude>
@@ -7142,7 +7468,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H12</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.94901527183805</longitude>
 					<latitude>38.91974253235791</latitude>
@@ -7162,7 +7487,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H13</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.0138444551025</longitude>
 					<latitude>38.94580609608838</latitude>
@@ -7182,7 +7506,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H17</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.07264043592437</longitude>
 					<latitude>38.88128186846717</latitude>
@@ -7202,7 +7525,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H19</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.07783443540235</longitude>
 					<latitude>38.91542369389239</latitude>
@@ -7222,7 +7544,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H20</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.07785118538045</longitude>
 					<latitude>38.92276840510066</latitude>
@@ -7242,7 +7563,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H23</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.08920120856462</longitude>
 					<latitude>38.93857654104651</latitude>
@@ -7262,7 +7582,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H24</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.07048860486185</longitude>
 					<latitude>38.91778244638378</latitude>
@@ -7282,7 +7601,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H27</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.17340349949269</longitude>
 					<latitude>38.83108604250701</latitude>
@@ -7302,7 +7620,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H28</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.12841022382926</longitude>
 					<latitude>38.90524629315901</latitude>
@@ -7322,7 +7639,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H29</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.11981024498378</longitude>
 					<latitude>38.90993704714922</latitude>
@@ -7342,7 +7658,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H31</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.09334074885723</longitude>
 					<latitude>38.93230216205691</latitude>
@@ -7362,7 +7677,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H32</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.08979428833879</longitude>
 					<latitude>38.92421103162577</latitude>
@@ -7382,7 +7696,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H35</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.07951017096735</longitude>
 					<latitude>38.91989831461733</latitude>
@@ -7402,7 +7715,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H37</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.11243758461468</longitude>
 					<latitude>38.89646419747441</latitude>
@@ -7422,7 +7734,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H38</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.30487532716441</longitude>
 					<latitude>38.91970451839327</latitude>
@@ -7442,7 +7753,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H39</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.24216870540344</longitude>
 					<latitude>38.91902494314627</latitude>
@@ -7462,7 +7772,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H40</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.15884238905845</longitude>
 					<latitude>38.90123631127758</latitude>
@@ -7482,7 +7791,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H42</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.01402221381707</longitude>
 					<latitude>38.82698403658401</latitude>
@@ -7502,7 +7810,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H43</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.14665108452705</longitude>
 					<latitude>38.87385327472731</latitude>
@@ -7522,7 +7829,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H47</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.01003553293992</longitude>
 					<latitude>38.93977523498958</latitude>
@@ -7542,7 +7848,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H50</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.05315826257365</longitude>
 					<latitude>38.96188173273116</latitude>
@@ -7562,7 +7867,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H51</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.0496506342492</longitude>
 					<latitude>38.91416305416067</latitude>
@@ -7582,7 +7886,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H52</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.07434758853383</longitude>
 					<latitude>38.92344188012275</latitude>
@@ -7602,7 +7905,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H56</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.06101334404653</longitude>
 					<latitude>38.91725085307708</latitude>
@@ -7622,7 +7924,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H60</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.91721517859401</longitude>
 					<latitude>38.93151974977108</latitude>
@@ -7642,7 +7943,6 @@
 			</Placemark>
 			<Placemark>
 				<name>H65</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.00743646351081</longitude>
 					<latitude>38.9193344128334</latitude>
@@ -7663,10 +7963,8 @@
 		</Folder>
 		<Folder>
 			<name>SF</name>
-			<visibility>0</visibility>
 			<Placemark>
 				<name>SF01</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.08567069460436</longitude>
 					<latitude>38.90121488106971</latitude>
@@ -7686,7 +7984,6 @@
 			</Placemark>
 			<Placemark>
 				<name>SF02</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.08965668907953</longitude>
 					<latitude>38.90110391299371</latitude>
@@ -7705,7 +8002,6 @@
 			</Placemark>
 			<Placemark>
 				<name>SF03</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-76.97219813398505</longitude>
 					<latitude>38.77240183678239</latitude>
@@ -7724,7 +8020,6 @@
 			</Placemark>
 			<Placemark>
 				<name>SF04</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.07065728203321</longitude>
 					<latitude>38.89992779584695</latitude>
@@ -7743,7 +8038,6 @@
 			</Placemark>
 			<Placemark>
 				<name>SF06</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.16356550007625</longitude>
 					<latitude>38.98873090557481</latitude>
@@ -7763,10 +8057,8 @@
 		</Folder>
 		<Folder>
 			<name>Pk and Ntch</name>
-			<visibility>0</visibility>
 			<Placemark>
 				<name>Pk01</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-77.39333503948106</longitude>
 					<latitude>39.26207623289473</latitude>
@@ -7786,7 +8078,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Pk02</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.63086221763153</longitude>
 					<latitude>39.45007822153502</latitude>
@@ -7806,7 +8097,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Pk03</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-77.69885822895013</longitude>
 					<latitude>38.89970053134407</latitude>
@@ -7826,7 +8116,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Pk04</name>
-				<visibility>0</visibility>
 				<LookAt>
 					<longitude>-78.203473804109</longitude>
 					<latitude>38.77428935806212</latitude>
@@ -7846,7 +8135,6 @@
 			</Placemark>
 			<Placemark>
 				<name>Pk05</name>
-				<visibility>0</visibility>
 				<Camera>
 					<longitude>-78.31007086938355</longitude>
 					<latitude>38.92576009623964</latitude>

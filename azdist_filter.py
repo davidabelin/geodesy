@@ -52,7 +52,7 @@ PHI = (1 + 5 ** 0.5) / 2
 PI = math.pi
 SQRT2 = math.sqrt(2)
 SQRT3 = math.sqrt(3) 
-TOL = 0.001 # Default tolerance, used in various places
+TOL = 0.0001 # Default tolerance, used in various places
 
 # === KML Parsing (from dot_connecter.py) ===
 def load_points_from_kml(path: str) -> Dict[str, Tuple[float, float]]:
@@ -187,7 +187,9 @@ def filter_pairs(
     if df.empty:
         return df.copy()
 
-    reasons_df = pd.DataFrame(index=df.index)
+    # Dictionary to hold Series for each potential reason column
+    # Each Series will have the same index as df, with reason strings or NaN
+    reason_columns_data = {}
     keep_mask = pd.Series(False, index=df.index)
 
     # Determine which fields to test based on --az-only and --dist-only flags
@@ -199,15 +201,15 @@ def filter_pairs(
         for t in az_targets:
             mask12 = (df['Az12'] - t).abs() <= az_tol
             mask21 = (df['Az21'] - t).abs() <= az_tol
-            reasons_df.loc[mask12, f'az12_tgt_{t}'] = f"Az12 target:{t:.2f}"
-            reasons_df.loc[mask21, f'az21_tgt_{t}'] = f"Az21 target:{t:.2f}"
+            reason_columns_data[f'az12_tgt_{t}'] = pd.Series(f"Az12 target:{t:.2f}", index=df.index).where(mask12)
+            reason_columns_data[f'az21_tgt_{t}'] = pd.Series(f"Az21 target:{t:.2f}", index=df.index).where(mask21)
             keep_mask |= mask12 | mask21
 
     # Distance close to a special value?
     if test_dist and dist_targets:
         for t in dist_targets:
             mask = (df['Dist'] - t).abs() <= dist_tol
-            reasons_df.loc[mask, f'dist_tgt_{t}'] = f"Dist target:{t:.4f}"
+            reason_columns_data[f'dist_tgt_{t}'] = pd.Series(f"Dist target:{t:.4f}", index=df.index).where(mask)
             keep_mask |= mask
 
     # Azimuth is a multiple of some special value?
@@ -215,22 +217,22 @@ def filter_pairs(
         for m in az_multiples:
             mask12 = vectorized_is_multiple(df['Az12'], m, az_tol)
             mask21 = vectorized_is_multiple(df['Az21'], m, az_tol)
-            reasons_df.loc[mask12, f'az12_mult_{m}'] = f"Az12 multiple:{m:.2f}"
-            reasons_df.loc[mask21, f'az21_mult_{m}'] = f"Az21 multiple:{m:.2f}"
+            reason_columns_data[f'az12_mult_{m}'] = pd.Series(f"Az12 multiple:{m:.2f}", index=df.index).where(mask12)
+            reason_columns_data[f'az21_mult_{m}'] = pd.Series(f"Az21 multiple:{m:.2f}", index=df.index).where(mask21)
             keep_mask |= mask12 | mask21
 
     # Distance is a multiple of some special value?
     if test_dist and dist_multiples:
         for m in dist_multiples:
             mask = vectorized_is_multiple(df['Dist'], m, dist_tol)
-            reasons_df.loc[mask, f'dist_mult_{m}'] = f"Dist multiple:{m:.4f}"
+            reason_columns_data[f'dist_mult_{m}'] = pd.Series(f"Dist multiple:{m:.4f}", index=df.index).where(mask)
             keep_mask |= mask
 
     # Distance is a factor of some special value? (Should only run if dist is being tested)
     if test_dist and factor_targets:
         for tgt in factor_targets:
             mask = vectorized_is_factor(df['Dist'], tgt, factor_tol)
-            reasons_df.loc[mask, f'dist_factor_{tgt}'] = f"Dist factor of:{tgt:.4f}"
+            reason_columns_data[f'dist_factor_{tgt}'] = pd.Series(f"Dist factor of:{tgt:.4f}", index=df.index).where(mask)
             keep_mask |= mask
 
     # Halves, wholes filters
@@ -238,30 +240,33 @@ def filter_pairs(
         if test_az:
             mask12 = mask_half(df['Az12'], az_tol)
             mask21 = mask_half(df['Az21'], az_tol)
-            reasons_df.loc[mask12, 'az12_half'] = "Az12 Half"
-            reasons_df.loc[mask21, 'az21_half'] = "Az21 Half"
+            reason_columns_data['az12_half'] = pd.Series("Az12 Half", index=df.index).where(mask12)
+            reason_columns_data['az21_half'] = pd.Series("Az21 Half", index=df.index).where(mask21)
             keep_mask |= mask12 | mask21
         if test_dist:
             mask = mask_half(df['Dist'], dist_tol)
-            reasons_df.loc[mask, 'dist_half'] = "Dist Half"
+            reason_columns_data['dist_half'] = pd.Series("Dist Half", index=df.index).where(mask)
             keep_mask |= mask
     if whole:
         if test_az:
             mask12 = mask_whole(df['Az12'], az_tol)
             mask21 = mask_whole(df['Az21'], az_tol)
-            reasons_df.loc[mask12, 'az12_whole'] = "Az12 Whole"
-            reasons_df.loc[mask21, 'az21_whole'] = "Az21 Whole"
+            reason_columns_data['az12_whole'] = pd.Series("Az12 Whole", index=df.index).where(mask12)
+            reason_columns_data['az21_whole'] = pd.Series("Az21 Whole", index=df.index).where(mask21)
             keep_mask |= mask12 | mask21
         if test_dist:
             mask = mask_whole(df['Dist'], dist_tol)
-            reasons_df.loc[mask, 'dist_whole'] = "Dist Whole"
+            reason_columns_data['dist_whole'] = pd.Series("Dist Whole", index=df.index).where(mask)
             keep_mask |= mask
 
     # User-supplied custom functions (advanced usage)
     for i, func in enumerate(custom_funcs):
         mask = df.apply(func, axis=1)
-        reasons_df.loc[mask, f'custom_{i}'] = "Custom"
+        reason_columns_data[f'custom_{i}'] = pd.Series("Custom", index=df.index).where(mask)
         keep_mask |= mask
+
+    # Create the reasons_df from the collected data in one go
+    reasons_df = pd.DataFrame(reason_columns_data, index=df.index)
 
     filtered_df = df[keep_mask].copy()
     
@@ -353,41 +358,6 @@ def draw_lines(
     reason_to_color = load_reason_map(reason_color_map_path)
     kml_folders = {} # To store folder objects: {folder_name: kml_folder}
 
-    def get_folder_name_for_reasons(normalized_reasons_set: frozenset) -> str:
-        """Determines the KML folder name based on a set of normalized reasons."""
-        # Special case for Az 15 & 18 multiples
-        has_az_15 = "Az multiple:15.00" in normalized_reasons_set
-        has_az_18 = "Az multiple:18.00" in normalized_reasons_set
-        if has_az_15 and has_az_18:
-            return "Az Multiples (15 & 18)"
-
-        if not normalized_reasons_set:
-            return "Uncategorized"
-
-        # Group by the first reason in the sorted list for consistent behavior
-        first_reason = sorted(list(normalized_reasons_set))[0]
-
-        if first_reason.startswith("Az target:"):
-            return "Az Targets"
-        if first_reason == "Az multiple:15.00":
-            return "Az Multiples (15)"
-        if first_reason == "Az multiple:18.00":
-            return "Az Multiples (18)"
-        if first_reason.startswith("Dist target:"):
-            return "Dist Targets"
-        if first_reason.startswith("Dist multiple:"):
-            return "Dist Multiples"
-        if first_reason.startswith("Dist factor of:"):
-            return "Dist Factors"
-        if first_reason.startswith("Az multiple:"):
-            return "Az Multiples (Other)"
-        if first_reason.endswith(" Half"):
-            return "Half Value Matches"
-        if first_reason.endswith(" Whole"):
-            return "Whole Value Matches"
-        
-        return "Miscellaneous"
-
     for rec in pair_records:
         p1_name = rec['P1']
         p2_name = rec['P2']
@@ -397,12 +367,12 @@ def draw_lines(
         raw_reasons_set = frozenset(r.strip() for r in reason_string.split(',') if r.strip())
         normalized_reasons_set = frozenset(normalize_reason(r) for r in raw_reasons_set)
 
-        # Use normalized set for color lookup and folder determination
+        # Use normalized set for color lookup. Grouping is now by P1.
         color = reason_to_color.get(normalized_reasons_set, 'FFAAAAFF')
         width = 2.5 if len(raw_reasons_set) > 1 else 1.5
 
-        # Determine folder and create if it doesn't exist
-        folder_name = get_folder_name_for_reasons(normalized_reasons_set)
+        # Determine folder based on P1 and create if it doesn't exist
+        folder_name = p1_name
         if folder_name not in kml_folders:
             kml_folders[folder_name] = kml.newfolder(name=folder_name)
         
@@ -567,7 +537,7 @@ def main():
             return
 
         # Sort records for potentially more organized KML output
-        pair_records_for_kml.sort(key=lambda x: x.get('Reason', ''))
+        pair_records_for_kml.sort(key=lambda x: (x.get('P1', ''), x.get('P2', '')))
         draw_lines(pair_records_for_kml, points_data, args.output_kml, ellipsoid_calc_used=not args.spherical, reason_color_map_path=color_map_path)
     else:
         if filters_active:

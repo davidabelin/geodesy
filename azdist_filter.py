@@ -1,5 +1,5 @@
 """
-azdist_filter.py v6.0
+azdist_filter.py v6.2
 
 - --half, --whole apply to both Az and Dist unless --az-only or --dist-only specified.
 - 'Reason' column shows which criteria/field was matched.
@@ -423,7 +423,8 @@ def draw_lines(
     kml.save(out_path)
     print(f"Wrote KML with {len(pair_records)} lines to {out_path}.")
     
-def main():
+def parse_arguments():
+    """Parses command-line arguments for the script."""
     parser = argparse.ArgumentParser(description="Filter azimuth/distance pairs by modular criteria.")
     parser.add_argument("input_kml", help="Input KML file with placemarks")
     parser.add_argument("output_kml", help="Output KML file with lines for filtered pairs")
@@ -443,92 +444,76 @@ def main():
     parser.add_argument("--factor-tol", type=float, default=TOL, help="Tolerance for --factor-targets checks [default: 0.001]")
     parser.add_argument("--factor-targets", nargs='*', type=float, default=None, help="Distance is a factor of each TARGET (within tolerance)")
     parser.add_argument('--spherical', action='store_true', help='Use spherical (not ellipsoidal) calculations for Az/Dist')
-    args = parser.parse_args()
+    return parser.parse_args()
 
-    def to_float_list(seq): # Helper function, can be kept local to main or moved
-        if seq is None:
-            return []
-        out = []
-        for x in seq:
-            try:
-                if x is not None and str(x).strip() != '':
-                    out.append(float(x))
-            except ValueError: # Catch if conversion to float fails
-                print(f"Warning: Could not convert '{x}' to float. Skipping this target/multiple.")
-                continue
-        return out
+def to_float_list(seq):
+    """Safely converts a sequence of strings to a list of floats."""
+    if seq is None:
+        return []
+    out = []
+    for x in seq:
+        try:
+            if x is not None and str(x).strip() != '':
+                out.append(float(x))
+        except ValueError:
+            print(f"Warning: Could not convert '{x}' to float. Skipping this target/multiple.")
+            continue
+    return out
 
-    # Parse filter arguments early to determine if any are active
+def load_and_prepare_data(args):
+    """Loads KML points and generates the initial DataFrame of all point pairs."""
+    points_data = load_points_from_kml(args.input_kml)
+    all_pairs_df = generate_all_pairs_dataframe(points_data, ellipsoid=not args.spherical)
+    return points_data, all_pairs_df
+
+def apply_filters(args, all_pairs_df):
+    """Applies all specified filters to the DataFrame."""
     parsed_az_targets = to_float_list(args.az_targets)
     parsed_dist_targets = to_float_list(args.dist_targets)
     parsed_az_multiples = to_float_list(args.az_multiples)
     parsed_dist_multiples = to_float_list(args.dist_multiples)
     parsed_factor_targets = to_float_list(args.factor_targets)
 
-    points_data = load_points_from_kml(args.input_kml)
-    all_pairs_df = generate_all_pairs_dataframe(points_data, ellipsoid=not args.spherical)
-
     filters_active = (
-        bool(parsed_az_targets) or
-        bool(parsed_dist_targets) or
-        bool(parsed_az_multiples) or
-        bool(parsed_dist_multiples) or
-        bool(parsed_factor_targets) or
-        args.half or
-        args.whole
+        bool(parsed_az_targets) or bool(parsed_dist_targets) or
+        bool(parsed_az_multiples) or bool(parsed_dist_multiples) or
+        bool(parsed_factor_targets) or args.half or args.whole
     )
 
     if not filters_active:
-        # No filters specified by the user, use all generated pairs
         processed_df = all_pairs_df.copy()
-        # Add a 'Reason' column if df is not empty
         if not processed_df.empty:
             processed_df['Reason'] = "All Pairs (No Filters)"
-        elif 'Reason' not in processed_df.columns: # Ensure Reason column exists even for empty df
+        elif 'Reason' not in processed_df.columns:
             processed_df['Reason'] = pd.Series(dtype='str')
         print(f"No filters specified. Processing all {len(processed_df)} pairs.")
     else:
-        # Filters are active, apply them
         processed_df = filter_pairs(
-                        all_pairs_df,
-                        az_targets=parsed_az_targets,
-                        az_tol=args.az_tol,
-                        dist_targets=parsed_dist_targets,
-                        dist_tol=args.dist_tol,
-                        az_multiples=parsed_az_multiples,
-                        dist_multiples=parsed_dist_multiples,
-                        factor_targets=parsed_factor_targets,
-                        factor_tol=args.factor_tol,
-                        half=args.half,
-                        whole=args.whole,
-                        az_only=args.az_only,
-                        dist_only=args.dist_only
+            all_pairs_df,
+            az_targets=parsed_az_targets, az_tol=args.az_tol,
+            dist_targets=parsed_dist_targets, dist_tol=args.dist_tol,
+            az_multiples=parsed_az_multiples, dist_multiples=parsed_dist_multiples,
+            factor_targets=parsed_factor_targets, factor_tol=args.factor_tol,
+            half=args.half, whole=args.whole,
+            az_only=args.az_only, dist_only=args.dist_only
         )
         print(f"Selected {len(processed_df)} out of {len(all_pairs_df)} total calculated pairs.")
+    return processed_df, filters_active
 
+def handle_output(args, processed_df, points_data, ellipsoid_calc_used, filters_active):
+    """Manages all file outputs (CSV, KML, color map)."""
     if args.out:
         processed_df.to_csv(args.out, index=False)
         print(f"Pair data written to {args.out}")
-    else:
-        # Print to console if no CSV output, but maybe just a summary if KML is the main output
-        if not processed_df.empty:
-            print("Filtered pairs (first 5 rows):")
-            print(processed_df.head())
-        elif filters_active: # Only print "No pairs matched" if filters were actually active
-            print("No pairs matched the filter criteria.")
-        # If not filters_active and processed_df is empty, "Processing all 0 pairs" is already printed.
 
-    # Generate KML output with lines
     if not processed_df.empty:
-        # Convert filtered DataFrame rows to a list of dictionaries
         pair_records_for_kml = processed_df.to_dict(orient='records')
 
-        # New explicit workflow for color map
         if args.export_color_map:
             print(f"Exporting color map to '{args.export_color_map}'...")
             export_reason_map_csv(pair_records_for_kml, args.export_color_map)
             print(f"Edit this file, then rerun using the --color-map flag to generate the KML.")
-            return # Exit after exporting
+            return
 
         color_map_path = args.color_map
         if not os.path.exists(color_map_path):
@@ -536,14 +521,20 @@ def main():
             print(f"Please run the script with --export-color-map <filename.csv> first to generate it.")
             return
 
-        # Sort records for potentially more organized KML output
         pair_records_for_kml.sort(key=lambda x: (x.get('P1', ''), x.get('P2', '')))
-        draw_lines(pair_records_for_kml, points_data, args.output_kml, ellipsoid_calc_used=not args.spherical, reason_color_map_path=color_map_path)
+        draw_lines(pair_records_for_kml, points_data, args.output_kml, ellipsoid_calc_used, reason_color_map_path=color_map_path)
     else:
         if filters_active:
             print(f"No lines to draw as no pairs matched the filter criteria. KML file '{args.output_kml}' will not be created with content.")
-        else: # No filters active, but all_pairs_df was empty (e.g. <2 input points)
+        else:
             print(f"No lines to draw as no pairs could be generated from the input. KML file '{args.output_kml}' will not be created with content.")
+
+def main():
+    """Main function to orchestrate the script's execution."""
+    args = parse_arguments()
+    points_data, all_pairs_df = load_and_prepare_data(args)
+    processed_df, filters_active = apply_filters(args, all_pairs_df)
+    handle_output(args, processed_df, points_data, not args.spherical, filters_active)
 
 if __name__ == "__main__":
     main()

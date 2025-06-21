@@ -2,11 +2,11 @@
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
     <Document id="1">
         <name>Filtered Lines</name>
-        <description>&lt;b&gt;Folder Summary:&lt;/b&gt;&lt;br/&gt;&lt;ul&gt;&lt;li&gt;AN: 1 lines&lt;/li&gt;&lt;li&gt;CFe: 2 lines&lt;/li&gt;&lt;li&gt;Cap: 4 lines&lt;/li&gt;&lt;li&gt;Cavg: 1 lines&lt;/li&gt;&lt;li&gt;Chk01: 1 lines&lt;/li&gt;&lt;li&gt;Chk02: 1 lines&lt;/li&gt;&lt;li&gt;Chk03: 1 lines&lt;/li&gt;&lt;li&gt;Chk09: 1 lines&lt;/li&gt;&lt;li&gt;Chk10: 1 lines&lt;/li&gt;&lt;li&gt;Chk14: 1 lines&lt;/li&gt;&lt;li&gt;Chk15: 1 lines&lt;/li&gt;&lt;li&gt;Chk16: 3 lines&lt;/li&gt;&lt;li&gt;Chk18: 2 lines&lt;/li&gt;&lt;li&gt;Chk20: 2 lines&lt;/li&gt;&lt;li&gt;Chk21: 1 lines&lt;/li&gt;&lt;li&gt;Chk22: 1 lines&lt;/li&gt;&lt;li&gt;Chk26: 2 lines&lt;/li&gt;&lt;li&gt;Chk28: 1 lines&lt;/li&gt;&lt;li&gt;Chk32: 2 lines&lt;/li&gt;&lt;li&gt;Chk34: 1 lines&lt;/li&gt;&lt;li&gt;Chk35: 1 lines&lt;/li&gt;&lt;li&gt;Chk36: 1 lines&lt;/li&gt;&lt;li&gt;Chk40: 1 lines&lt;/li&gt;&lt;li&gt;Chk42: 3 lines&lt;/li&gt;&lt;li&gt;Chk43: 1 lines&lt;/li&gt;&lt;li&gt;Chk49: 1 lines&lt;/li&gt;&lt;li&gt;Chk51: 1 lines&lt;/li&gt;&lt;li&gt;Chk57: 1 lines&lt;/li&gt;&lt;li&gt;Chk58: 1 lines&lt;/li&gt;&lt;li&gt;Chk59: 1 lines&lt;/li&gt;&lt;li&gt;Ec: 1 lines&lt;/li&gt;&lt;li&gt;Gs8: 2 lines&lt;/li&gt;&lt;li&gt;Gs9: 1 lines&lt;/li&gt;&lt;li&gt;H12: 2 lines&lt;/li&gt;&lt;li&gt;H17: 1 lines&lt;/li&gt;&lt;li&gt;H22: 1 lines&lt;/li&gt;&lt;li&gt;H33: 1 lines&lt;/li&gt;&lt;li&gt;H42: 2 lines&lt;/li&gt;&lt;li&gt;H65: 1 lines&lt;/li&gt;&lt;li&gt;H67: 1 lines&lt;/li&gt;&lt;li&gt;H71: 1 lines&lt;/li&gt;&lt;li&gt;H99: 1 lines&lt;/li&gt;&lt;li&gt;HighWb: 3 lines&lt;/li&gt;&lt;li&gt;Hk: 1 lines&lt;/li&gt;&lt;li&gt;J: 1 lines&lt;/li&gt;&lt;li&gt;K: 1 lines&lt;/li&gt;&lt;li&gt;La: 1 lines&lt;/li&gt;&lt;li&gt;Lcnr: 1 lines&lt;/li&gt;&lt;li&gt;M: 1 lines&lt;/li&gt;&lt;li&gt;NOa: 1 lines&lt;/li&gt;&lt;li&gt;OtrB: 1 lines&lt;/li&gt;&lt;li&gt;OtrC: 1 lines&lt;/li&gt;&lt;li&gt;PenA: 1 lines&lt;/li&gt;&lt;li&gt;PenC: 1 lines&lt;/li&gt;&lt;li&gt;PenF: 2 lines&lt;/li&gt;&lt;li&gt;Pk01: 1 lines&lt;/li&gt;&lt;li&gt;RCrkA: 1 lines&lt;/li&gt;&lt;li&gt;Sc: 1 lines&lt;/li&gt;&lt;li&gt;WH: 1 lines&lt;/li&gt;&lt;li&gt;WHa: 1 lines&lt;/li&gt;&lt;li&gt;WHz: 3 lines&lt;/li&gt;&lt;li&gt;Wc: 3 lines&lt;/li&gt;&lt;/ul&gt;&lt;hr&gt;Lines generated using Ellipsoidal (WGS84) calculations.</description>
+        <description>&lt;b&gt;Folder Summary:&lt;/b&gt;&lt;br/&gt;&lt;ul&gt;&lt;li&gt;AN: 1 lines&lt;/li&gt;&lt;li&gt;CFe: 2 lines&lt;/li&gt;&lt;li&gt;Cap: 2 lines&lt;/li&gt;&lt;li&gt;Chk01: 1 lines&lt;/li&gt;&lt;li&gt;Chk09: 1 lines&lt;/li&gt;&lt;li&gt;Chk16: 1 lines&lt;/li&gt;&lt;li&gt;Chk20: 2 lines&lt;/li&gt;&lt;li&gt;Chk21: 1 lines&lt;/li&gt;&lt;li&gt;Chk22: 1 lines&lt;/li&gt;&lt;li&gt;Chk26: 2 lines&lt;/li&gt;&lt;li&gt;Chk32: 1 lines&lt;/li&gt;&lt;li&gt;Chk35: 1 lines&lt;/li&gt;&lt;li&gt;Chk40: 1 lines&lt;/li&gt;&lt;li&gt;Chk42: 1 lines&lt;/li&gt;&lt;li&gt;Chk43: 1 lines&lt;/li&gt;&lt;li&gt;Chk59: 1 lines&lt;/li&gt;&lt;li&gt;Gs8: 2 lines&lt;/li&gt;&lt;li&gt;Gs9: 1 lines&lt;/li&gt;&lt;li&gt;H12: 2 lines&lt;/li&gt;&lt;li&gt;H17: 1 lines&lt;/li&gt;&lt;li&gt;H22: 1 lines&lt;/li&gt;&lt;li&gt;H42: 2 lines&lt;/li&gt;&lt;li&gt;H65: 1 lines&lt;/li&gt;&lt;li&gt;HighWb: 2 lines&lt;/li&gt;&lt;li&gt;Hk: 1 lines&lt;/li&gt;&lt;li&gt;J: 1 lines&lt;/li&gt;&lt;li&gt;K: 1 lines&lt;/li&gt;&lt;li&gt;Lcnr: 1 lines&lt;/li&gt;&lt;li&gt;NOa: 1 lines&lt;/li&gt;&lt;li&gt;PenC: 1 lines&lt;/li&gt;&lt;li&gt;Pk01: 1 lines&lt;/li&gt;&lt;li&gt;RCrkA: 1 lines&lt;/li&gt;&lt;li&gt;WHn: 1 lines&lt;/li&gt;&lt;li&gt;WHs: 2 lines&lt;/li&gt;&lt;li&gt;WHz: 3 lines&lt;/li&gt;&lt;li&gt;elEc: 3 lines&lt;/li&gt;&lt;li&gt;elSc: 2 lines&lt;/li&gt;&lt;/ul&gt;&lt;hr&gt;Lines generated using Ellipsoidal (WGS84) calculations.</description>
         <Folder id="2">
             <Style id="5">
                 <LineStyle id="6">
-                    <color>FFFFBB00</color>
+                    <color>FFFF9999</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
@@ -46,14 +46,14 @@
         <Folder id="7">
             <Style id="10">
                 <LineStyle id="11">
-                    <color>FFFFDD88</color>
+                    <color>FFFFFF55</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <Style id="14">
                 <LineStyle id="15">
-                    <color>FFFFDD88</color>
+                    <color>FFFFFF55</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
@@ -123,28 +123,14 @@
         <Folder id="16">
             <Style id="19">
                 <LineStyle id="20">
-                    <color>FF55EE12</color>
+                    <color>FFFF0055</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <Style id="23">
                 <LineStyle id="24">
-                    <color>FF88EE11</color>
-                    <colorMode>normal</colorMode>
-                    <width>2.5</width>
-                </LineStyle>
-            </Style>
-            <Style id="27">
-                <LineStyle id="28">
-                    <color>FFFF9933</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <Style id="31">
-                <LineStyle id="32">
-                    <color>FFCCFF33</color>
+                    <color>FFFF0001</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
@@ -181,36 +167,6 @@
                 </LineString>
             </Placemark>
             <Placemark id="22">
-                <name>Cap → Chk23a</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Cap<br>
-          <b>P2:</b> Chk23a<br>
-          <hr>
-          <b>Distance:</b> 2.236 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 54.458°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 54.479°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 234.479°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 234.458°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist factor of:2.2360, Dist multiple:2.2360<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#23</styleUrl>
-                <LineString id="21">
-                    <coordinates>-77.009227,38.889801,0.0 -76.97546834269932,38.90863930872903,0.0</coordinates>
-                </LineString>
-            </Placemark>
-            <Placemark id="26">
                 <name>Cap → Chk59</name>
                 <description>
                     
@@ -235,92 +191,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#27</styleUrl>
-                <LineString id="25">
+                <styleUrl>#23</styleUrl>
+                <LineString id="21">
                     <coordinates>-77.009227,38.889801,0.0 -77.04244035387981,39.01004268273348,0.0</coordinates>
                 </LineString>
             </Placemark>
-            <Placemark id="30">
-                <name>Cap → Nc</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Cap<br>
-          <b>P2:</b> Nc<br>
-          <hr>
-          <b>Distance:</b> 1.732 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 278.704°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 278.684°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 98.684°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 98.704°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.8660<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#31</styleUrl>
-                <LineString id="29">
-                    <coordinates>-77.009227,38.889801,0.0 -77.04098558,38.89359614000001,0.0</coordinates>
-                </LineString>
-            </Placemark>
         </Folder>
-        <Folder id="33">
-            <Style id="36">
-                <LineStyle id="37">
-                    <color>FFFFFF00</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>Cavg</name>
-            <Placemark id="35">
-                <name>Cavg → La</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Cavg<br>
-          <b>P2:</b> La<br>
-          <hr>
-          <b>Distance:</b> 0.668 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 239.533°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 239.527°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 59.527°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 59.533°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.3338<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#36</styleUrl>
-                <LineString id="34">
-                    <coordinates>-77.04077541312266,38.89307792552204,0.0 -77.05145152722608,38.88816903625909,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="38">
-            <Style id="41">
-                <LineStyle id="42">
-                    <color>FFFFDD88</color>
+        <Folder id="25">
+            <Style id="28">
+                <LineStyle id="29">
+                    <color>FFFFFF55</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Chk01</name>
-            <Placemark id="40">
+            <Placemark id="27">
                 <name>Chk01 → SF04</name>
                 <description>
                     
@@ -345,102 +231,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#41</styleUrl>
-                <LineString id="39">
+                <styleUrl>#28</styleUrl>
+                <LineString id="26">
                     <coordinates>-77.0045692366363,38.80358701301893,0.0 -77.07087604008456,38.90017164390296,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="43">
-            <Style id="46">
-                <LineStyle id="47">
-                    <color>FFFF9933</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>Chk02</name>
-            <Placemark id="45">
-                <name>Chk02 → H23</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk02<br>
-          <b>P2:</b> H23<br>
-          <hr>
-          <b>Distance:</b> 9.192 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 320.870°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 320.803°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 140.803°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 140.870°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.7071<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#46</styleUrl>
-                <LineString id="44">
-                    <coordinates>-76.98066122302069,38.83591588236636,0.0 -77.08834070412745,38.93923731423045,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="48">
-            <Style id="51">
-                <LineStyle id="52">
-                    <color>FFFFBB00</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>Chk03</name>
-            <Placemark id="50">
-                <name>Chk03 → H88</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk03<br>
-          <b>P2:</b> H88<br>
-          <hr>
-          <b>Distance:</b> 2.839 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 9.265°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 9.270°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 189.270°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 189.265°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.1494<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#51</styleUrl>
-                <LineString id="49">
-                    <coordinates>-77.01339590231409,38.80887860350852,0.0 -77.00492179089107,38.84950002068123,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="53">
-            <Style id="56">
-                <LineStyle id="57">
-                    <color>FFFF88BB</color>
+        <Folder id="30">
+            <Style id="33">
+                <LineStyle id="34">
+                    <color>FFFF99FF</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Chk09</name>
-            <Placemark id="55">
+            <Placemark id="32">
                 <name>Chk09 → Chk53</name>
                 <description>
                     
@@ -465,216 +271,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#56</styleUrl>
-                <LineString id="54">
+                <styleUrl>#33</styleUrl>
+                <LineString id="31">
                     <coordinates>-77.08911728826524,38.92188332835548,0.0 -77.00907388669604,38.8706887702613,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="58">
-            <Style id="61">
-                <LineStyle id="62">
-                    <color>FFFFBB00</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>Chk10</name>
-            <Placemark id="60">
-                <name>Chk10 → H70</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk10<br>
-          <b>P2:</b> H70<br>
-          <hr>
-          <b>Distance:</b> 6.276 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 277.611°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 277.539°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 97.539°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 97.611°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.1494<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#61</styleUrl>
-                <LineString id="59">
-                    <coordinates>-76.95502425801097,38.86173720173936,0.0 -77.07038741369139,38.8737311478417,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="63">
-            <Style id="66">
-                <LineStyle id="67">
-                    <color>FFFFFF00</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>Chk14</name>
-            <Placemark id="65">
-                <name>Chk14 → H66</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk14<br>
-          <b>P2:</b> H66<br>
-          <hr>
-          <b>Distance:</b> 3.672 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 253.214°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 253.173°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 73.173°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 73.214°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.3338<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#66</styleUrl>
-                <LineString id="64">
-                    <coordinates>-77.03571742899706,38.92072480308088,0.0 -77.10094955658019,38.90533124793031,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="68">
-            <Style id="71">
-                <LineStyle id="72">
-                    <color>FFCCFF33</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>Chk15</name>
-            <Placemark id="70">
-                <name>Chk15 → H70b</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk15<br>
-          <b>P2:</b> H70b<br>
-          <hr>
-          <b>Distance:</b> 5.196 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 108.414°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 108.472°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 288.472°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 288.414°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.8660<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#71</styleUrl>
-                <LineString id="69">
-                    <coordinates>-77.0702598537815,38.9339121071402,0.0 -76.97878782846644,38.91008217241069,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="73">
-            <Style id="76">
-                <LineStyle id="77">
-                    <color>FFFFCC33</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <Style id="80">
-                <LineStyle id="81">
-                    <color>FFFFFF00</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <Style id="84">
-                <LineStyle id="85">
-                    <color>FFFF9933</color>
+        <Folder id="35">
+            <Style id="38">
+                <LineStyle id="39">
+                    <color>FFFF0001</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Chk16</name>
-            <Placemark id="75">
-                <name>Chk16 → Chk17</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk16<br>
-          <b>P2:</b> Chk17<br>
-          <hr>
-          <b>Distance:</b> 0.874 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 87.529°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 87.539°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 267.539°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 267.529°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.8740<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#76</styleUrl>
-                <LineString id="74">
-                    <coordinates>-77.02680651074166,38.95984790558003,0.0 -77.01059198844285,38.96039316959799,0.0</coordinates>
-                </LineString>
-            </Placemark>
-            <Placemark id="79">
-                <name>Chk16 → H11</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk16<br>
-          <b>P2:</b> H11<br>
-          <hr>
-          <b>Distance:</b> 3.339 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 159.042°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 159.056°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 339.056°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 339.042°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.3338<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#80</styleUrl>
-                <LineString id="78">
-                    <coordinates>-77.02680651074166,38.95984790558003,0.0 -77.0046483262631,38.9146495509119,0.0</coordinates>
-                </LineString>
-            </Placemark>
-            <Placemark id="83">
+            <Placemark id="37">
                 <name>Chk16 → H37</name>
                 <description>
                     
@@ -699,106 +311,29 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#84</styleUrl>
-                <LineString id="82">
+                <styleUrl>#38</styleUrl>
+                <LineString id="36">
                     <coordinates>-77.02680651074166,38.95984790558003,0.0 -77.11248589188622,38.89634739382956,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="86">
-            <Style id="89">
-                <LineStyle id="90">
-                    <color>FFFF5500</color>
+        <Folder id="40">
+            <Style id="43">
+                <LineStyle id="44">
+                    <color>FFFFFF99</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
-            <Style id="93">
-                <LineStyle id="94">
-                    <color>FFFFCC56</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>Chk18</name>
-            <Placemark id="88">
-                <name>Chk18 → H44</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk18<br>
-          <b>P2:</b> H44<br>
-          <hr>
-          <b>Distance:</b> 1.854 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 0.480°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 0.480°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 180.480°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 180.480°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.6180<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#89</styleUrl>
-                <LineString id="87">
-                    <coordinates>-77.11265634246809,38.87614213026904,0.0 -77.1123682030325,38.90301800526387,0.0</coordinates>
-                </LineString>
-            </Placemark>
-            <Placemark id="92">
-                <name>Chk18 → H67</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk18<br>
-          <b>P2:</b> H67<br>
-          <hr>
-          <b>Distance:</b> 2.995 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 24.921°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 24.936°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 204.936°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 204.921°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist factor of:5.9907<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#93</styleUrl>
-                <LineString id="91">
-                    <coordinates>-77.11265634246809,38.87614213026904,0.0 -77.08923640277803,38.91551942120227,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="95">
-            <Style id="98">
-                <LineStyle id="99">
-                    <color>FFFFFF00</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <Style id="102">
-                <LineStyle id="103">
-                    <color>FFFF88BB</color>
+            <Style id="47">
+                <LineStyle id="48">
+                    <color>FFFF99FF</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Chk20</name>
-            <Placemark id="97">
+            <Placemark id="42">
                 <name>Chk20 → Chk38</name>
                 <description>
                     
@@ -823,12 +358,12 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#98</styleUrl>
-                <LineString id="96">
+                <styleUrl>#43</styleUrl>
+                <LineString id="41">
                     <coordinates>-77.00135736591604,38.82106536665973,0.0 -77.0022595046106,38.85493665631558,0.0</coordinates>
                 </LineString>
             </Placemark>
-            <Placemark id="101">
+            <Placemark id="46">
                 <name>Chk20 → OtrC</name>
                 <description>
                     
@@ -853,22 +388,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#102</styleUrl>
-                <LineString id="100">
+                <styleUrl>#47</styleUrl>
+                <LineString id="45">
                     <coordinates>-77.00135736591604,38.82106536665973,0.0 -76.98472940704961,38.95177142459147,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="104">
-            <Style id="107">
-                <LineStyle id="108">
-                    <color>FFFFDD88</color>
+        <Folder id="49">
+            <Style id="52">
+                <LineStyle id="53">
+                    <color>FFFFFF55</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Chk21</name>
-            <Placemark id="106">
+            <Placemark id="51">
                 <name>Chk21 → POOthr3a</name>
                 <description>
                     
@@ -893,22 +428,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#107</styleUrl>
-                <LineString id="105">
+                <styleUrl>#52</styleUrl>
+                <LineString id="50">
                     <coordinates>-76.94019736733574,38.87280409544193,0.0 -77.0402519018478,38.7852261694161,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="109">
-            <Style id="112">
-                <LineStyle id="113">
-                    <color>FFFFBB00</color>
+        <Folder id="54">
+            <Style id="57">
+                <LineStyle id="58">
+                    <color>FFFF9999</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Chk22</name>
-            <Placemark id="111">
+            <Placemark id="56">
                 <name>Chk22 → Chk28</name>
                 <description>
                     
@@ -933,29 +468,29 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#112</styleUrl>
-                <LineString id="110">
+                <styleUrl>#57</styleUrl>
+                <LineString id="55">
                     <coordinates>-77.0858650836171,38.93790243521637,0.0 -77.0776296316338,38.95399489057218,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="114">
-            <Style id="117">
-                <LineStyle id="118">
-                    <color>FFFFBB00</color>
+        <Folder id="59">
+            <Style id="62">
+                <LineStyle id="63">
+                    <color>FFFF9999</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
-            <Style id="121">
-                <LineStyle id="122">
-                    <color>FFFF88BB</color>
+            <Style id="66">
+                <LineStyle id="67">
+                    <color>FFFF99FF</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Chk26</name>
-            <Placemark id="116">
+            <Placemark id="61">
                 <name>Chk26 → H19</name>
                 <description>
                     
@@ -980,12 +515,12 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#117</styleUrl>
-                <LineString id="115">
+                <styleUrl>#62</styleUrl>
+                <LineString id="60">
                     <coordinates>-76.91666542015503,38.88686719010732,0.0 -77.07888357211404,38.91560586754403,0.0</coordinates>
                 </LineString>
             </Placemark>
-            <Placemark id="120">
+            <Placemark id="65">
                 <name>Chk26 → SF04</name>
                 <description>
                     
@@ -1010,69 +545,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#121</styleUrl>
-                <LineString id="119">
+                <styleUrl>#66</styleUrl>
+                <LineString id="64">
                     <coordinates>-76.91666542015503,38.88686719010732,0.0 -77.07087604008456,38.90017164390296,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="123">
-            <Style id="126">
-                <LineStyle id="127">
-                    <color>FFFFBB00</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>Chk28</name>
-            <Placemark id="125">
-                <name>Chk28 → H70b</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk28<br>
-          <b>P2:</b> H70b<br>
-          <hr>
-          <b>Distance:</b> 6.127 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 119.600°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 119.662°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 299.662°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 299.600°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.1494<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#126</styleUrl>
-                <LineString id="124">
-                    <coordinates>-77.0776296316338,38.95399489057218,0.0 -76.97878782846644,38.91008217241069,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="128">
-            <Style id="131">
-                <LineStyle id="132">
-                    <color>FFFFBB00</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <Style id="135">
-                <LineStyle id="136">
-                    <color>FFFFFF00</color>
+        <Folder id="68">
+            <Style id="71">
+                <LineStyle id="72">
+                    <color>FFFF9999</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Chk32</name>
-            <Placemark id="130">
+            <Placemark id="70">
                 <name>Chk32 → Chk41</name>
                 <description>
                     
@@ -1097,92 +585,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#131</styleUrl>
-                <LineString id="129">
+                <styleUrl>#71</styleUrl>
+                <LineString id="69">
                     <coordinates>-77.05142116747349,38.95878698101598,0.0 -76.9575387987198,38.91261730408393,0.0</coordinates>
                 </LineString>
             </Placemark>
-            <Placemark id="134">
-                <name>Chk32 → Pk04</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk32<br>
-          <b>P2:</b> Pk04<br>
-          <hr>
-          <b>Distance:</b> 63.431 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 258.865°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 258.142°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 78.142°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 78.865°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.3338<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#135</styleUrl>
-                <LineString id="133">
-                    <coordinates>-77.05142116747349,38.95878698101598,0.0 -78.20406185227269,38.77550687860945,0.0</coordinates>
-                </LineString>
-            </Placemark>
         </Folder>
-        <Folder id="137">
-            <Style id="140">
-                <LineStyle id="141">
-                    <color>FFFF9933</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>Chk34</name>
-            <Placemark id="139">
-                <name>Chk34 → H56</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk34<br>
-          <b>P2:</b> H56<br>
-          <hr>
-          <b>Distance:</b> 2.828 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 243.123°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 243.094°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 63.094°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 63.123°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.7071<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#140</styleUrl>
-                <LineString id="138">
-                    <coordinates>-77.01438697638629,38.93536052674429,0.0 -77.06120140091524,38.91681538320637,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="142">
-            <Style id="145">
-                <LineStyle id="146">
-                    <color>FFCCFF33</color>
+        <Folder id="73">
+            <Style id="76">
+                <LineStyle id="77">
+                    <color>FFFF5500</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Chk35</name>
-            <Placemark id="144">
+            <Placemark id="75">
                 <name>Chk35 → H38</name>
                 <description>
                     
@@ -1207,62 +625,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#145</styleUrl>
-                <LineString id="143">
+                <styleUrl>#76</styleUrl>
+                <LineString id="74">
                     <coordinates>-77.05068501975197,38.89407905799511,0.0 -77.30556025520397,38.92033648688445,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="147">
-            <Style id="150">
-                <LineStyle id="151">
-                    <color>FFFFBB00</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>Chk36</name>
-            <Placemark id="149">
-                <name>Chk36 → OtrB</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk36<br>
-          <b>P2:</b> OtrB<br>
-          <hr>
-          <b>Distance:</b> 3.138 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 2.167°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 2.168°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 182.168°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 182.167°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.1494<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#150</styleUrl>
-                <LineString id="148">
-                    <coordinates>-76.99354755099984,38.91158883943301,0.0 -76.99134485249716,38.95704643888089,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="152">
-            <Style id="155">
-                <LineStyle id="156">
-                    <color>FFFFBB00</color>
+        <Folder id="78">
+            <Style id="81">
+                <LineStyle id="82">
+                    <color>FFFF9999</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Chk40</name>
-            <Placemark id="154">
+            <Placemark id="80">
                 <name>Chk40 → Pk02</name>
                 <description>
                     
@@ -1287,96 +665,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#155</styleUrl>
-                <LineString id="153">
+                <styleUrl>#81</styleUrl>
+                <LineString id="79">
                     <coordinates>-76.89912135737723,38.89172055971182,0.0 -77.627618,39.448887,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="157">
-            <Style id="160">
-                <LineStyle id="161">
-                    <color>FFFF9933</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <Style id="164">
-                <LineStyle id="165">
-                    <color>FFFFFF00</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <Style id="168">
-                <LineStyle id="169">
-                    <color>FFFF3300</color>
+        <Folder id="83">
+            <Style id="86">
+                <LineStyle id="87">
+                    <color>FFFFFF02</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Chk42</name>
-            <Placemark id="159">
-                <name>Chk42 → AN</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk42<br>
-          <b>P2:</b> AN<br>
-          <hr>
-          <b>Distance:</b> 7.071 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 96.450°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 96.532°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 276.532°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 276.450°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.7071<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#160</styleUrl>
-                <LineString id="158">
-                    <coordinates>-77.07230698965536,38.93017051598103,0.0 -76.94192180000002,38.91858289999999,0.0</coordinates>
-                </LineString>
-            </Placemark>
-            <Placemark id="163">
-                <name>Chk42 → Chk54</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk42<br>
-          <b>P2:</b> Chk54<br>
-          <hr>
-          <b>Distance:</b> 16.693 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 174.650°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 174.668°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 354.668°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 354.650°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.3338<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#164</styleUrl>
-                <LineString id="162">
-                    <coordinates>-77.07230698965536,38.93017051598103,0.0 -77.04351796976675,38.68922831692476,0.0</coordinates>
-                </LineString>
-            </Placemark>
-            <Placemark id="167">
+            <Placemark id="85">
                 <name>Chk42 → Chk62</name>
                 <description>
                     
@@ -1401,22 +705,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#168</styleUrl>
-                <LineString id="166">
+                <styleUrl>#86</styleUrl>
+                <LineString id="84">
                     <coordinates>-77.07230698965536,38.93017051598103,0.0 -77.02133073015519,38.90537641569407,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="170">
-            <Style id="173">
-                <LineStyle id="174">
-                    <color>FFFFBB00</color>
+        <Folder id="88">
+            <Style id="91">
+                <LineStyle id="92">
+                    <color>FFFF9999</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Chk43</name>
-            <Placemark id="172">
+            <Placemark id="90">
                 <name>Chk43 → Chk59</name>
                 <description>
                     
@@ -1441,182 +745,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#173</styleUrl>
-                <LineString id="171">
+                <styleUrl>#91</styleUrl>
+                <LineString id="89">
                     <coordinates>-77.0192667064925,38.94312493001874,0.0 -77.04244035387981,39.01004268273348,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="175">
-            <Style id="178">
-                <LineStyle id="179">
-                    <color>FFFF88BB</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>Chk49</name>
-            <Placemark id="177">
-                <name>Chk49 → H24</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk49<br>
-          <b>P2:</b> H24<br>
-          <hr>
-          <b>Distance:</b> 2.265 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 283.666°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 283.640°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 103.640°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 103.666°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.1742<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#178</styleUrl>
-                <LineString id="176">
-                    <coordinates>-77.02956862943489,38.90963170613946,0.0 -77.0704105785321,38.91738246946505,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="180">
-            <Style id="183">
-                <LineStyle id="184">
-                    <color>FFFFBB00</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>Chk51</name>
-            <Placemark id="182">
-                <name>Chk51 → SF03</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk51<br>
-          <b>P2:</b> SF03<br>
-          <hr>
-          <b>Distance:</b> 8.069 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 173.044°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 173.055°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 353.055°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 353.044°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.1494<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#183</styleUrl>
-                <LineString id="181">
-                    <coordinates>-76.99025683060958,38.88979572156659,0.0 -76.97215841432278,38.77367519361357,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="185">
-            <Style id="188">
-                <LineStyle id="189">
-                    <color>FFFF88BB</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>Chk57</name>
-            <Placemark id="187">
-                <name>Chk57 → H37</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk57<br>
-          <b>P2:</b> H37<br>
-          <hr>
-          <b>Distance:</b> 5.053 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 329.858°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 329.828°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 149.828°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 149.858°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.1742<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#188</styleUrl>
-                <LineString id="186">
-                    <coordinates>-77.06541563323557,38.83300987616117,0.0 -77.11248589188622,38.89634739382956,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="190">
-            <Style id="193">
-                <LineStyle id="194">
-                    <color>FFCCFF33</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>Chk58</name>
-            <Placemark id="192">
-                <name>Chk58 → Chk59</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Chk58<br>
-          <b>P2:</b> Chk59<br>
-          <hr>
-          <b>Distance:</b> 11.258 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 4.741°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 4.752°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 184.752°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 184.741°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.8660<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#193</styleUrl>
-                <LineString id="191">
-                    <coordinates>-77.05973097339024,38.84739885578784,0.0 -77.04244035387981,39.01004268273348,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="195">
-            <Style id="198">
-                <LineStyle id="199">
-                    <color>FFFFBB00</color>
+        <Folder id="93">
+            <Style id="96">
+                <LineStyle id="97">
+                    <color>FFFF9999</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Chk59</name>
-            <Placemark id="197">
+            <Placemark id="95">
                 <name>Chk59 → OtrC</name>
                 <description>
                     
@@ -1641,69 +785,29 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#198</styleUrl>
-                <LineString id="196">
+                <styleUrl>#96</styleUrl>
+                <LineString id="94">
                     <coordinates>-77.04244035387981,39.01004268273348,0.0 -76.98472940704961,38.95177142459147,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="200">
-            <Style id="203">
-                <LineStyle id="204">
-                    <color>FFFF88BB</color>
+        <Folder id="98">
+            <Style id="101">
+                <LineStyle id="102">
+                    <color>FFFF9999</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
-            <name>Ec</name>
-            <Placemark id="202">
-                <name>Ec → Chk43</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Ec<br>
-          <b>P2:</b> Chk43<br>
-          <hr>
-          <b>Distance:</b> 3.659 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 18.376°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 18.389°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 198.389°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 198.376°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.1742<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#203</styleUrl>
-                <LineString id="201">
-                    <coordinates>-77.0406797,38.89278669999997,0.0 -77.0192667064925,38.94312493001874,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="205">
-            <Style id="208">
-                <LineStyle id="209">
-                    <color>FFFFBB00</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <Style id="212">
-                <LineStyle id="213">
-                    <color>FFFF88BB</color>
+            <Style id="105">
+                <LineStyle id="106">
+                    <color>FFFF99FF</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Gs8</name>
-            <Placemark id="207">
+            <Placemark id="100">
                 <name>Gs8 → Chk21</name>
                 <description>
                     
@@ -1728,12 +832,12 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#208</styleUrl>
-                <LineString id="206">
+                <styleUrl>#101</styleUrl>
+                <LineString id="99">
                     <coordinates>-77.04288644534626,38.89107936946611,0.0 -76.94019736733574,38.87280409544193,0.0</coordinates>
                 </LineString>
             </Placemark>
-            <Placemark id="211">
+            <Placemark id="104">
                 <name>Gs8 → H17</name>
                 <description>
                     
@@ -1758,22 +862,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#212</styleUrl>
-                <LineString id="210">
+                <styleUrl>#105</styleUrl>
+                <LineString id="103">
                     <coordinates>-77.04288644534626,38.89107936946611,0.0 -77.07263105649967,38.88120136333437,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="214">
-            <Style id="217">
-                <LineStyle id="218">
-                    <color>FFFFBB00</color>
+        <Folder id="107">
+            <Style id="110">
+                <LineStyle id="111">
+                    <color>FFFF9999</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Gs9</name>
-            <Placemark id="216">
+            <Placemark id="109">
                 <name>Gs9 → OtrA</name>
                 <description>
                     
@@ -1798,29 +902,29 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#217</styleUrl>
-                <LineString id="215">
+                <styleUrl>#110</styleUrl>
+                <LineString id="108">
                     <coordinates>-77.03197308076226,38.79290977473043,0.0 -76.95188801292042,38.92624596949343,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="219">
-            <Style id="222">
-                <LineStyle id="223">
-                    <color>FFFFBB00</color>
+        <Folder id="112">
+            <Style id="115">
+                <LineStyle id="116">
+                    <color>FFFF9999</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
-            <Style id="226">
-                <LineStyle id="227">
-                    <color>FFFF5500</color>
+            <Style id="119">
+                <LineStyle id="120">
+                    <color>FFFFFF01</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>H12</name>
-            <Placemark id="221">
+            <Placemark id="114">
                 <name>H12 → H24</name>
                 <description>
                     
@@ -1845,12 +949,12 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#222</styleUrl>
-                <LineString id="220">
+                <styleUrl>#115</styleUrl>
+                <LineString id="113">
                     <coordinates>-76.94844865915428,38.92005589287478,0.0 -77.0704105785321,38.91738246946505,0.0</coordinates>
                 </LineString>
             </Placemark>
-            <Placemark id="225">
+            <Placemark id="118">
                 <name>H12 → H60</name>
                 <description>
                     
@@ -1875,22 +979,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#226</styleUrl>
-                <LineString id="224">
+                <styleUrl>#119</styleUrl>
+                <LineString id="117">
                     <coordinates>-76.94844865915428,38.92005589287478,0.0 -76.91720945574568,38.93132296535497,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="228">
-            <Style id="231">
-                <LineStyle id="232">
-                    <color>FFFFFF00</color>
+        <Folder id="121">
+            <Style id="124">
+                <LineStyle id="125">
+                    <color>FFFFFF99</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>H17</name>
-            <Placemark id="230">
+            <Placemark id="123">
                 <name>H17 → SF02</name>
                 <description>
                     
@@ -1915,22 +1019,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#231</styleUrl>
-                <LineString id="229">
+                <styleUrl>#124</styleUrl>
+                <LineString id="122">
                     <coordinates>-77.07263105649967,38.88120136333437,0.0 -77.0901139945135,38.90117456916591,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="233">
-            <Style id="236">
-                <LineStyle id="237">
-                    <color>FFFF5500</color>
+        <Folder id="126">
+            <Style id="129">
+                <LineStyle id="130">
+                    <color>FFFFFF01</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>H22</name>
-            <Placemark id="235">
+            <Placemark id="128">
                 <name>H22 → SF02</name>
                 <description>
                     
@@ -1955,69 +1059,29 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#236</styleUrl>
-                <LineString id="234">
+                <styleUrl>#129</styleUrl>
+                <LineString id="127">
                     <coordinates>-77.06004232078331,38.92823446130691,0.0 -77.0901139945135,38.90117456916591,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="238">
-            <Style id="241">
-                <LineStyle id="242">
-                    <color>FFFFFF00</color>
+        <Folder id="131">
+            <Style id="134">
+                <LineStyle id="135">
+                    <color>FFFF99FF</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
-            <name>H33</name>
-            <Placemark id="240">
-                <name>H33 → H37</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> H33<br>
-          <b>P2:</b> H37<br>
-          <hr>
-          <b>Distance:</b> 1.669 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 178.590°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 178.590°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 358.590°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 358.590°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.3338<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#241</styleUrl>
-                <LineString id="239">
-                    <coordinates>-77.11324805943606,38.92053966660955,0.0 -77.11248589188622,38.89634739382956,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="243">
-            <Style id="246">
-                <LineStyle id="247">
-                    <color>FFFF88BB</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <Style id="250">
-                <LineStyle id="251">
-                    <color>FFFFDD88</color>
+            <Style id="138">
+                <LineStyle id="139">
+                    <color>FFFFFF55</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>H42</name>
-            <Placemark id="245">
+            <Placemark id="133">
                 <name>H42 → H65</name>
                 <description>
                     
@@ -2042,12 +1106,12 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#246</styleUrl>
-                <LineString id="244">
+                <styleUrl>#134</styleUrl>
+                <LineString id="132">
                     <coordinates>-77.01466103512618,38.82554707680318,0.0 -77.00739402065348,38.91883509061264,0.0</coordinates>
                 </LineString>
             </Placemark>
-            <Placemark id="249">
+            <Placemark id="137">
                 <name>H42 → SF01</name>
                 <description>
                     
@@ -2072,22 +1136,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#250</styleUrl>
-                <LineString id="248">
+                <styleUrl>#138</styleUrl>
+                <LineString id="136">
                     <coordinates>-77.01466103512618,38.82554707680318,0.0 -77.08586335465753,38.90124200833564,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="252">
-            <Style id="255">
-                <LineStyle id="256">
-                    <color>FFFF88BB</color>
+        <Folder id="140">
+            <Style id="143">
+                <LineStyle id="144">
+                    <color>FFFF99FF</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>H65</name>
-            <Placemark id="254">
+            <Placemark id="142">
                 <name>H65 → Pk03</name>
                 <description>
                     
@@ -2112,156 +1176,29 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#255</styleUrl>
-                <LineString id="253">
+                <styleUrl>#143</styleUrl>
+                <LineString id="141">
                     <coordinates>-77.00739402065348,38.91883509061264,0.0 -77.698809,38.899665,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="257">
-            <Style id="260">
-                <LineStyle id="261">
-                    <color>FFFFFF00</color>
+        <Folder id="145">
+            <Style id="148">
+                <LineStyle id="149">
+                    <color>FFFF55FF</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
-            <name>H67</name>
-            <Placemark id="259">
-                <name>H67 → SF01</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> H67<br>
-          <b>P2:</b> SF01<br>
-          <hr>
-          <b>Distance:</b> 1.002 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 169.540°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 169.543°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 349.543°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 349.540°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.3338<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#260</styleUrl>
-                <LineString id="258">
-                    <coordinates>-77.08923640277803,38.91551942120227,0.0 -77.08586335465753,38.90124200833564,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="262">
-            <Style id="265">
-                <LineStyle id="266">
-                    <color>FFFF5500</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>H71</name>
-            <Placemark id="264">
-                <name>H71 → POOthr3a</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> H71<br>
-          <b>P2:</b> POOthr3a<br>
-          <hr>
-          <b>Distance:</b> 7.416 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 193.390°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 193.370°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 13.370°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 13.390°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.6180<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#265</styleUrl>
-                <LineString id="263">
-                    <coordinates>-77.00844224089784,38.88981684871572,0.0 -77.0402519018478,38.7852261694161,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="267">
-            <Style id="270">
-                <LineStyle id="271">
-                    <color>FFFFDD88</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>H99</name>
-            <Placemark id="269">
-                <name>H99 → SF03</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> H99<br>
-          <b>P2:</b> SF03<br>
-          <hr>
-          <b>Distance:</b> 8.102 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 168.931°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 168.949°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 348.949°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 348.931°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.5401<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#270</styleUrl>
-                <LineString id="268">
-                    <coordinates>-77.00096480083693,38.8889443857454,0.0 -76.97215841432278,38.77367519361357,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="272">
-            <Style id="275">
-                <LineStyle id="276">
-                    <color>FFFFAA01</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <Style id="279">
-                <LineStyle id="280">
-                    <color>FFFF88BB</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <Style id="283">
-                <LineStyle id="284">
-                    <color>FFFFBB00</color>
+            <Style id="152">
+                <LineStyle id="153">
+                    <color>FFFF9999</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>HighWb</name>
-            <Placemark id="274">
+            <Placemark id="147">
                 <name>HighWb → Chk08</name>
                 <description>
                     
@@ -2286,42 +1223,12 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#275</styleUrl>
-                <LineString id="273">
+                <styleUrl>#148</styleUrl>
+                <LineString id="146">
                     <coordinates>-77.06728222257168,38.80859367009808,0.0 -77.07846439947777,38.8580454440363,0.0</coordinates>
                 </LineString>
             </Placemark>
-            <Placemark id="278">
-                <name>HighWb → H38</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> HighWb<br>
-          <b>P2:</b> H38<br>
-          <hr>
-          <b>Distance:</b> 14.985 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 301.032°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 300.882°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 120.882°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 121.032°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.1742<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#279</styleUrl>
-                <LineString id="277">
-                    <coordinates>-77.06728222257168,38.80859367009808,0.0 -77.30556025520397,38.92033648688445,0.0</coordinates>
-                </LineString>
-            </Placemark>
-            <Placemark id="282">
+            <Placemark id="151">
                 <name>HighWb → H40</name>
                 <description>
                     
@@ -2346,22 +1253,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#283</styleUrl>
-                <LineString id="281">
+                <styleUrl>#152</styleUrl>
+                <LineString id="150">
                     <coordinates>-77.06728222257168,38.80859367009808,0.0 -77.15854915633481,38.90128237275844,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="285">
-            <Style id="288">
-                <LineStyle id="289">
-                    <color>FFFFBB00</color>
+        <Folder id="154">
+            <Style id="157">
+                <LineStyle id="158">
+                    <color>FFFF9999</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Hk</name>
-            <Placemark id="287">
+            <Placemark id="156">
                 <name>Hk → Chk25</name>
                 <description>
                     
@@ -2386,22 +1293,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#288</styleUrl>
-                <LineString id="286">
+                <styleUrl>#157</styleUrl>
+                <LineString id="155">
                     <coordinates>-77.051444,38.8951366,0.0 -77.03584297932892,38.9229071947,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="290">
-            <Style id="293">
-                <LineStyle id="294">
-                    <color>FFFF88BB</color>
+        <Folder id="159">
+            <Style id="162">
+                <LineStyle id="163">
+                    <color>FFFF99FF</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>J</name>
-            <Placemark id="292">
+            <Placemark id="161">
                 <name>J → Gs6</name>
                 <description>
                     
@@ -2426,22 +1333,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#293</styleUrl>
-                <LineString id="291">
+                <styleUrl>#162</styleUrl>
+                <LineString id="160">
                     <coordinates>-77.03656908080315,38.889801,0.0 -77.11066858924072,38.94253116241286,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="295">
-            <Style id="298">
-                <LineStyle id="299">
-                    <color>FFDDEE11</color>
+        <Folder id="164">
+            <Style id="167">
+                <LineStyle id="168">
+                    <color>FFFF00FF</color>
                     <colorMode>normal</colorMode>
                     <width>2.5</width>
                 </LineStyle>
             </Style>
             <name>K</name>
-            <Placemark id="297">
+            <Placemark id="166">
                 <name>K → B</name>
                 <description>
                     
@@ -2466,62 +1373,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#298</styleUrl>
-                <LineString id="296">
+                <styleUrl>#167</styleUrl>
+                <LineString id="165">
                     <coordinates>-77.051435,38.892755,0.0 -77.008989,38.892747285,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="300">
-            <Style id="303">
-                <LineStyle id="304">
-                    <color>FFDDEE12</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>La</name>
-            <Placemark id="302">
-                <name>La → Chk63</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> La<br>
-          <b>P2:</b> Chk63<br>
-          <hr>
-          <b>Distance:</b> 1.144 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 44.519°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 44.529°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 224.529°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 224.519°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist factor of:2.2882<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#303</styleUrl>
-                <LineString id="301">
-                    <coordinates>-77.05145152722608,38.88816903625909,0.0 -77.036569,38.89999431930673,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="305">
-            <Style id="308">
-                <LineStyle id="309">
-                    <color>FFFF88BB</color>
+        <Folder id="169">
+            <Style id="172">
+                <LineStyle id="173">
+                    <color>FFFF99FF</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Lcnr</name>
-            <Placemark id="307">
+            <Placemark id="171">
                 <name>Lcnr → Chk35</name>
                 <description>
                     
@@ -2546,62 +1413,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#308</styleUrl>
-                <LineString id="306">
+                <styleUrl>#172</styleUrl>
+                <LineString id="170">
                     <coordinates>-77.04994269848781,38.88906071490013,0.0 -77.05068501975197,38.89407905799511,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="310">
-            <Style id="313">
-                <LineStyle id="314">
-                    <color>FFFF88BB</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>M</name>
-            <Placemark id="312">
-                <name>M → OtrB</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> M<br>
-          <b>P2:</b> OtrB<br>
-          <hr>
-          <b>Distance:</b> 5.227 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 26.915°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 26.942°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 206.942°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 206.915°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.1742<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#313</styleUrl>
-                <LineString id="311">
-                    <coordinates>-77.035278,38.889484,0.0 -76.99134485249716,38.95704643888089,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="315">
-            <Style id="318">
-                <LineStyle id="319">
-                    <color>FFFFCC55</color>
+        <Folder id="174">
+            <Style id="177">
+                <LineStyle id="178">
+                    <color>FFFF9900</color>
                     <colorMode>normal</colorMode>
                     <width>2.5</width>
                 </LineStyle>
             </Style>
             <name>NOa</name>
-            <Placemark id="317">
+            <Placemark id="176">
                 <name>NOa → AnOthr02</name>
                 <description>
                     
@@ -2626,142 +1453,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#318</styleUrl>
-                <LineString id="316">
+                <styleUrl>#177</styleUrl>
+                <LineString id="175">
                     <coordinates>-77.06705128052432,38.92154464050518,0.0 -76.95766732477911,38.90608413980003,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="320">
-            <Style id="323">
-                <LineStyle id="324">
-                    <color>FFFFCC33</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>OtrB</name>
-            <Placemark id="322">
-                <name>OtrB → H60</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> OtrB<br>
-          <b>P2:</b> H60<br>
-          <hr>
-          <b>Distance:</b> 4.370 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 113.933°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 113.980°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 293.980°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 293.933°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.8740<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#323</styleUrl>
-                <LineString id="321">
-                    <coordinates>-76.99134485249716,38.95704643888089,0.0 -76.91720945574568,38.93132296535497,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="325">
-            <Style id="328">
-                <LineStyle id="329">
-                    <color>FFFFCC33</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>OtrC</name>
-            <Placemark id="327">
-                <name>OtrC → H22</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> OtrC<br>
-          <b>P2:</b> H22<br>
-          <hr>
-          <b>Distance:</b> 4.370 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 248.214°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 248.167°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 68.167°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 68.214°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.8740<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#328</styleUrl>
-                <LineString id="326">
-                    <coordinates>-76.98472940704961,38.95177142459147,0.0 -77.06004232078331,38.92823446130691,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="330">
-            <Style id="333">
-                <LineStyle id="334">
-                    <color>FFFF88BB</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>PenA</name>
-            <Placemark id="332">
-                <name>PenA → POOthr3a</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> PenA<br>
-          <b>P2:</b> POOthr3a<br>
-          <hr>
-          <b>Distance:</b> 6.099 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 171.011°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 171.022°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 351.022°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 351.011°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.1742<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#333</styleUrl>
-                <LineString id="331">
-                    <coordinates>-77.05790028667388,38.872552231854,0.0 -77.0402519018478,38.7852261694161,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="335">
-            <Style id="338">
-                <LineStyle id="339">
-                    <color>FFFFFF00</color>
+        <Folder id="179">
+            <Style id="182">
+                <LineStyle id="183">
+                    <color>FFFFFF99</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>PenC</name>
-            <Placemark id="337">
+            <Placemark id="181">
                 <name>PenC → Chk18</name>
                 <description>
                     
@@ -2786,99 +1493,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#338</styleUrl>
-                <LineString id="336">
+                <styleUrl>#182</styleUrl>
+                <LineString id="180">
                     <coordinates>-77.05693269848774,38.87621612361609,0.0 -77.11265634246809,38.87614213026904,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="340">
-            <Style id="343">
-                <LineStyle id="344">
-                    <color>FFFFBB00</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <Style id="347">
-                <LineStyle id="348">
-                    <color>FFFFBB00</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>PenF</name>
-            <Placemark id="342">
-                <name>PenF → I014</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> PenF<br>
-          <b>P2:</b> I014<br>
-          <hr>
-          <b>Distance:</b> 2.839 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 26.623°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 26.638°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 206.638°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 206.623°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.1494<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#343</styleUrl>
-                <LineString id="341">
-                    <coordinates>-77.0555808299749,38.86885510940446,0.0 -77.03197530601018,38.90564871624386,0.0</coordinates>
-                </LineString>
-            </Placemark>
-            <Placemark id="346">
-                <name>PenF → POOthr3a</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> PenF<br>
-          <b>P2:</b> POOthr3a<br>
-          <hr>
-          <b>Distance:</b> 5.828 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 171.836°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 171.845°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 351.845°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 351.836°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist multiple:0.1494<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#347</styleUrl>
-                <LineString id="345">
-                    <coordinates>-77.0555808299749,38.86885510940446,0.0 -77.0402519018478,38.7852261694161,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="349">
-            <Style id="352">
-                <LineStyle id="353">
-                    <color>FFFF88BB</color>
+        <Folder id="184">
+            <Style id="187">
+                <LineStyle id="188">
+                    <color>FFFF99FF</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>Pk01</name>
-            <Placemark id="351">
+            <Placemark id="186">
                 <name>Pk01 → Pk04</name>
                 <description>
                     
@@ -2903,22 +1533,22 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#352</styleUrl>
-                <LineString id="350">
+                <styleUrl>#187</styleUrl>
+                <LineString id="185">
                     <coordinates>-77.39330127153266,39.26242301794514,0.0 -78.20406185227269,38.77550687860945,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="354">
-            <Style id="357">
-                <LineStyle id="358">
-                    <color>FFFF88BB</color>
+        <Folder id="189">
+            <Style id="192">
+                <LineStyle id="193">
+                    <color>FFFF99FF</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>RCrkA</name>
-            <Placemark id="356">
+            <Placemark id="191">
                 <name>RCrkA → H99</name>
                 <description>
                     
@@ -2943,79 +1573,39 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#357</styleUrl>
-                <LineString id="355">
+                <styleUrl>#192</styleUrl>
+                <LineString id="190">
                     <coordinates>-77.05755337263248,38.89950909563222,0.0 -77.00096480083693,38.8889443857454,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="359">
-            <Style id="362">
-                <LineStyle id="363">
-                    <color>FFFF0000</color>
+        <Folder id="194">
+            <Style id="197">
+                <LineStyle id="198">
+                    <color>FFFF9999</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
-            <name>Sc</name>
-            <Placemark id="361">
-                <name>Sc → Ec</name>
+            <name>WHn</name>
+            <Placemark id="196">
+                <name>WHn → Chk39</name>
                 <description>
                     
         
 <![CDATA[
-          <b>P1:</b> Sc<br>
-          <b>P2:</b> Ec<br>
-          <hr>
-          <b>Distance:</b> 0.008 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 319.981°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 319.981°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 139.981°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 139.981°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist factor of:6.1800<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#362</styleUrl>
-                <LineString id="360">
-                    <coordinates>-77.04058603,38.89269952,0.0 -77.0406797,38.89278669999997,0.0</coordinates>
-                </LineString>
-            </Placemark>
-        </Folder>
-        <Folder id="364">
-            <Style id="367">
-                <LineStyle id="368">
-                    <color>FFFFBB00</color>
-                    <colorMode>normal</colorMode>
-                    <width>1.5</width>
-                </LineStyle>
-            </Style>
-            <name>WH</name>
-            <Placemark id="366">
-                <name>WH → Chk39</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> WH<br>
+          <b>P1:</b> WHn<br>
           <b>P2:</b> Chk39<br>
           <hr>
           <b>Distance:</b> 6.724 miles<br>
           <hr>
           <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 90.175°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 90.254°<br>
+          <b>Forward Azimuth at P1 (Az12):</b> 90.224°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 90.302°<br>
           <hr>
           <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 270.254°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 270.175°<br>
+          <b>Forward Azimuth at P2 (Az21):</b> 270.302°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 270.224°<br>
           <hr>
           <b>Filter Reason(s):</b> Dist multiple:0.1494<br>
           <hr>
@@ -3023,76 +1613,113 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#367</styleUrl>
-                <LineString id="365">
-                    <coordinates>-77.036569,38.89778875877805,0.0 -76.91182568346446,38.8974237158863,0.0</coordinates>
+                <styleUrl>#197</styleUrl>
+                <LineString id="195">
+                    <coordinates>-77.036569,38.89787121557463,0.0 -76.91182568346446,38.8974237158863,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="369">
-            <Style id="372">
-                <LineStyle id="373">
-                    <color>FFCCFF55</color>
+        <Folder id="199">
+            <Style id="202">
+                <LineStyle id="203">
+                    <color>FFFF9901</color>
                     <colorMode>normal</colorMode>
-                    <width>2.5</width>
+                    <width>1.5</width>
                 </LineStyle>
             </Style>
-            <name>WHa</name>
-            <Placemark id="371">
-                <name>WHa → Chk44</name>
+            <Style id="206">
+                <LineStyle id="207">
+                    <color>FFFF0000</color>
+                    <colorMode>normal</colorMode>
+                    <width>1.5</width>
+                </LineStyle>
+            </Style>
+            <name>WHs</name>
+            <Placemark id="201">
+                <name>WHs → WH SEcnr</name>
                 <description>
                     
         
 <![CDATA[
-          <b>P1:</b> WHa<br>
-          <b>P2:</b> Chk44<br>
+          <b>P1:</b> WHs<br>
+          <b>P2:</b> WH SEcnr<br>
           <hr>
-          <b>Distance:</b> 0.866 miles<br>
+          <b>Distance:</b> 0.017 miles<br>
           <hr>
           <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 334.653°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 334.648°<br>
+          <b>Forward Azimuth at P1 (Az12):</b> 95.618°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 95.618°<br>
           <hr>
           <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 154.648°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 154.653°<br>
+          <b>Forward Azimuth at P2 (Az21):</b> 275.618°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 275.618°<br>
           <hr>
-          <b>Filter Reason(s):</b> Dist factor of:1.7321, Dist multiple:0.8660<br>
+          <b>Filter Reason(s):</b> Dist factor of:5.9907<br>
           <hr>
           <i>Calculation Method: Ellipsoidal (WGS84)</i>
         ]]>                    
         
                 </description>
-                <styleUrl>#372</styleUrl>
-                <LineString id="370">
-                    <coordinates>-77.03657097283033,38.89828563763562,0.0 -77.04345033773585,38.9096320124952,0.0</coordinates>
+                <styleUrl>#202</styleUrl>
+                <LineString id="200">
+                    <coordinates>-77.036569,38.897561,0.0 -77.03626431326734,38.89753757777559,0.0</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="205">
+                <name>WHs → WHb</name>
+                <description>
+                    
+        
+<![CDATA[
+          <b>P1:</b> WHs<br>
+          <b>P2:</b> WHb<br>
+          <hr>
+          <b>Distance:</b> 0.101 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 179.994°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 179.994°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 359.994°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 359.994°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Dist factor of:1.4142<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                    
+        
+                </description>
+                <styleUrl>#206</styleUrl>
+                <LineString id="204">
+                    <coordinates>-77.036569,38.897561,0.0 -77.03656881060775,38.89609664728791,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="374">
-            <Style id="377">
-                <LineStyle id="378">
-                    <color>FFFF0000</color>
+        <Folder id="208">
+            <Style id="211">
+                <LineStyle id="212">
+                    <color>FFFFFF00</color>
                     <colorMode>normal</colorMode>
                     <width>2.5</width>
                 </LineStyle>
             </Style>
-            <Style id="381">
-                <LineStyle id="382">
-                    <color>FFFF5500</color>
+            <Style id="215">
+                <LineStyle id="216">
+                    <color>FFFFFF01</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
-            <Style id="385">
-                <LineStyle id="386">
-                    <color>FFFF8833</color>
+            <Style id="219">
+                <LineStyle id="220">
+                    <color>FFFF0099</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
             <name>WHz</name>
-            <Placemark id="376">
+            <Placemark id="210">
                 <name>WHz → CFd</name>
                 <description>
                     
@@ -3117,12 +1744,12 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#377</styleUrl>
-                <LineString id="375">
+                <styleUrl>#211</styleUrl>
+                <LineString id="209">
                     <coordinates>-77.03431133703796,38.89597663639302,0.0 -77.00578323852076,38.88868978460074,0.0</coordinates>
                 </LineString>
             </Placemark>
-            <Placemark id="380">
+            <Placemark id="214">
                 <name>WHz → Pk04</name>
                 <description>
                     
@@ -3147,12 +1774,12 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#381</styleUrl>
-                <LineString id="379">
+                <styleUrl>#215</styleUrl>
+                <LineString id="213">
                     <coordinates>-77.03431133703796,38.89597663639302,0.0 -78.20406185227269,38.77550687860945,0.0</coordinates>
                 </LineString>
             </Placemark>
-            <Placemark id="384">
+            <Placemark id="218">
                 <name>WHz → SF01</name>
                 <description>
                     
@@ -3177,83 +1804,53 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#385</styleUrl>
-                <LineString id="383">
+                <styleUrl>#219</styleUrl>
+                <LineString id="217">
                     <coordinates>-77.03431133703796,38.89597663639302,0.0 -77.08586335465753,38.90124200833564,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>
-        <Folder id="387">
-            <Style id="390">
-                <LineStyle id="391">
-                    <color>FFFF8800</color>
-                    <colorMode>normal</colorMode>
-                    <width>2.5</width>
-                </LineStyle>
-            </Style>
-            <Style id="394">
-                <LineStyle id="395">
-                    <color>FFFFBB00</color>
+        <Folder id="221">
+            <Style id="224">
+                <LineStyle id="225">
+                    <color>FFFF9999</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
-            <Style id="398">
-                <LineStyle id="399">
-                    <color>FFFF88BB</color>
+            <Style id="228">
+                <LineStyle id="229">
+                    <color>FFFFFF99</color>
                     <colorMode>normal</colorMode>
                     <width>1.5</width>
                 </LineStyle>
             </Style>
-            <name>Wc</name>
-            <Placemark id="389">
-                <name>Wc → Cavg</name>
+            <Style id="232">
+                <LineStyle id="233">
+                    <color>FFFF99FF</color>
+                    <colorMode>normal</colorMode>
+                    <width>1.5</width>
+                </LineStyle>
+            </Style>
+            <name>elEc</name>
+            <Placemark id="223">
+                <name>elEc → Chk17</name>
                 <description>
                     
         
 <![CDATA[
-          <b>P1:</b> Wc<br>
-          <b>P2:</b> Cavg<br>
+          <b>P1:</b> elEc<br>
+          <b>P2:</b> Chk17<br>
           <hr>
-          <b>Distance:</b> 0.006 miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 174.821°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 174.821°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 354.821°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 354.821°<br>
-          <hr>
-          <b>Filter Reason(s):</b> Dist factor of:1.6180, Dist factor of:5.6050<br>
-          <hr>
-          <i>Calculation Method: Ellipsoidal (WGS84)</i>
-        ]]>                    
-        
-                </description>
-                <styleUrl>#390</styleUrl>
-                <LineString id="388">
-                    <coordinates>-77.04078625,38.89317136999999,0.0 -77.04077541312266,38.89307792552204,0.0</coordinates>
-                </LineString>
-            </Placemark>
-            <Placemark id="393">
-                <name>Wc → Chk62</name>
-                <description>
-                    
-        
-<![CDATA[
-          <b>P1:</b> Wc<br>
-          <b>P2:</b> Chk62<br>
-          <hr>
-          <b>Distance:</b> 1.345 miles<br>
+          <b>Distance:</b> 4.931 miles<br>
           <hr>
           <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 51.236°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 51.249°<br>
+          <b>Forward Azimuth at P1 (Az12):</b> 18.955°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 18.974°<br>
           <hr>
           <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 231.249°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 231.236°<br>
+          <b>Forward Azimuth at P2 (Az21):</b> 198.974°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 198.955°<br>
           <hr>
           <b>Filter Reason(s):</b> Dist multiple:0.1494<br>
           <hr>
@@ -3261,29 +1858,59 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#394</styleUrl>
-                <LineString id="392">
-                    <coordinates>-77.04078625,38.89317136999999,0.0 -77.02133073015519,38.90537641569407,0.0</coordinates>
+                <styleUrl>#224</styleUrl>
+                <LineString id="222">
+                    <coordinates>-77.04033404260801,38.89278681802996,0.0 -77.01059198844285,38.96039316959799,0.0</coordinates>
                 </LineString>
             </Placemark>
-            <Placemark id="397">
-                <name>Wc → Chk63</name>
+            <Placemark id="227">
+                <name>elEc → H56</name>
                 <description>
                     
         
 <![CDATA[
-          <b>P1:</b> Wc<br>
-          <b>P2:</b> Chk63<br>
+          <b>P1:</b> elEc<br>
+          <b>P2:</b> H56<br>
           <hr>
-          <b>Distance:</b> 0.523 miles<br>
+          <b>Distance:</b> 2.003 miles<br>
           <hr>
           <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> 25.780°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> 25.783°<br>
+          <b>Forward Azimuth at P1 (Az12):</b> 325.847°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 325.834°<br>
           <hr>
           <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> 205.783°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> 205.780°<br>
+          <b>Forward Azimuth at P2 (Az21):</b> 145.834°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 145.847°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Dist multiple:0.3338<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                    
+        
+                </description>
+                <styleUrl>#228</styleUrl>
+                <LineString id="226">
+                    <coordinates>-77.04033404260801,38.89278681802996,0.0 -77.06120140091524,38.91681538320637,0.0</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="231">
+                <name>elEc → OtrC</name>
+                <description>
+                    
+        
+<![CDATA[
+          <b>P1:</b> elEc<br>
+          <b>P2:</b> OtrC<br>
+          <hr>
+          <b>Distance:</b> 5.053 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 36.351°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 36.386°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 216.386°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 216.351°<br>
           <hr>
           <b>Filter Reason(s):</b> Dist multiple:0.1742<br>
           <hr>
@@ -3291,9 +1918,86 @@
         ]]>                    
         
                 </description>
-                <styleUrl>#398</styleUrl>
-                <LineString id="396">
-                    <coordinates>-77.04078625,38.89317136999999,0.0 -77.036569,38.89999431930673,0.0</coordinates>
+                <styleUrl>#232</styleUrl>
+                <LineString id="230">
+                    <coordinates>-77.04033404260801,38.89278681802996,0.0 -76.98472940704961,38.95177142459147,0.0</coordinates>
+                </LineString>
+            </Placemark>
+        </Folder>
+        <Folder id="234">
+            <Style id="237">
+                <LineStyle id="238">
+                    <color>FFFF9999</color>
+                    <colorMode>normal</colorMode>
+                    <width>1.5</width>
+                </LineStyle>
+            </Style>
+            <Style id="241">
+                <LineStyle id="242">
+                    <color>FFFF55FF</color>
+                    <colorMode>normal</colorMode>
+                    <width>1.5</width>
+                </LineStyle>
+            </Style>
+            <name>elSc</name>
+            <Placemark id="236">
+                <name>elSc → Chk54</name>
+                <description>
+                    
+        
+<![CDATA[
+          <b>P1:</b> elSc<br>
+          <b>P2:</b> Chk54<br>
+          <hr>
+          <b>Distance:</b> 14.046 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 180.647°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 180.645°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 0.645°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 0.647°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Dist multiple:0.1494<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                    
+        
+                </description>
+                <styleUrl>#237</styleUrl>
+                <LineString id="235">
+                    <coordinates>-77.04058603,38.89284818820199,0.0 -77.04351796976675,38.68922831692476,0.0</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark id="240">
+                <name>elSc → H32</name>
+                <description>
+                    
+        
+<![CDATA[
+          <b>P1:</b> elSc<br>
+          <b>P2:</b> H32<br>
+          <hr>
+          <b>Distance:</b> 3.464 miles<br>
+          <hr>
+          <u>Path P1 → P2:</u><br>
+          <b>Forward Azimuth at P1 (Az12):</b> 308.881°<br>
+          <b>Back Azimuth at P2 (BackAz12):</b> 308.850°<br>
+          <hr>
+          <u>Path P2 → P1:</u><br>
+          <b>Forward Azimuth at P2 (Az21):</b> 128.850°<br>
+          <b>Back Azimuth at P1 (BackAz21):</b> 128.881°<br>
+          <hr>
+          <b>Filter Reason(s):</b> Dist multiple:3.4641<br>
+          <hr>
+          <i>Calculation Method: Ellipsoidal (WGS84)</i>
+        ]]>                    
+        
+                </description>
+                <styleUrl>#241</styleUrl>
+                <LineString id="239">
+                    <coordinates>-77.04058603,38.89284818820199,0.0 -77.09063005508365,38.9243596243616,0.0</coordinates>
                 </LineString>
             </Placemark>
         </Folder>

@@ -1,17 +1,21 @@
-reason_set,color
-['Dist factor of:1.4142'],FFFF0000
-['Dist multiple:0.7071'],FFFF0001
-['Dist multiple:0.8660'],FFFF5500
-"['Dist factor of:1.6180', 'Dist multiple:1.6180']",FFFFFF00
-['Dist multiple:0.6180'],FFFFFF01
-['Dist multiple:1.6180'],FFFFFF02
-['Dist factor of:2.2360'],FFFF0055
-"['Dist factor of:2.2882', 'Dist multiple:2.2882']",FFFF00FF
-['Dist factor of:5.6050'],FFFF0099
-"['Dist factor of:5.9907', 'Dist multiple:5.9907']",FFFF9900
-['Dist factor of:5.9907'],FFFF9901
-['Dist multiple:0.1494'],FFFF9999
-['Dist multiple:0.1742'],FFFF99FF
-['Dist multiple:0.3338'],FFFFFF99
-['Dist multiple:0.5401'],FFFFFF55
-['Dist multiple:3.4641'],FFFF55FF
+reason_set,color,group
+['Dist factor of:1.3143'],color000,group_000
+"['Dist factor of:1.4142', 'Dist multiple:1.4142']",color001,group_001
+['Dist factor of:1.4142'],color002,group_002
+['Dist factor of:1.5388'],color003,group_003
+"['Dist factor of:1.6180', 'Dist multiple:1.6180']",color004,group_004
+['Dist factor of:1.7321'],color005,group_005
+"['Dist factor of:2.2361', 'Dist multiple:2.2361']",color006,group_006
+['Dist factor of:3.0000'],color007,group_007
+['Dist factor of:4.0000'],color008,group_008
+"['Dist factor of:5.0000', 'Dist multiple:5.0000']",color009,group_009
+['Dist factor of:5.0000'],color010,group_010
+['Dist multiple:0.4755'],color011,group_011
+['Dist multiple:0.6180'],color012,group_012
+['Dist multiple:1.3143'],color013,group_013
+['Dist multiple:1.4142'],color014,group_014
+['Dist multiple:1.5388'],color015,group_015
+['Dist multiple:1.6180'],color016,group_016
+['Dist multiple:1.7321'],color017,group_017
+['Dist multiple:2.2361'],color018,group_018
+['Dist multiple:4.0000'],color019,group_019

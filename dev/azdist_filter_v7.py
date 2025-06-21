@@ -4,12 +4,14 @@ azdist_filter.py v7.0
 - --half, --whole apply to both Az and Dist unless --az-only or --dist-only specified.
 - 'Reason' column shows which criteria/field was matched.
 - Example usages:
-        azd --az-only --factor-tol 0.002 --az-tol 0.002 --az-targets 185.117 84.883 5.117 25.5 64.5 54.75 125.25 34.25 95.117 27.6923 117.692 152.3077 1 91 181 271 89 179 269 359 61 59 44 46 29 31 121 119 107 109 109.5 198 36.8699 53.1301 126.8699 143.1301 53.1301 36.8699 116.565 153.435 63.435 26.5651 --az-multiples 15 18 --factor-targets 222.5 --spherical --whole --out data/az_out.csv data/MixPnts.kml data/az_MixLines.kml
+        azd --az-only --factor-tol 0.002 --az-tol 0.002 --az-targets 185.117 84.883 5.117 25.5 64.5 54.75 125.25 34.25 95.117 27.6923 117.692 152.3077 1 91 181 271 89 179 269 359 61 59 44 46 29 31 121 119 107 109 109.5 198 36.8699 53.1301 126.8699 143.1301 53.1301 36.8699 116.565 153.435 63.435 26.5651 --az-multiples 15 18 --factor-targets 222.5 --spherical --whole --out highpoints/az_out.csv highpoints/MixPnts.kml highpoints/az_MixLines.kml
+        azd --dist-only --factor-tol 0.00025 --dist-tol 0.00025 --dist-targets 5.605 3.4641 0.33385 0.54018 0.87403 2.2882 3.7025 5.9907 0.004392 --dist-multiples 1.618 0.618 2.236 0.866 0.7071 --factor-targets 22.882 16.18 6.18 17.321 14.142 --spherical --whole --out highpoints/dist_out.csv highpoints/MixPnts.kml highpoints/dist_MixLines.kml
         azd --az-targets 46 --az-tol 0.005 --dist-targets 2.2882 7.071 --dist-tol 0.0005 --az-multiples 18 --dist-multiples 1.5 --factor-targets 14.142 --factor-tol 0.001 --spherical --half --whole --out data/azdist_filtered.csv data/SelectPnts.kml data/SelectPnts_critlines.kml
         azd --dist-only --factor-tol 0.00019 --dist-tol 0.0002 --dist-targets 2.2882 --dist-multiples 1.618 0.618 2.236 0.866 0.7071 --factor-targets 16.18 6.18 17.321 14.142 --spherical --whole --out highpoints/dist_out.csv highpoints/MixPnts.kml highpoints/dist_MMixLines.kml
-        azd --factor-tol 0.0005 --dist-tol 0.0005 --dist-multiples 2.28825 0.87403 2.80252 1.07047 6.26662 2.393643 1.4142 1.7321 2.2361 1.618 0.618 0.47553 1.31433 1.5388 3.0 4.0 5.0 --factor-targets 1.4142 1.7321 2.2361 1.618 0.618 0.47553 1.31433 1.5388 3.0 4.0 5.0 2.28825 0.87403 2.80252 1.07047 6.26662 2.39364 --export-color-map data/d_tri_colormap.csv --out data/d_tris_ell.csv data/MixPnts.kml data/d_TriLines_ell.kml
-   
-Useful RIGHT Triangle properties (for Grouping):
+        azd --dist-only --factor-tol 0.0005 --dist-tol 0.0005 --dist-multiples 3.4641 0.33385 0.54012 0.87403 3.7025 5.9907 1.618 0.618 2.236 0.866 0.7071 2.2882 5.605 0.174242 0.14943 --factor-targets 3.7025 5.9907 2.2882 3.7025 2.236 1.618 6.18 1.7321 1.4142 5.605 --spherical --half --whole --out data/d_penplus.csv data/PentagonPlusPoints.kml data/d_PenPlusLines_filt.kml
+        azd --az-only --az-tol 0.01 --az-targets 25.5 64.5 54.75 125.25 34.25 1 10 172 91 82 73 74 53 55 89 179 269 359 61 59 44 46 134 136 29 31 121 119 107 109 109.5 198 126.87 143.13 53.13 36.87 222.5 42.5 132.5 129.2315 140.7685 50.7685 39.2315 126.8699 63.43495 26.56505 116.56505 153.43495 51.82729 38.1727 128.1727 141.82729 --az-multiples 15 18 --out data/az_mix_ell.csv data/MixPnts.kml data/az_MixLines_ell.kml
+        
+Useful RIGHT Triangle properties:
 r2 - r3 - r5:   AZs 129.2315 140.7685 50.7685 39.2315
                 Ds 1.4142 1.7321 2.2361
 3 - 4 - 5:	    AZs 53.1301 36.8699 126.8699 143.1301
@@ -22,6 +24,8 @@ r2 - r3 - r5:   AZs 129.2315 140.7685 50.7685 39.2315
                     Ds 1 1.618 2.618
 18 - 72 - 90:	Ds 0.47553 1.618 1.5388
 36 - 54 - 90	Ds 1.31433 2 2.2361
+
+azd --factor-tol 0.0005 --dist-tol 0.0005 --dist-multiples 2.28825 0.87403 2.80252 1.07047 6.26662 2.393643 1.4142 1.7321 2.2361 1.618 0.618 0.47553 1.31433 1.5388 3.0 4.0 5.0 --factor-targets 1.4142 1.7321 2.2361 1.618 0.618 0.47553 1.31433 1.5388 3.0 4.0 5.0 2.28825 0.87403 2.80252 1.07047 6.26662 2.39364 --export-color-map data/d_tri_colormap.csv --out data/d_tris_ell.csv data/MixPnts.kml data/d_TriLines_ell.kml
 
 azd --az-multiples 129.2315 140.7685 50.7685 39.2315 53.1301 36.8699 126.8699 143.1301 63.43495 26.56505 116.56505 153.43495 51.82729 38.1727 128.1727 141.82729
 

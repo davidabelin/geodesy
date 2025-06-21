@@ -36,30 +36,6 @@
 		<SimpleField type="double" name="Lon"><displayName>&lt;b&gt;Lon&lt;/b&gt;</displayName>
 </SimpleField>
 	</Schema>
-	<Style id="hlightPointStyle">
-		<IconStyle>
-			<color>e6ffffff</color>
-			<scale>0.8</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle_highlight.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>ccffffff</color>
-			<scale>0.7</scale>
-		</LabelStyle>
-		<BalloonStyle>
-			<text><![CDATA[<table border="0">
-  <tr><td><b>LOC</b></td><td>$[updates/LOC]</td></tr>
-  <tr><td><b>LAT</b></td><td>$[updates/LAT]</td></tr>
-  <tr><td><b>LON</b></td><td>$[updates/LON]</td></tr>
-</table>
-]]></text>
-		</BalloonStyle>
-		<LineStyle>
-			<width>2.5</width>
-		</LineStyle>
-	</Style>
 	<Style id="hlightPointStyle0100">
 		<IconStyle>
 			<color>e60000ff</color>
@@ -92,6 +68,29 @@
 		<LineStyle>
 			<color>ffd5ffff</color>
 			<width>3</width>
+		</LineStyle>
+	</Style>
+	<Style id="hlightPointStyle5">
+		<IconStyle>
+			<color>e6ffffff</color>
+			<scale>0.8</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle_highlight.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>ccffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<BalloonStyle>
+			<text><![CDATA[<table border="0">
+  <tr><td><b>LOC</b></td><td>$[updates/LOC]</td></tr>
+  <tr><td><b>LAT</b></td><td>$[updates/LAT]</td></tr>
+  <tr><td><b>LON</b></td><td>$[updates/LON]</td></tr>
+</table>]]></text>
+		</BalloonStyle>
+		<LineStyle>
+			<width>2.5</width>
 		</LineStyle>
 	</Style>
 	<StyleMap id="m_ylw-pushpin">
@@ -264,14 +263,34 @@
 			<styleUrl>#sh_placemark_circle_highlight9</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_placemark_circle13231">
+	<StyleMap id="msn_placemark_circle1323">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_placemark_circle104102</styleUrl>
+			<styleUrl>#sn_placemark_circle104103</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_placemark_circle_highlight15600</styleUrl>
+			<styleUrl>#sh_placemark_circle_highlight15602</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_placemark_circle13230">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_placemark_circle10410</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_placemark_circle_highlight15603</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_placemark_circle13231">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_placemark_circle104101</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_placemark_circle_highlight15604</styleUrl>
 		</Pair>
 	</StyleMap>
 	<StyleMap id="msn_placemark_circle13232">
@@ -281,37 +300,17 @@
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_placemark_circle_highlight15603</styleUrl>
-		</Pair>
-	</StyleMap>
-	<StyleMap id="msn_placemark_circle1323">
-		<Pair>
-			<key>normal</key>
-			<styleUrl>#sn_placemark_circle10410</styleUrl>
-		</Pair>
-		<Pair>
-			<key>highlight</key>
-			<styleUrl>#sh_placemark_circle_highlight15602</styleUrl>
+			<styleUrl>#sh_placemark_circle_highlight15601</styleUrl>
 		</Pair>
 	</StyleMap>
 	<StyleMap id="msn_placemark_circle13233">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_placemark_circle104103</styleUrl>
+			<styleUrl>#sn_placemark_circle104102</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
 			<styleUrl>#sh_placemark_circle_highlight1560</styleUrl>
-		</Pair>
-	</StyleMap>
-	<StyleMap id="msn_placemark_circle13230">
-		<Pair>
-			<key>normal</key>
-			<styleUrl>#sn_placemark_circle104101</styleUrl>
-		</Pair>
-		<Pair>
-			<key>highlight</key>
-			<styleUrl>#sh_placemark_circle_highlight15601</styleUrl>
 		</Pair>
 	</StyleMap>
 	<StyleMap id="msn_placemark_circle13234">
@@ -884,6 +883,16 @@
 			<styleUrl>#sh_shaded_dot10</styleUrl>
 		</Pair>
 	</StyleMap>
+	<StyleMap id="msn_star">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_star</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_star</styleUrl>
+		</Pair>
+	</StyleMap>
 	<StyleMap id="msn_star0">
 		<Pair>
 			<key>normal</key>
@@ -964,20 +973,10 @@
 			<styleUrl>#sh_track1</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_triangle1">
-		<Pair>
-			<key>normal</key>
-			<styleUrl>#sn_triangle0</styleUrl>
-		</Pair>
-		<Pair>
-			<key>highlight</key>
-			<styleUrl>#sh_triangle0</styleUrl>
-		</Pair>
-	</StyleMap>
 	<StyleMap id="msn_triangle">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_triangle</styleUrl>
+			<styleUrl>#sn_triangle5</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
@@ -987,34 +986,44 @@
 	<StyleMap id="msn_triangle0">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_triangle5</styleUrl>
+			<styleUrl>#sn_triangle</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_triangle3</styleUrl>
+			<styleUrl>#sh_triangle2</styleUrl>
 		</Pair>
 	</StyleMap>
 	<StyleMap id="msn_triangle01">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#sn_triangle00</styleUrl>
+			<styleUrl>#sn_triangle0</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
 			<styleUrl>#sh_triangle4</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_triangle10">
+	<StyleMap id="msn_triangle03">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_triangle50</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_triangle3</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_triangle1">
 		<Pair>
 			<key>normal</key>
 			<styleUrl>#sn_triangle2</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#sh_triangle00</styleUrl>
+			<styleUrl>#sh_triangle0</styleUrl>
 		</Pair>
 	</StyleMap>
-	<StyleMap id="msn_triangle100">
+	<StyleMap id="msn_triangle10">
 		<Pair>
 			<key>normal</key>
 			<styleUrl>#sn_triangle6</styleUrl>
@@ -1054,7 +1063,7 @@
 			<styleUrl>#sh_volcano</styleUrl>
 		</Pair>
 	</StyleMap>
-	<Style id="normPointStyle">
+	<Style id="normPointStyle0">
 		<IconStyle>
 			<color>e6ffffff</color>
 			<scale>0.8</scale>
@@ -1071,8 +1080,7 @@
   <tr><td><b>LOC</b></td><td>$[updates/LOC]</td></tr>
   <tr><td><b>LAT</b></td><td>$[updates/LAT]</td></tr>
   <tr><td><b>LON</b></td><td>$[updates/LON]</td></tr>
-</table>
-]]></text>
+</table>]]></text>
 		</BalloonStyle>
 		<LineStyle>
 			<width>2.5</width>
@@ -1112,16 +1120,6 @@
 			<width>3</width>
 		</LineStyle>
 	</Style>
-	<StyleMap id="pointStyleMap">
-		<Pair>
-			<key>normal</key>
-			<styleUrl>#normPointStyle</styleUrl>
-		</Pair>
-		<Pair>
-			<key>highlight</key>
-			<styleUrl>#hlightPointStyle</styleUrl>
-		</Pair>
-	</StyleMap>
 	<StyleMap id="pointStyleMap00">
 		<Pair>
 			<key>normal</key>
@@ -1130,6 +1128,16 @@
 		<Pair>
 			<key>highlight</key>
 			<styleUrl>#hlightPointStyle0100</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="pointStyleMap1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#normPointStyle0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#hlightPointStyle5</styleUrl>
 		</Pair>
 	</StyleMap>
 	<StyleMap id="pointStyleMap2">
@@ -1507,7 +1515,7 @@
 			<color>ffffaad2</color>
 		</PolyStyle>
 	</Style>
-	<Style id="sh_placemark_circle_highlight15602">
+	<Style id="sh_placemark_circle_highlight1560">
 		<IconStyle>
 			<color>e60000ff</color>
 			<scale>0.7</scale>
@@ -1519,30 +1527,6 @@
 			<color>e6ffffff</color>
 			<scale>0.7</scale>
 		</LabelStyle>
-		<ListStyle>
-		</ListStyle>
-		<LineStyle>
-			<color>e6ffffff</color>
-			<width>3</width>
-		</LineStyle>
-		<PolyStyle>
-			<color>ffffaad2</color>
-		</PolyStyle>
-	</Style>
-	<Style id="sh_placemark_circle_highlight15600">
-		<IconStyle>
-			<color>e60000ff</color>
-			<scale>0.7</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>e6ffffff</color>
-			<scale>0.7</scale>
-		</LabelStyle>
-		<ListStyle>
-		</ListStyle>
 		<LineStyle>
 			<color>e6ffffff</color>
 			<width>3</width>
@@ -1563,8 +1547,26 @@
 			<color>e6ffffff</color>
 			<scale>0.7</scale>
 		</LabelStyle>
-		<ListStyle>
-		</ListStyle>
+		<LineStyle>
+			<color>e6ffffff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>ffffaad2</color>
+		</PolyStyle>
+	</Style>
+	<Style id="sh_placemark_circle_highlight15602">
+		<IconStyle>
+			<color>e60000ff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>e6ffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
 		<LineStyle>
 			<color>e6ffffff</color>
 			<width>3</width>
@@ -1585,8 +1587,6 @@
 			<color>e6ffffff</color>
 			<scale>0.7</scale>
 		</LabelStyle>
-		<ListStyle>
-		</ListStyle>
 		<LineStyle>
 			<color>e6ffffff</color>
 			<width>3</width>
@@ -1595,7 +1595,7 @@
 			<color>ffffaad2</color>
 		</PolyStyle>
 	</Style>
-	<Style id="sh_placemark_circle_highlight1560">
+	<Style id="sh_placemark_circle_highlight15604">
 		<IconStyle>
 			<color>e60000ff</color>
 			<scale>0.7</scale>
@@ -1607,8 +1607,6 @@
 			<color>e6ffffff</color>
 			<scale>0.7</scale>
 		</LabelStyle>
-		<ListStyle>
-		</ListStyle>
 		<LineStyle>
 			<color>e6ffffff</color>
 			<width>3</width>
@@ -2574,6 +2572,24 @@
 			<width>1.2</width>
 		</LineStyle>
 	</Style>
+	<Style id="sh_star">
+		<IconStyle>
+			<color>cc005500</color>
+			<scale>0.827273</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>ccffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+		<LineStyle>
+			<width>2</width>
+		</LineStyle>
+	</Style>
 	<Style id="sh_star1">
 		<IconStyle>
 			<color>cc005500</color>
@@ -2726,31 +2742,12 @@
 			<color>bfffffff</color>
 			<scale>0.5</scale>
 		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
 		<LineStyle>
 			<color>ccffffff</color>
 			<width>1.5</width>
 		</LineStyle>
 	</Style>
 	<Style id="sh_triangle0">
-		<IconStyle>
-			<color>e6ffaaff</color>
-			<scale>0.827273</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/triangle.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>bfffffff</color>
-			<scale>0.5</scale>
-		</LabelStyle>
-		<LineStyle>
-			<color>f2ffaaff</color>
-			<width>3.3</width>
-		</LineStyle>
-	</Style>
-	<Style id="sh_triangle00">
 		<IconStyle>
 			<color>e6ffffff</color>
 			<scale>0.945455</scale>
@@ -2782,6 +2779,23 @@
 		<LineStyle>
 			<color>ccffffff</color>
 			<width>1.5</width>
+		</LineStyle>
+	</Style>
+	<Style id="sh_triangle2">
+		<IconStyle>
+			<color>e6ffaaff</color>
+			<scale>0.827273</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/triangle.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>bfffffff</color>
+			<scale>0.5</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>f2ffaaff</color>
+			<width>3.3</width>
 		</LineStyle>
 	</Style>
 	<Style id="sh_triangle3">
@@ -3112,72 +3126,6 @@
 			<colorMode>random</colorMode>
 		</PolyStyle>
 	</Style>
-	<Style id="sn_placemark_circle104102">
-		<IconStyle>
-			<color>e60000ff</color>
-			<scale>0.7</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>e6ffffff</color>
-			<scale>0.7</scale>
-		</LabelStyle>
-		<ListStyle>
-		</ListStyle>
-		<LineStyle>
-			<color>e6ffffff</color>
-			<width>3</width>
-		</LineStyle>
-		<PolyStyle>
-			<color>ffffaad2</color>
-		</PolyStyle>
-	</Style>
-	<Style id="sn_placemark_circle104103">
-		<IconStyle>
-			<color>e60000ff</color>
-			<scale>0.7</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>e6ffffff</color>
-			<scale>0.7</scale>
-		</LabelStyle>
-		<ListStyle>
-		</ListStyle>
-		<LineStyle>
-			<color>e6ffffff</color>
-			<width>3</width>
-		</LineStyle>
-		<PolyStyle>
-			<color>ffffaad2</color>
-		</PolyStyle>
-	</Style>
-	<Style id="sn_placemark_circle104101">
-		<IconStyle>
-			<color>e60000ff</color>
-			<scale>0.7</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>e6ffffff</color>
-			<scale>0.7</scale>
-		</LabelStyle>
-		<ListStyle>
-		</ListStyle>
-		<LineStyle>
-			<color>e6ffffff</color>
-			<width>3</width>
-		</LineStyle>
-		<PolyStyle>
-			<color>ffffaad2</color>
-		</PolyStyle>
-	</Style>
 	<Style id="sn_placemark_circle10410">
 		<IconStyle>
 			<color>e60000ff</color>
@@ -3190,8 +3138,6 @@
 			<color>e6ffffff</color>
 			<scale>0.7</scale>
 		</LabelStyle>
-		<ListStyle>
-		</ListStyle>
 		<LineStyle>
 			<color>e6ffffff</color>
 			<width>3</width>
@@ -3212,8 +3158,66 @@
 			<color>e6ffffff</color>
 			<scale>0.7</scale>
 		</LabelStyle>
-		<ListStyle>
-		</ListStyle>
+		<LineStyle>
+			<color>e6ffffff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>ffffaad2</color>
+		</PolyStyle>
+	</Style>
+	<Style id="sn_placemark_circle104101">
+		<IconStyle>
+			<color>e60000ff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>e6ffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>e6ffffff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>ffffaad2</color>
+		</PolyStyle>
+	</Style>
+	<Style id="sn_placemark_circle104102">
+		<IconStyle>
+			<color>e60000ff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>e6ffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>e6ffffff</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>ffffaad2</color>
+		</PolyStyle>
+	</Style>
+	<Style id="sn_placemark_circle104103">
+		<IconStyle>
+			<color>e60000ff</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>e6ffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
 		<LineStyle>
 			<color>e6ffffff</color>
 			<width>3</width>
@@ -4276,6 +4280,24 @@
 			<width>1.2</width>
 		</LineStyle>
 	</Style>
+	<Style id="sn_star">
+		<IconStyle>
+			<color>cc005500</color>
+			<scale>0.7</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>ccffffff</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+		<LineStyle>
+			<width>2</width>
+		</LineStyle>
+	</Style>
 	<Style id="sn_star1">
 		<IconStyle>
 			<color>deff00ff</color>
@@ -4416,7 +4438,7 @@
 			<width>2.5</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_triangle0">
+	<Style id="sn_triangle">
 		<IconStyle>
 			<color>e6ffaaff</color>
 			<scale>0.7</scale>
@@ -4433,26 +4455,7 @@
 			<width>3.3</width>
 		</LineStyle>
 	</Style>
-	<Style id="sn_triangle">
-		<IconStyle>
-			<color>e6ffffff</color>
-			<scale>0.8</scale>
-			<Icon>
-				<href>http://maps.google.com/mapfiles/kml/shapes/triangle.png</href>
-			</Icon>
-		</IconStyle>
-		<LabelStyle>
-			<color>bfffffff</color>
-			<scale>0.5</scale>
-		</LabelStyle>
-		<BalloonStyle>
-		</BalloonStyle>
-		<LineStyle>
-			<color>ccffffff</color>
-			<width>1.5</width>
-		</LineStyle>
-	</Style>
-	<Style id="sn_triangle00">
+	<Style id="sn_triangle0">
 		<IconStyle>
 			<color>e6ffffff</color>
 			<scale>0.8</scale>
@@ -4504,6 +4507,23 @@
 		</LineStyle>
 	</Style>
 	<Style id="sn_triangle5">
+		<IconStyle>
+			<color>e6ffffff</color>
+			<scale>0.8</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/triangle.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>bfffffff</color>
+			<scale>0.5</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ccffffff</color>
+			<width>1.5</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_triangle50">
 		<IconStyle>
 			<color>e6ffffff</color>
 			<scale>0.8</scale>
@@ -4629,6 +4649,7 @@
 		</Placemark>
 		<Folder>
 			<name>Pen</name>
+			<open>1</open>
 			<Placemark>
 				<name>P</name>
 				<styleUrl>#msn_star30</styleUrl>
@@ -4749,20 +4770,20 @@
 			</Placemark>
 			<Placemark>
 				<name>PenC</name>
-				<LookAt>
-					<longitude>-77.05604559034877</longitude>
-					<latitude>38.87565543473433</latitude>
-					<altitude>0</altitude>
-					<heading>169.9889651686078</heading>
-					<tilt>0.1361785549977257</tilt>
-					<range>520.4833079586078</range>
+				<Camera>
+					<longitude>-77.05711519199795</longitude>
+					<latitude>38.87622393366062</latitude>
+					<altitude>76.51538314046999</altitude>
+					<heading>14.24222288028321</heading>
+					<tilt>0.1099536624384067</tilt>
+					<roll>16.94271619048612</roll>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-				</LookAt>
-				<styleUrl>#msn_star30</styleUrl>
+				</Camera>
+				<styleUrl>#msn_star</styleUrl>
 				<Point>
 					<extrude>1</extrude>
 					<gx:drawOrder>1</gx:drawOrder>
-					<coordinates>-77.05693269848774,38.87621612361609,44</coordinates>
+					<coordinates>-77.05702684244545,38.87632204707956,44</coordinates>
 				</Point>
 			</Placemark>
 			<Placemark>
@@ -4909,7 +4930,7 @@
 					<range>142.5483293546443</range>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</LookAt>
-				<styleUrl>#msn_placemark_circle1323</styleUrl>
+				<styleUrl>#msn_placemark_circle13232</styleUrl>
 				<Point>
 					<extrude>1</extrude>
 					<altitudeMode>relativeToGround</altitudeMode>
@@ -4948,7 +4969,7 @@
 					<range>139.6073395455507</range>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</LookAt>
-				<styleUrl>#msn_placemark_circle13232</styleUrl>
+				<styleUrl>#msn_placemark_circle13231</styleUrl>
 				<Point>
 					<altitudeMode>relativeToGround</altitudeMode>
 					<gx:drawOrder>1</gx:drawOrder>
@@ -5003,7 +5024,7 @@
 					<range>148.1832284532262</range>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</LookAt>
-				<styleUrl>#msn_placemark_circle13231</styleUrl>
+				<styleUrl>#msn_placemark_circle1323</styleUrl>
 				<Point>
 					<altitudeMode>relativeToGround</altitudeMode>
 					<gx:drawOrder>1</gx:drawOrder>
@@ -5081,7 +5102,7 @@
 					<range>153.6665464494</range>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</LookAt>
-				<styleUrl>#msn_triangle1</styleUrl>
+				<styleUrl>#msn_triangle0</styleUrl>
 				<Point>
 					<extrude>1</extrude>
 					<altitudeMode>relativeToGround</altitudeMode>
@@ -5117,7 +5138,7 @@
 					<roll>84.8079243107949</roll>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</Camera>
-				<styleUrl>#msn_triangle100</styleUrl>
+				<styleUrl>#msn_triangle10</styleUrl>
 				<Point>
 					<extrude>1</extrude>
 					<altitudeMode>relativeToGround</altitudeMode>
@@ -5173,7 +5194,7 @@
 					<roll>82.93833762307538</roll>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</Camera>
-				<styleUrl>#msn_triangle100</styleUrl>
+				<styleUrl>#msn_triangle10</styleUrl>
 				<Point>
 					<altitudeMode>relativeToGround</altitudeMode>
 					<gx:drawOrder>1</gx:drawOrder>
@@ -5191,7 +5212,7 @@
 					<range>148.0044651593322</range>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</LookAt>
-				<styleUrl>#msn_triangle10</styleUrl>
+				<styleUrl>#msn_triangle1</styleUrl>
 				<Point>
 					<gx:drawOrder>1</gx:drawOrder>
 					<coordinates>-77.00578323852076,38.88868978460074,0</coordinates>
@@ -5226,7 +5247,7 @@
 					<range>352.8312890275362</range>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</LookAt>
-				<styleUrl>#msn_triangle0</styleUrl>
+				<styleUrl>#msn_triangle03</styleUrl>
 				<Point>
 					<extrude>1</extrude>
 					<altitudeMode>relativeToGround</altitudeMode>
@@ -5245,7 +5266,7 @@
 					<roll>4.295694251411208</roll>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</Camera>
-				<styleUrl>#msn_triangle100</styleUrl>
+				<styleUrl>#msn_triangle10</styleUrl>
 				<Point>
 					<gx:drawOrder>1</gx:drawOrder>
 					<coordinates>-77.00907795602103,38.89361386946052,0</coordinates>
@@ -5279,7 +5300,7 @@
 					<roll>-45.09176574580417</roll>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</Camera>
-				<styleUrl>#msn_triangle100</styleUrl>
+				<styleUrl>#msn_triangle10</styleUrl>
 				<Point>
 					<gx:drawOrder>1</gx:drawOrder>
 					<coordinates>-77.00988737303246,38.88556174596554,0</coordinates>
@@ -5328,7 +5349,7 @@
 			<name>Q</name>
 			<Placemark>
 				<name>elEc</name>
-				<styleUrl>#pointStyleMap</styleUrl>
+				<styleUrl>#pointStyleMap1</styleUrl>
 				<ExtendedData>
 					<SchemaData schemaUrl="#S_updates_SDD">
 						<SimpleData name="LOC">eLEc</SimpleData>
@@ -5344,7 +5365,7 @@
 			</Placemark>
 			<Placemark>
 				<name>elSc</name>
-				<styleUrl>#pointStyleMap</styleUrl>
+				<styleUrl>#pointStyleMap1</styleUrl>
 				<ExtendedData>
 					<SchemaData schemaUrl="#S_updates_SDD">
 						<SimpleData name="LOC">eLSc</SimpleData>
@@ -5360,7 +5381,7 @@
 			</Placemark>
 			<Placemark>
 				<name>elNc</name>
-				<styleUrl>#pointStyleMap</styleUrl>
+				<styleUrl>#pointStyleMap1</styleUrl>
 				<ExtendedData>
 					<SchemaData schemaUrl="#S_updates_SDD">
 						<SimpleData name="LOC">eLNc</SimpleData>
@@ -5376,7 +5397,7 @@
 			</Placemark>
 			<Placemark>
 				<name>elWc</name>
-				<styleUrl>#pointStyleMap</styleUrl>
+				<styleUrl>#pointStyleMap1</styleUrl>
 				<ExtendedData>
 					<SchemaData schemaUrl="#S_updates_SDD">
 						<SimpleData name="LOC">elWc</SimpleData>
@@ -5516,12 +5537,12 @@
 			<Placemark>
 				<name>L</name>
 				<LookAt>
-					<longitude>-77.05034254307265</longitude>
-					<latitude>38.88914094899145</latitude>
+					<longitude>-77.05016782433138</longitude>
+					<latitude>38.88923404521926</latitude>
 					<altitude>0</altitude>
-					<heading>-92.06093464414785</heading>
-					<tilt>20.19296905321517</tilt>
-					<range>297.9512281050887</range>
+					<heading>1.834801939457445</heading>
+					<tilt>0</tilt>
+					<range>142.6962755882109</range>
 					<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
 				</LookAt>
 				<styleUrl>#msn_track0</styleUrl>
@@ -5529,7 +5550,7 @@
 					<extrude>1</extrude>
 					<altitudeMode>relativeToGround</altitudeMode>
 					<gx:drawOrder>1</gx:drawOrder>
-					<coordinates>-77.05018996185001,38.889309435739,97</coordinates>
+					<coordinates>-77.0501466575182,38.88924949780046,97</coordinates>
 				</Point>
 			</Placemark>
 			<Placemark>

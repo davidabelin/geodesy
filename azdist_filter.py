@@ -1,5 +1,5 @@
 """
-azdist_filter.py v7.0
+azdist_filter.py v7.6
 
 - --half, --whole apply to both Az and Dist unless --az-only or --dist-only specified.
 - 'Reason' column shows which criteria/field was matched.
@@ -33,562 +33,206 @@ USER-DRIVEN COLORING: Skeleton for the Only Solution That Cannot Fail
 - This gives *full control* over what color every line is, and enables visual grouping, legend, re-use, and no surprises.
 
 """
-
-import pandas as pd
-import numpy as np
 import argparse
+import csv
 import math
-import ast
-from typing import List, Callable, Dict, Tuple
 from itertools import combinations
-from functools import partial
-import concurrent.futures
-import xml.etree.ElementTree as ET
 import simplekml
-from geometry import inverse_geodetic
-import os
-import time
+from pyproj import Geod
 from tqdm import tqdm
-from matplotlib import colormaps as cm
-import matplotlib.colors as mcolors
+import xml.etree.ElementTree as ET
+import concurrent.futures
+import os
+from functools import partial
 
-# === Constants ===
-PHI = (1 + 5 ** 0.5) / 2
-PI = math.pi
-SQRT2 = math.sqrt(2)
-SQRT3 = math.sqrt(3) 
-TOL = 0.0001 # Default tolerance, used in various places
+# ===============================================================================
+# Constants and Geodetic Functions
+# ===============================================================================
+PHI = (1 + math.sqrt(5)) / 2
+DEG2RAD = math.pi / 180.0
+RAD2DEG = 180.0 / math.pi
+EARTH_RADIUS_MILES = 3958.756
+worker_geod_obj = None
 
-# === KML Parsing (from dot_connecter.py) ===
-def load_points_from_kml(path: str) -> Dict[str, Tuple[float, float]]:
-    """
-    Parse KML to dict name -> (lat, lon).
-    Handles Placemarks without a <name> tag by generating a unique name.
-    """
+def init_worker(use_ellipsoid: bool):
+    global worker_geod_obj
+    if use_ellipsoid:
+        worker_geod_obj = Geod(ellps='WGS84')
+
+def inverse_geodetic(p1_coords, p2_coords, geod_obj):
+    if geod_obj:
+        az1, az2, dist_m = geod_obj.inv(p1_coords[1], p1_coords[0], p2_coords[1], p2_coords[0])
+        return az1 % 360, az2 % 360, dist_m / 1609.344
+    phi1r, phi2r = p1_coords[0] * DEG2RAD, p2_coords[0] * DEG2RAD
+    dlam = (p2_coords[1] - p1_coords[1]) * DEG2RAD
+    sigma = math.acos(max(-1, min(1, math.sin(phi1r) * math.sin(phi2r) + math.cos(phi1r) * math.cos(phi2r) * math.cos(dlam))))
+    dist = EARTH_RADIUS_MILES * sigma
+    y1, x1 = math.sin(dlam) * math.cos(phi2r), math.cos(phi1r) * math.sin(phi2r) - math.sin(phi1r) * math.cos(phi2r) * math.cos(dlam)
+    az1 = (math.atan2(y1, x1) * RAD2DEG + 360) % 360
+    y2, x2 = math.sin(-dlam) * math.cos(phi1r), math.cos(phi2r) * math.sin(phi1r) - math.sin(phi2r) * math.cos(phi1r) * math.cos(dlam)
+    az2 = (math.atan2(y2, x2) * RAD2DEG + 360) % 360
+    return az1, az2, dist
+
+def calculate_triangle_properties(p1_coords, p2_coords, p3_coords, geod_obj):
+    _, _, side_ab = inverse_geodetic(p1_coords, p2_coords, geod_obj)
+    _, _, side_bc = inverse_geodetic(p2_coords, p3_coords, geod_obj)
+    _, _, side_ca = inverse_geodetic(p3_coords, p1_coords, geod_obj)
+    def clamp(x): return max(-1.0, min(1.0, x))
+    try:
+        angle_a = math.degrees(math.acos(clamp((side_bc**2 + side_ca**2 - side_ab**2) / (2 * side_bc * side_ca))))
+        angle_b = math.degrees(math.acos(clamp((side_ca**2 + side_ab**2 - side_bc**2) / (2 * side_ca * side_ab))))
+        angle_c = math.degrees(math.acos(clamp((side_ab**2 + side_bc**2 - side_ca**2) / (2 * side_ab * side_bc))))
+    except (ValueError, ZeroDivisionError): return None
+    return {"sides": [side_ab, side_bc, side_ca], "angles": [angle_a, angle_b, angle_c]}
+
+# ===============================================================================
+# KML Parsing, Triangle Definitions, and Styling
+# ===============================================================================
+def load_points_from_kml(path: str) -> dict[str, tuple[float, float]]:
     ns = {'kml': 'http://www.opengis.net/kml/2.2'}
     tree = ET.parse(path)
     root = tree.getroot()
     pts = {}
-    unnamed_point_idx = 0
-    for pm_idx, pm in enumerate(root.findall('.//kml:Placemark', ns)):
+    for pm in root.findall('.//kml:Placemark', ns):
         name = pm.findtext('kml:name', default='', namespaces=ns).strip()
-        
-        # Find coordinates element safely
-        coordinates_element = pm.find('.//kml:Point/kml:coordinates', ns)
-        if coordinates_element is None or coordinates_element.text is None:
-            print(f"Warning: Placemark {pm_idx + 1} skipped, missing coordinates element or text.")
-            continue
-        
-        coord_text_str = coordinates_element.text.strip()
-        if not coord_text_str: # Skip if coordinates string is empty after stripping
-            print(f"Warning: Placemark {pm_idx + 1} (Name: '{name}') skipped, empty coordinates string.")
-            continue
-
-        if not name: # If name is missing, generate one
-            unnamed_point_idx += 1
-            name = f"UP_{unnamed_point_idx}"
-        
-        # Ensure name is unique (handles auto-generated or KML duplicates)
-        original_name = name
-        suffix_counter = 1
-        while name in pts: 
-            name = f"{original_name}_{suffix_counter}"
-            suffix_counter += 1
-            
-        try:
-            lon_str, lat_str, *_ = coord_text_str.split(',') # KML order is lon,lat,alt
-            pts[name] = (float(lat_str), float(lon_str)) # Stores as lat,lon
-        except ValueError:
-            print(f"Warning: Could not parse coordinates for Placemark '{name}': {coord_text_str}")
-            continue
+        coords_element = pm.find('.//kml:Point/kml:coordinates', ns)
+        if name and coords_element is not None and coords_element.text:
+            lon_str, lat_str, *_ = coords_element.text.strip().split(',')
+            pts[name] = (float(lat_str), float(lon_str))
     print(f"Loaded {len(pts)} points from {path}.")
     return pts
 
-# === Pair Metric Calculation (inspired by dot_connecter.py) ===
-def _calculate_pair_metrics(pair: Tuple[str, str], points: Dict[str, Tuple[float, float]], ellipsoid: bool) -> Dict[str, any]:
-    """Worker function to calculate metrics for a single pair of points. Must be a top-level function for pickling."""
-    p1_name, p2_name = pair
-    lat1, lon1 = points[p1_name]
-    lat2, lon2 = points[p2_name]
+TRIANGLE_DEFINITIONS = {
+    "3-4-5":       {"group": "3-4-5 Right Triangles", "angles": [36.87, 53.13, 90.0], "side_ratios": [3.0, 4.0, 5.0]},
+    "30-60-90":    {"group": "30-60-90 Right Triangles", "angles": [30.0, 60.0, 90.0], "side_ratios": [1.0, math.sqrt(3), 2.0]},
+    "Equilateral": {"group": "Equilateral Triangles", "angles": [60.0, 60.0, 60.0], "side_ratios": [1.0, 1.0, 1.0]},
+    "45-45-90":    {"group": "45-45-90 Right Triangles", "angles": [45.0, 45.0, 90.0], "side_ratios": [1.0, 1.0, math.sqrt(2)]},
+    "18-72-90":    {"group": "18-72-90 Right Triangles", "angles": [18.0, 72.0, 90.0], "side_ratios": [math.sin(math.radians(18)), math.sin(math.radians(72)), 1.0]},
+    "36-54-90":    {"group": "36-54-90 Right Triangles", "angles": [36.0, 54.0, 90.0], "side_ratios": [math.sin(math.radians(36)), math.sin(math.radians(54)), 1.0]},
+    "Golden T":    {"group": "Golden Triangles (72-72-36)", "angles": [36.0, 72.0, 72.0], "side_ratios": [1.0, PHI, PHI]},
+    "Golden G":    {"group": "Golden Gnomons (36-36-108)", "angles": [36.0, 36.0, 108.0], "side_ratios": [1.0, 1.0, 1/PHI]},
+    "Kepler":      {"group": "Kepler Right Triangles", "angles": [31.72, 58.28, 90.0], "side_ratios": [1, math.sqrt(PHI), PHI]},
+    "1-2-r5":      {"group": "1-2-sqrt(5) Right Triangles", "angles": [26.57, 63.43, 90.0], "side_ratios": [1.0, 2.0, math.sqrt(5)]},
+}
 
-    # az_p1_to_p2 is the forward azimuth at p1 towards p2
-    # az_p2_to_p1 is the forward azimuth at p2 towards p1
-    az_p1_to_p2, az_p2_to_p1, dist = inverse_geodetic(lat1, lon1, lat2, lon2, unit='miles', ellipsoid=ellipsoid)
+# --- New KML Styling Logic ---
+# Base colors for matches found by the more precise 'side_ratios'
+KML_STYLES_SIDES = {
+    "3-4-5": "FF0077FF", "30-60-90": "FF00FF00", "Equilateral": "FFFF00F0", # Bright Pink
+    "45-45-90": "FFFF0000", "18-72-90": "FFFF00CC", "36-54-90": "FFFF10C1",
+    "Golden T": "FF00D7FF", "Golden G": "FFFF8C00", "Kepler": "FFEE82EE",
+    "1-2-r5": "FFFF00FF", "Default": "FFFFFFFF",
+}
+# Darker/muted versions for matches found by 'angles'
+KML_STYLES_ANGLES = {
+    "3-4-5": "FF004E9A", "30-60-90": "FF009900", "Equilateral": "FFCC00B4", # Darker Pink
+    "45-45-90": "FFB40000", "18-72-90": "FFB40090", "36-54-90": "FFB40C88",
+    "Golden T": "FF00A6D1", "Golden G": "FFB46200", "Kepler": "FFA95DB4",
+    "1-2-r5": "FFB400B4", "Default": "FFCCCCCC",
+}
 
-    az12 = az_p1_to_p2 % 360
-    az21 = az_p2_to_p1 % 360
-    back_az_at_p2 = (az21 + 180) % 360 # Back azimuth at P2 for line P1->P2
-    back_az_at_p1 = (az12 + 180) % 360 # Back azimuth at P1 for line P2->P1
+def find_triangle_match(properties, angle_tol, ratio_tol):
+    if not properties: return None, None, None
+    sorted_angles, sorted_sides = sorted(properties['angles']), sorted(properties['sides'])
+    for key, definition in TRIANGLE_DEFINITIONS.items():
+        match_type = None
+        if all(abs(a - b) < angle_tol for a, b in zip(sorted_angles, sorted(definition['angles']))):
+            match_type = "angles"
+        elif sorted_sides[0] > 1e-9:
+            measured_ratios = [s / sorted_sides[0] for s in sorted_sides]
+            def_ratios = sorted(definition['side_ratios'])
+            if def_ratios[0] > 1e-9:
+                def_ratios_norm = [r / def_ratios[0] for r in def_ratios]
+                if all(abs(a - b) < ratio_tol for a, b in zip(measured_ratios, def_ratios_norm)):
+                    match_type = "side_ratios"
+        if match_type:
+            factor = sum(sorted_sides) / sum(definition['side_ratios']) if sum(definition['side_ratios']) > 0 else 0
+            return key, match_type, factor
+    return None, None, None
 
-    return {
-        'P1': p1_name, 'P1_lat': lat1, 'P1_lon': lon1,
-        'P2': p2_name, 'P2_lat': lat2, 'P2_lon': lon2,
-        'Dist': dist, 'Az12': az12, 'Az21': az21,
-        'BackAz12': back_az_at_p2, 'BackAz21': back_az_at_p1
-    }
+def process_single_triad(triad_of_points, angle_tol, ratio_tol):
+    (p1_name, p1_coords), (p2_name, p2_coords), (p3_name, p3_coords) = triad_of_points
+    properties = calculate_triangle_properties(p1_coords, p2_coords, p3_coords, geod_obj=worker_geod_obj)
+    match_key, match_reason, match_factor = find_triangle_match(properties, angle_tol, ratio_tol)
+    if match_key:
+        return {"points": (p1_name, p2_name, p3_name), "coords": (p1_coords, p2_coords, p3_coords),
+                "key": match_key, "reason": match_reason, "factor": match_factor, "properties": properties}
+    return None
 
-def generate_all_pairs_dataframe(points: Dict[str, Tuple[float, float]], ellipsoid: bool = True) -> pd.DataFrame:
-    """Calculates Az/Dist for all unique pairs, using parallel processing for large datasets."""
-    point_names = list(points.keys())
-    columns = ['P1', 'P1_lat', 'P1_lon',
-               'P2', 'P2_lat', 'P2_lon',
-               'Dist', 'Az12', 'Az21',
-               'BackAz12', 'BackAz21']
+# ===============================================================================
+# Main Execution
+# ===============================================================================
+def main():
+    parser = argparse.ArgumentParser(description="Find and classify special triangles from a KML file.")
+    parser.add_argument("input_kml", help="Input KML file with placemarks.")
+    parser.add_argument("output_kml", help="Output KML file for matched triangles.")
+    parser.add_argument("--out-csv", help="Optional CSV file for saving matched triangle data.", default=None)
+    parser.add_argument('--spherical', action='store_true', help='Use spherical calculations. Default is ellipsoidal (WGS84).')
+    parser.add_argument('--angle-tol', type=float, default=1.5, help='Tolerance for angle matching in degrees. Default: 1.5')
+    parser.add_argument('--ratio-tol', type=float, default=0.015, help='Tolerance for side ratio matching (unitless). Default: 0.015')
+    args = parser.parse_args()
 
-    if len(point_names) < 2:
-        return pd.DataFrame(columns=columns)
+    use_ellipsoid = not args.spherical
+    points = load_points_from_kml(args.input_kml)
+    if len(points) < 3: print("Error: Need at least 3 points in the KML file."); return
 
-    all_pairs = list(combinations(point_names, 2))
+    all_triads = list(combinations(points.items(), 3))
+    total_triads = len(all_triads)
+    
+    print(f"Analyzing {total_triads} unique triangles using {'Ellipsoidal' if use_ellipsoid else 'Spherical'} model...")
+    matched_triangles, PARALLEL_THRESHOLD = [], 20000 
 
-    # Heuristic: For small numbers of pairs, the overhead of creating processes
-    # can be slower than just running the calculations in a single thread.
-    PARALLEL_THRESHOLD = 50000
-
-    if len(all_pairs) < PARALLEL_THRESHOLD:
-        print(f"Calculating metrics for {len(all_pairs)} pairs using a single thread (below threshold of {PARALLEL_THRESHOLD})...")
-        # For smaller jobs, a simple list comprehension with a progress bar is efficient.
-        pair_data_list = [
-            _calculate_pair_metrics(pair, points, ellipsoid)
-            for pair in tqdm(all_pairs, desc="Processing pairs (single-thread)")
-        ]
+    if total_triads < PARALLEL_THRESHOLD:
+        print(f"Processing in a single thread (below threshold of {PARALLEL_THRESHOLD})...")
+        geod_obj = Geod(ellps='WGS84') if use_ellipsoid else None
+        for triad in tqdm(all_triads, desc="Processing"):
+            result = process_single_triad_st(triad, geod_obj, args.angle_tol, args.ratio_tol)
+            if result: matched_triangles.append(result)
     else:
         num_workers = os.cpu_count() or 1
-        print(f"Calculating metrics for {len(all_pairs)} pairs using up to {num_workers} processes (above threshold of {PARALLEL_THRESHOLD})...")
-        worker_func = partial(_calculate_pair_metrics, points=points, ellipsoid=ellipsoid)
-        pair_data_list = []
-        with concurrent.futures.ProcessPoolExecutor(max_workers=num_workers) as executor:
-            results_iterator = executor.map(worker_func, all_pairs)
-            pair_data_list = list(tqdm(results_iterator, total=len(all_pairs), desc="Processing pairs (parallel)"))
+        print(f"Processing in parallel with up to {num_workers} workers (above threshold of {PARALLEL_THRESHOLD})...")
+        worker_func = partial(process_single_triad, angle_tol=args.angle_tol, ratio_tol=args.ratio_tol)
+        with concurrent.futures.ProcessPoolExecutor(max_workers=num_workers, initializer=init_worker, initargs=(use_ellipsoid,)) as executor:
+            results_iterator = executor.map(worker_func, all_triads, chunksize=1000)
+            matched_triangles = [r for r in tqdm(results_iterator, total=total_triads, desc="Processing") if r is not None]
 
-    if not pair_data_list:
-        return pd.DataFrame(columns=columns)
+    print(f"Found {len(matched_triangles)} triangles matching defined criteria.")
+    if not matched_triangles: return
 
-    # Create DataFrame and ensure original column order
-    return pd.DataFrame(pair_data_list)[columns]
-
-def within_tol(val: float, targets: list, tol: float) -> bool:
-    return any(abs(val - float(t)) <= tol for t in targets)
-
-def vectorized_is_multiple(series: pd.Series, base: float, tol: float) -> pd.Series:
-    """Vectorized check if values in a series are a multiple of a base value."""
-    if base == 0:
-        return pd.Series(False, index=series.index)
-    rem = series % base
-    return (rem <= tol) | (abs(base - rem) <= tol)
-
-def vectorized_is_factor(series: pd.Series, target: float, tol: float) -> pd.Series:
-    """Vectorized check if values in a series are a factor of a target value."""
-    # Avoid division by zero for val in series
-    safe_series = series.replace(0, np.nan)
-    rem = target % safe_series
-    mask = (rem <= tol) | (abs(safe_series - rem) <= tol)
-    return mask.fillna(False) # Treat original zeros as not being a factor
-
-def mask_half(series, tol=TOL):
-    decimals = np.round((series - np.floor(series)) * 10)
-    return (np.abs(series - np.round(series * 2) / 2) <= tol) & (decimals == 5)
-
-def mask_whole(series, tol=TOL):
-    decimals = np.round((series - np.floor(series)) * 10)
-    return (np.abs(series - np.round(series)) <= tol) & (decimals == 0)
-
-def filter_pairs(
-    df: pd.DataFrame,
-    az_targets: list = None,
-    az_tol: float = TOL,
-    dist_targets: list = None,
-    dist_tol: float = TOL,
-    az_multiples: list = None,
-    dist_multiples: list = None,
-    factor_targets: list = None,
-    factor_tol: float = TOL,
-    half: bool = False,
-    whole: bool = False,
-    az_only: bool = False,
-    dist_only: bool = False,
-    custom_funcs: list = []
-) -> pd.DataFrame:
-    """
-    Flexible filtering: halves/wholes apply to both Az and Dist unless only one is requested.
-    Reason column records all matches for each field.
-    """
-    if df.empty:
-        return df.copy()
-
-    # Dictionary to hold Series for each potential reason column
-    # Each Series will have the same index as df, with reason strings or NaN
-    reason_columns_data = {}
-    keep_mask = pd.Series(False, index=df.index)
-
-    # Determine which fields to test based on --az-only and --dist-only flags
-    test_az = not dist_only
-    test_dist = not az_only
-
-    # Azimuth close to a special value?
-    if test_az and az_targets:
-        for t in az_targets:
-            mask12 = (df['Az12'] - t).abs() <= az_tol
-            mask21 = (df['Az21'] - t).abs() <= az_tol
-            reason_columns_data[f'az12_tgt_{t}'] = pd.Series(f"Az12 target:{t:.2f}", index=df.index).where(mask12)
-            reason_columns_data[f'az21_tgt_{t}'] = pd.Series(f"Az21 target:{t:.2f}", index=df.index).where(mask21)
-            keep_mask |= mask12 | mask21
-
-    # Distance close to a special value?
-    if test_dist and dist_targets:
-        for t in dist_targets:
-            mask = (df['Dist'] - t).abs() <= dist_tol
-            reason_columns_data[f'dist_tgt_{t}'] = pd.Series(f"Dist target:{t:.4f}", index=df.index).where(mask)
-            keep_mask |= mask
-
-    # Azimuth is a multiple of some special value?
-    if test_az and az_multiples:
-        for m in az_multiples:
-            mask12 = vectorized_is_multiple(df['Az12'], m, az_tol)
-            mask21 = vectorized_is_multiple(df['Az21'], m, az_tol)
-            reason_columns_data[f'az12_mult_{m}'] = pd.Series(f"Az12 multiple:{m:.2f}", index=df.index).where(mask12)
-            reason_columns_data[f'az21_mult_{m}'] = pd.Series(f"Az21 multiple:{m:.2f}", index=df.index).where(mask21)
-            keep_mask |= mask12 | mask21
-
-    # Distance is a multiple of some special value?
-    if test_dist and dist_multiples:
-        for m in dist_multiples:
-            mask = vectorized_is_multiple(df['Dist'], m, dist_tol)
-            reason_columns_data[f'dist_mult_{m}'] = pd.Series(f"Dist multiple:{m:.4f}", index=df.index).where(mask)
-            keep_mask |= mask
-
-    # Distance is a factor of some special value? (Should only run if dist is being tested)
-    if test_dist and factor_targets:
-        for tgt in factor_targets:
-            mask = vectorized_is_factor(df['Dist'], tgt, factor_tol)
-            reason_columns_data[f'dist_factor_{tgt}'] = pd.Series(f"Dist factor of:{tgt:.4f}", index=df.index).where(mask)
-            keep_mask |= mask
-
-    # Halves, wholes filters
-    if half:
-        if test_az:
-            mask12 = mask_half(df['Az12'], az_tol)
-            mask21 = mask_half(df['Az21'], az_tol)
-            reason_columns_data['az12_half'] = pd.Series("Az12 Half", index=df.index).where(mask12)
-            reason_columns_data['az21_half'] = pd.Series("Az21 Half", index=df.index).where(mask21)
-            keep_mask |= mask12 | mask21
-        if test_dist:
-            mask = mask_half(df['Dist'], dist_tol)
-            reason_columns_data['dist_half'] = pd.Series("Dist Half", index=df.index).where(mask)
-            keep_mask |= mask
-    if whole:
-        if test_az:
-            mask12 = mask_whole(df['Az12'], az_tol)
-            mask21 = mask_whole(df['Az21'], az_tol)
-            reason_columns_data['az12_whole'] = pd.Series("Az12 Whole", index=df.index).where(mask12)
-            reason_columns_data['az21_whole'] = pd.Series("Az21 Whole", index=df.index).where(mask21)
-            keep_mask |= mask12 | mask21
-        if test_dist:
-            mask = mask_whole(df['Dist'], dist_tol)
-            reason_columns_data['dist_whole'] = pd.Series("Dist Whole", index=df.index).where(mask)
-            keep_mask |= mask
-
-    # User-supplied custom functions (advanced usage)
-    for i, func in enumerate(custom_funcs):
-        mask = df.apply(func, axis=1)
-        reason_columns_data[f'custom_{i}'] = pd.Series("Custom", index=df.index).where(mask)
-        keep_mask |= mask
-
-    # Create the reasons_df from the collected data in one go
-    reasons_df = pd.DataFrame(reason_columns_data, index=df.index)
-
-    filtered_df = df[keep_mask].copy()
-    
-    # Populate the 'Reason' column for the filtered DataFrame
-    if not filtered_df.empty:
-        reasons_for_filtered = reasons_df.loc[filtered_df.index]
-        reason_series = reasons_for_filtered.apply(
-            lambda row: ", ".join(sorted(list(set(r for r in row if pd.notna(r))))),
-            axis=1
-        )
-        filtered_df["Reason"] = reason_series
-    else:
-        # Add Reason column even if empty to maintain schema
-        filtered_df["Reason"] = pd.Series(dtype='str')
+    kml, csv_rows, kml_folders = simplekml.Kml(name="Special Triangles"), [], {}
+    for match in sorted(matched_triangles, key=lambda m: m['key']):
+        key, definition = match['key'], TRIANGLE_DEFINITIONS[match['key']]
+        group_name = definition['group']
+        folder = kml_folders.setdefault(group_name, kml.newfolder(name=group_name))
         
-    return filtered_df
-
-# === Color utilities ===
-def rgba_to_kml_color(rgba):
-    r, g, b, a = [int(255*x) for x in rgba]
-    return f"{a:02X}{b:02X}{g:02X}{r:02X}"
-
-def normalize_reason(reason: str) -> str:
-    """Normalizes a reason string to treat Az12 and Az21 the same for grouping and coloring."""
-    if reason.startswith("Az12 "):
-        return reason.replace("Az12 ", "Az ", 1)
-    if reason.startswith("Az21 "):
-        return reason.replace("Az21 ", "Az ", 1)
-    return reason
-
-# === 1. Export mapping from unique reason-sets to user-editable color ids ===
-def export_reason_map_csv(pair_records, path='reason_color_map.csv'):
-    reason_sets = set(
-        frozenset(normalize_reason(r.strip()) for r in rec.get('Reason', '').split(',') if r.strip())
-        for rec in pair_records
-    )
-
-    if not reason_sets:
-        with open(path, 'w', encoding='utf8') as f:
-            f.write('reason_set,color,group\n')
-        print(f"No unique reason-sets found. Empty map file created at {path}.")
-        return
-
-    sorted_reason_sets = sorted(list(reason_sets), key=lambda s: repr(sorted(list(s))))
-    map_data = {
-        'reason_set': [repr(sorted(list(rs))) for rs in sorted_reason_sets],
-        'color': [f'color{i:03d}' for i in range(len(sorted_reason_sets))],
-        'group': [f'group_{i:03d}' for i in range(len(sorted_reason_sets))]
-    }
-    df_to_export = pd.DataFrame(map_data)
-    df_to_export.to_csv(path, index=False)
-    print(f"Exported {len(df_to_export)} unique reason-sets to {path}. Assign colors and group names in this file, then re-run to generate KML.")
-
-# === 2. Read user-edited color map and use for KML coloring ===
-def load_reason_map(path='reason_color_map.csv'):
-    mapping = {}
-    df = pd.read_csv(path)
-    if 'group' not in df.columns:
-        raise ValueError(f"Color map file '{path}' is missing the required 'group' column.")
-    for _, row in df.iterrows():
-        key = frozenset(ast.literal_eval(row['reason_set']))
-        mapping[key] = {'color': row['color'], 'group': row['group']}
-    return mapping
-
-def get_vivid_colors(colormap_name, n):
-    cmap = cm[colormap_name]
-    if n == 1:
-        return [cmap(0.75)] # More vivid
-    return [cmap(i/(n-1)) for i in range(n)]
-
-def get_grbl_colors(n):
-    if n == 1:
-        return [cm['Blues'](0.6)]
-    half = n // 2
-    greens = [cm['Greens'](i / max(half-1, 1)) for i in range(half)] if half > 0 else []
-    blues = [cm['Blues'](i / max(n-half-1, 1)) for i in range(n-half)] if (n-half) > 0 else []
-    return greens + blues
-
-# === KML Line Drawing ===
-def draw_lines(
-    pair_records: List[Dict[str, any]], 
-    points: Dict[str, Tuple[float, float]], 
-    out_path: str,
-    ellipsoid_calc_used: bool, # This parameter is now passed from main
-    reason_color_map_path: str
-):
-    kml = simplekml.Kml(name="Filtered Lines")
-    calc_method_str = "Ellipsoidal (WGS84)" if ellipsoid_calc_used else "Spherical"
-    kml.document.description = f"Lines generated using {calc_method_str} calculations."
-
-    # The decision to create the map is now handled in main(). This function just loads and uses it.
-    try:
-        reason_map = load_reason_map(reason_color_map_path)
-    except (FileNotFoundError, ValueError) as e:
-        print(f"Error loading color map: {e}")
-        return # Stop if we can't get color/group info
-    kml_folders = {} # To store folder objects: {group_name: kml_folder}
-
-    for rec in pair_records:
-        p1_name = rec['P1']
-        p2_name = rec['P2']
-        reason_string = rec.get('Reason', "")
-
-        # Normalize reasons for consistent coloring and grouping
-        raw_reasons_set = frozenset(r.strip() for r in reason_string.split(',') if r.strip())
-        normalized_reasons_set = frozenset(normalize_reason(r) for r in raw_reasons_set)
-
-        # Use normalized set for color and group lookup.
-        style_info = reason_map.get(normalized_reasons_set, {'color': 'FFAAAAFF', 'group': 'Uncategorized'})
-        color = style_info['color']
-        group_name = style_info['group']
-        width = 2.5 if len(raw_reasons_set) > 1 else 1.5
-
-        # Determine folder based on the group from the map file and create if it doesn't exist
-        if group_name not in kml_folders:
-            kml_folders[group_name] = kml.newfolder(name=group_name)
+        p_names, p_coords, props, reason = match['points'], match['coords'], match['properties'], match['reason']
+        poly = folder.newpolygon(name=f"{p_names[0]}-{p_names[1]}-{p_names[2]}")
+        poly.outerboundaryis = [ (c[1], c[0]) for c in p_coords ] + [ (p_coords[0][1], p_coords[0][0]) ]
         
-        folder = kml_folders[group_name]
-
-        line = folder.newlinestring(name=f"{p1_name} → {p2_name}")
-        lat1, lon1 = points[p1_name]
-        lat2, lon2 = points[p2_name]
-        line.coords = [(lon1, lat1), (lon2, lat2)]
-        line.style.linestyle.color = color
-        line.style.linestyle.width = width
-        description_html = f"""
-        <![CDATA[
-          <b>P1:</b> {rec['P1']}<br>
-          <b>P2:</b> {rec['P2']}<br>
-          <hr>
-          <b>Distance:</b> {rec['Dist']:.3f} miles<br>
-          <hr>
-          <u>Path P1 → P2:</u><br>
-          <b>Forward Azimuth at P1 (Az12):</b> {rec['Az12']:.3f}°<br>
-          <b>Back Azimuth at P2 (BackAz12):</b> {rec['BackAz12']:.3f}°<br>
-          <hr>
-          <u>Path P2 → P1:</u><br>
-          <b>Forward Azimuth at P2 (Az21):</b> {rec['Az21']:.3f}°<br>
-          <b>Back Azimuth at P1 (BackAz21):</b> {rec['BackAz21']:.3f}°<br>
-          <hr>
-          <b>Filter Reason(s):</b> {rec['Reason']}<br>
-          <hr>
-          <i>Calculation Method: {calc_method_str}</i>
-        ]]>
-        """
-        line.description = description_html
-
-    # Generate summary of folders and line counts and add to KML description
-    if kml_folders:
-        summary_html = "<b>Folder Summary:</b><br/><ul>"
-        # Sort folders by name for consistent output
-        for folder_name in sorted(kml_folders.keys()):
-            folder = kml_folders[folder_name]
-            line_count = len(folder.features)
-            if line_count > 0:
-                summary_html += f"<li>{folder_name}: {line_count} lines</li>"
-        summary_html += "</ul><hr>"
+        # --- Select color based on match reason ---
+        if reason == 'side_ratios':
+            color = KML_STYLES_SIDES.get(key, KML_STYLES_SIDES["Default"])
+        else: # 'angles'
+            color = KML_STYLES_ANGLES.get(key, KML_STYLES_ANGLES["Default"])
         
-        # Prepend summary to the existing description
-        kml.document.description = summary_html + kml.document.description
+        poly.style.polystyle.color, poly.style.linestyle.color, poly.style.linestyle.width = simplekml.Color.changealphaint(100, color), color, 2
+        poly.description = f"<![CDATA[<b>Match Type:</b> {key} (by {reason})<br><b>Proportionality Factor:</b> {match['factor']:.4f}<br><hr><b>Vertices:</b> {', '.join(p_names)}<br><b>Angles:</b> {', '.join(f'{a:.2f}°' for a in props['angles'])}<br><b>Side Lengths (miles):</b> {', '.join(f'{s:.4f}' for s in props['sides'])}]]>"
+        csv_rows.append([*p_names, key, reason, group_name, match['factor'], *props['angles'], *props['sides']])
+        
+    kml.save(args.output_kml); print(f"Wrote {len(matched_triangles)} triangles to {args.output_kml}")
+    if args.out_csv:
+        with open(args.out_csv, 'w', newline='') as f:
+            writer = csv.writer(f); writer.writerow(['p1', 'p2', 'p3', 'match_type', 'match_reason', 'group', 'proportionality_factor', 'angle1', 'angle2', 'angle3', 'side1', 'side2', 'side3']); writer.writerows(csv_rows)
+        print(f"Wrote details to {args.out_csv}")
 
-    kml.save(out_path)
-    print(f"Wrote KML with {len(pair_records)} lines to {out_path}.")
-    
-def parse_arguments():
-    """Parses command-line arguments for the script."""
-    parser = argparse.ArgumentParser(description="Filter azimuth/distance pairs by modular criteria.")
-    parser.add_argument("input_kml", help="Input KML file with placemarks")
-    parser.add_argument("output_kml", help="Output KML file with lines for filtered pairs")
-    parser.add_argument("--out", help="Optional CSV file for saving filtered pair data (Az, Dist, Reason)", default=None)
-    parser.add_argument("--export-color-map", type=str, metavar='FILE', help="Export the reason-to-color/group map to a CSV file and exit.")
-    parser.add_argument("--color-map", type=str, metavar='FILE', default='reason_color_map.csv', help="Path to the CSV map for KML generation. Must contain 'reason_set', 'color', and 'group' columns. Colors can be KML names or AABBGGRR hex codes. Default: 'reason_color_map.csv'")
-    parser.add_argument("--az-only", action='store_true', help="Restrict all filters to Azimuth fields only.")
-    parser.add_argument("--dist-only", action='store_true', help="Restrict all filters to Distance fields only.")
-    parser.add_argument("--half", action='store_true', help="Filter for distances or azimuths ending in .5 (exclusive)")
-    parser.add_argument("--whole", action='store_true', help="Filter for distances or azimuths ending in .0 (exclusive)")
-    parser.add_argument("--az-tol", type=float, default=TOL, help="Tolerance for azimuth match [default: 0.001]")
-    parser.add_argument("--az-targets", nargs='*', type=float, default=None, help="Azimuths of interest (deg)")
-    parser.add_argument("--az-multiples", nargs='*', type=float, default=None, help="Azimuth multiples to match")
-    parser.add_argument("--dist-tol", type=float, default=TOL, help="Tolerance for distance match [default: 0.001]")
-    parser.add_argument("--dist-targets", nargs='*', type=float, default=None, help="Distances of interest (miles)")
-    parser.add_argument("--dist-multiples", nargs='*', type=float, default=None, help="Distance multiples to match")
-    parser.add_argument("--factor-tol", type=float, default=TOL, help="Tolerance for --factor-targets checks [default: 0.001]")
-    parser.add_argument("--factor-targets", nargs='*', type=float, default=None, help="Distance is a factor of each TARGET (within tolerance)")
-    parser.add_argument('--spherical', action='store_true', help='Use spherical (not ellipsoidal) calculations for Az/Dist')
-    return parser.parse_args()
-
-def to_float_list(seq):
-    """Safely converts a sequence of strings to a list of floats."""
-    if seq is None:
-        return []
-    out = []
-    for x in seq:
-        try:
-            if x is not None and str(x).strip() != '':
-                out.append(float(x))
-        except ValueError:
-            print(f"Warning: Could not convert '{x}' to float. Skipping this target/multiple.")
-            continue
-    return out
-
-def load_and_prepare_data(args):
-    """Loads KML points and generates the initial DataFrame of all point pairs."""
-    points_data = load_points_from_kml(args.input_kml)
-    all_pairs_df = generate_all_pairs_dataframe(points_data, ellipsoid=not args.spherical)
-    return points_data, all_pairs_df
-
-def apply_filters(args, all_pairs_df):
-    """Applies all specified filters to the DataFrame."""
-    parsed_az_targets = to_float_list(args.az_targets)
-    parsed_dist_targets = to_float_list(args.dist_targets)
-    parsed_az_multiples = to_float_list(args.az_multiples)
-    parsed_dist_multiples = to_float_list(args.dist_multiples)
-    parsed_factor_targets = to_float_list(args.factor_targets)
-
-    filters_active = (
-        bool(parsed_az_targets) or bool(parsed_dist_targets) or
-        bool(parsed_az_multiples) or bool(parsed_dist_multiples) or
-        bool(parsed_factor_targets) or args.half or args.whole
-    )
-
-    if not filters_active:
-        processed_df = all_pairs_df.copy()
-        if not processed_df.empty:
-            processed_df['Reason'] = "All Pairs (No Filters)"
-        elif 'Reason' not in processed_df.columns:
-            processed_df['Reason'] = pd.Series(dtype='str')
-        print(f"No filters specified. Processing all {len(processed_df)} pairs.")
-    else:
-        processed_df = filter_pairs(
-            all_pairs_df,
-            az_targets=parsed_az_targets, az_tol=args.az_tol,
-            dist_targets=parsed_dist_targets, dist_tol=args.dist_tol,
-            az_multiples=parsed_az_multiples, dist_multiples=parsed_dist_multiples,
-            factor_targets=parsed_factor_targets, factor_tol=args.factor_tol,
-            half=args.half, whole=args.whole,
-            az_only=args.az_only, dist_only=args.dist_only
-        )
-        print(f"Selected {len(processed_df)} out of {len(all_pairs_df)} total calculated pairs.")
-    return processed_df, filters_active
-
-def handle_output(args, processed_df, points_data, ellipsoid_calc_used, filters_active):
-    """Manages all file outputs (CSV, KML, color map)."""
-    if args.out:
-        processed_df.to_csv(args.out, index=False)
-        print(f"Pair data written to {args.out}")
-
-    if not processed_df.empty:
-        pair_records_for_kml = processed_df.to_dict(orient='records')
-
-        if args.export_color_map:
-            print(f"Exporting color map to '{args.export_color_map}'...")
-            export_reason_map_csv(pair_records_for_kml, args.export_color_map)
-            return
-
-        color_map_path = args.color_map
-        if not os.path.exists(color_map_path):
-            print(f"\nError: Color map '{color_map_path}' not found.")
-            print(f"Please run the script with --export-color-map <filename.csv> first to generate it.")
-            return
-
-        pair_records_for_kml.sort(key=lambda x: (x.get('P1', ''), x.get('P2', '')))
-        draw_lines(pair_records_for_kml, points_data, args.output_kml, ellipsoid_calc_used, reason_color_map_path=color_map_path)
-    else:
-        if filters_active:
-            print(f"No lines to draw as no pairs matched the filter criteria. KML file '{args.output_kml}' will not be created with content.")
-        else:
-            print(f"No lines to draw as no pairs could be generated from the input. KML file '{args.output_kml}' will not be created with content.")
-
-def main():
-    """Main function to orchestrate the script's execution."""
-    script_start_time = time.monotonic()
-    args = parse_arguments()
-
-    # --- Load and Prepare ---
-    t0 = time.monotonic()
-    points_data, all_pairs_df = load_and_prepare_data(args)
-    t1 = time.monotonic()
-    print(f"\n> Data loading and pair calculation took {t1 - t0:.2f} seconds.")
-
-    # --- Filter ---
-    t0 = time.monotonic()
-    processed_df, filters_active = apply_filters(args, all_pairs_df)
-    t1 = time.monotonic()
-    print(f"> Filtering took {t1 - t0:.2f} seconds.")
-
-    # --- Output ---
-    t0 = time.monotonic()
-    handle_output(args, processed_df, points_data, not args.spherical, filters_active)
-    t1 = time.monotonic()
-    print(f"> File output took {t1 - t0:.2f} seconds.")
-
-    script_end_time = time.monotonic()
-    print(f"\nTotal script execution time: {script_end_time - script_start_time:.2f} seconds.")
+def process_single_triad_st(triad_of_points, geod_obj, angle_tol, ratio_tol):
+    (p1_name, p1_coords), (p2_name, p2_coords), (p3_name, p3_coords) = triad_of_points
+    properties = calculate_triangle_properties(p1_coords, p2_coords, p3_coords, geod_obj=geod_obj)
+    match_key, match_reason, match_factor = find_triangle_match(properties, angle_tol, ratio_tol)
+    if match_key:
+        return {"points": (p1_name, p2_name, p3_name), "coords": (p1_coords, p2_coords, p3_coords),
+                "key": match_key, "reason": match_reason, "factor": match_factor, "properties": properties}
+    return None
 
 if __name__ == "__main__":
     main()

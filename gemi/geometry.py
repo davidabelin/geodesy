@@ -1,7 +1,27 @@
-"""
-C:\Users\David\Documents\Local_Python\geodesy\gemi\geometry.py
-v1.0: Gemi-assisted
-"""
+'''
+Version 1.0.0  Gemi Assisted
+
+Usage:
+>geo -h
+geometry.py [-h] {direct,inverse,walk,golden-spiral-in,golden-spiral-plot-in,golden-spiral-out,find-lat,find-lon,gauss,testgauss} ...
+
+Spherical Geometry Toolkit
+
+positional arguments:
+  {direct,inverse,walk,golden-spiral-in,golden-spiral-plot-in,golden-spiral-out,find-lat,find-lon,gauss,testgauss}
+    direct              Forward geodetic: lat1, lon1, az1, dist -> lat2, lon2, az2
+    inverse             Inverse geodetic: lat1, lon1, lat2, lon2 -> az1, az2, dist
+    walk                Find points on a progression of angles and side lengths
+    golden-spiral-in    Generate inward-growing golden spiral points
+    golden-spiral-plot-in
+                        Plot golden spiral
+    golden-spiral-out   Generate outward-growing golden spiral points
+    find-lat            Find latitudes for fixed lon and distance
+    find-lon            Find longitudes for fixed lat and distance
+
+options:
+  -h, --help            show this help message and exit
+'''
 
 import csv
 import os

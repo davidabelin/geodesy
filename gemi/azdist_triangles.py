@@ -1,6 +1,6 @@
 """
 azdist_triangles.py   v2.0  Gemi-assisted
-""
+
 Example usage and result:
 
 >python azdist_triangles.py --angle-tol 0.01 --ratio-tol 0.001 --out-csv data/tri_out_ell.csv data/MixPnts.kml data/TriangleLines_ell.kml

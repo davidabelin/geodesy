@@ -3,19 +3,31 @@
 *.xlsx
 *.tif
 *.xcs
+*.tif
+*.geojson
+*.csv
+*.img
+*.data
+*.kml
+*.kmz
+*.xlsx
+*.xl*
+*.json
 
 # Both project Data folders but keep kml
+data
 data/*
 data/*.*
 data/*/*.*
-data
-
+data/
 data/*.csv
 data/*.xlsx
 data/downloaded/
 data/docs/
 data/FirstTries/
+*/data/*.*
 
+devde/*.*
 dev/data/*.csv
 dev/data/*.xlsx
 

@@ -5,6 +5,11 @@
 *.xcs
 
 # Both project Data folders but keep kml
+data/*
+data/*.*
+data/*/*.*
+data
+
 data/*.csv
 data/*.xlsx
 data/downloaded/

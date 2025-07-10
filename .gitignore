@@ -3,19 +3,37 @@
 *.xlsx
 *.tif
 *.xcs
+*.tif
+*.geojson
+*.csv
+*.img
+*.data
+*.kml
+*.kmz
+*.xlsx
+*.xl*
+*.json
+*.xcf
 
 # Both project Data folders but keep kml
+data
+data/*
+data/*.*
+data/*/*.*
+data/
 data/*.csv
 data/*.xlsx
 data/downloaded/
 data/docs/
 data/FirstTries/
+*/data/*.*
 
+devde/*.*
 dev/data/*.csv
 dev/data/*.xlsx
 
 #and other non-python dev folder contents too
-dev/*.bat
+dev/*.*
 
 # image folder contents
 image/

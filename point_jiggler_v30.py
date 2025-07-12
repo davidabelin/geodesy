@@ -79,6 +79,7 @@ from scipy.optimize import minimize
 from pyproj import Geod
 import rasterio
 from tqdm import tqdm
+import numpy as np
 
 # --- Global Geodetic Object ---
 GEOD = Geod(ellps='WGS84')
@@ -173,18 +174,18 @@ def parse_kml_folders(kml_path):
 
 
 def load_targets(targets_path):
-   targets = {'distances': [], 'azimuths': []}
+    targets = {'distances': [], 'azimuths': []}
 
     try:
-    with open(path, 'r') as f:
-        reader = csv.reader(f)
-        next(reader)
-        for row in reader:
-            ttype, val = row[0].lower(), float(row[1])
-            if 'dist' in ttype:
-                targets['distances'].append(val)
-            elif 'az' in ttype:
-                targets['azimuths'].append(val)
+        with open(path, 'r') as f:
+            reader = csv.reader(f)
+            next(reader)
+            for row in reader:
+                ttype, val = row[0].lower(), float(row[1])
+                if 'dist' in ttype:
+                    targets['distances'].append(val)
+                elif 'az' in ttype:
+                    targets['azimuths'].append(val)
     except FileNotFoundError:
         print(f"Warning: Targets file not found at {targets_path}. Proceeding without geometric targets.")
     except Exception as e:

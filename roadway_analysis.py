@@ -1,4 +1,4 @@
-# Version 2.5 Semi Gemi Assisted
+# Version 2.51 Semi Gemi Assisted
 import geopandas as gpd
 import numpy as np
 import pandas as pd
@@ -26,35 +26,30 @@ METERS_TO_FEET = 3.28084
 
 warnings.simplefilter(action='ignore', category=pd.errors.SettingWithCopyWarning)
 
-# --- NEW: Smart Sorting Function ---
+# --- Smart Sorting Function ---
 def get_street_sort_key(street_name):
     """
     Creates a key for sorting streets logically (by quadrant, then type, then value).
-    Example: "16TH ST NW" -> ('NW', 1, 16)
-             "K ST NW"    -> ('NW', 2, 10) (K is 10th letter, skipping J)
     """
     if not isinstance(street_name, str):
-        return ('', 9, '') # Default for non-string names
+        return ('', 9, '') 
 
-    # 1. Extract Quadrant
     quadrant_match = re.search(r'\s(NW|NE|SW|SE)$', street_name)
-    quadrant = quadrant_match.group(1) if quadrant_match else 'ZZ' # ZZ sorts last
+    quadrant = quadrant_match.group(1) if quadrant_match else 'ZZ'
 
-    # 2. Determine Type (Numbered, Lettered, Other) and Value
     num_match = re.match(r'^(\d+)', street_name)
     if num_match:
-        return (quadrant, 1, int(num_match.group(1))) # Type 1 for Numbered
+        return (quadrant, 1, int(num_match.group(1)))
 
     letter_match = re.match(r'^([A-Z])\s', street_name)
     if letter_match:
         letter = letter_match.group(1)
-        # Handle the infamous missing 'J' street
         alpha_pos = ord(letter) - ord('A')
         if letter > 'J':
             alpha_pos -= 1
-        return (quadrant, 2, alpha_pos) # Type 2 for Lettered
+        return (quadrant, 2, alpha_pos)
 
-    return (quadrant, 3, street_name) # Type 3 for Named
+    return (quadrant, 3, street_name)
 
 # --- Styling Function ---
 def get_style_color(street_name, other_streets_sorted_list):
@@ -90,16 +85,14 @@ def classify_street(azimuth):
         if r[0] <= azimuth <= r[1]: return 'NS'
     return 'Other'
 
-# --- REVISED: Distance Calculation ---
+# --- REVISED: Distance Calculation with Coordinate Output ---
 def calculate_and_save_distances_csv(gdf, classification, output_path):
     if gdf.empty: return
     
-    # Apply the new smart sorting key
     gdf['sort_key'] = gdf['original_name'].apply(get_street_sort_key)
     sorted_gdf = gdf.sort_values(by='sort_key').reset_index(drop=True)
     
     distance_records = []
-    # Group by quadrant to calculate distances only within the same quadrant
     for quadrant, group in sorted_gdf.groupby(lambda i: sorted_gdf.loc[i, 'sort_key'][0]):
         if len(group) < 2: continue
         group = group.reset_index(drop=True)
@@ -107,14 +100,20 @@ def calculate_and_save_distances_csv(gdf, classification, output_path):
             street_a_row, street_b_row = group.iloc[i], group.iloc[i+1]
             p1, p2 = street_a_row.centroid, street_b_row.centroid
             dist_m = Geodesic.WGS84.Inverse(p1.y, p1.x, p2.y, p1.x)['s12'] if classification == 'EW' else Geodesic.WGS84.Inverse(p1.y, p1.x, p1.y, p2.x)['s12']
+            
+            # Add the new coordinate columns to the record
             distance_records.append({
                 'StreetA': street_a_row['original_name'],
+                'LatA': p1.y,
+                'LonA': p1.x,
                 'StreetB': street_b_row['original_name'],
+                'LatB': p2.y,
+                'LonB': p2.x,
                 'Distance': round(dist_m * METERS_TO_FEET, 2)
             })
             
     pd.DataFrame(distance_records).to_csv(output_path, index=False)
-    print(f"   > Saved {classification} distances to '{output_path}'")
+    print(f"   > Saved {classification} distances with coordinates to '{output_path}'")
 
 # --- KML Output Function ---
 def create_kml_output(gdf, output_path):

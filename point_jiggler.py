@@ -1,15 +1,17 @@
-# /geodesy/point_jiggler.py — v3.55
+# /geodesy/point_jiggler.py — v4.0
 """
-CURRENT VERSION 3.55
+CURRENT VERSION 4.0
 
+------------------------------------------------
+3.55
 Optimize point coordinates based on:
   - Geometric distance/azimuths (targets.csv)
   - Triangle-based criteria (tarcrits.csv)
   - Altitude maxima (DEM GeoTIFF)
 
 Usage:
-  python point_jiggler.py input.kml targets.csv tarcrits.csv --dem dem.tif output.kml\
-    [--geom-weight 1.0] [--tri-weight 1.0] [--alt-weight 1.0] [--max-it 100]
+  python point_jiggler.py input.kml targets.csv tarcrits.csv --dem dem.tif output.kml \
+      [--geom-weight 1.0] [--tri-weight 1.0] [--alt-weight 1.0] [--max-it 100]
 ------------------------------------------------
 
 3.5
@@ -106,7 +108,7 @@ import xml.etree.ElementTree as ET
 from scipy.optimize import minimize
 from pyproj import Geod
 import rasterio
-from rasterio.crs import CRS
+from rasterio import CRS
 from rasterio.warp import transform
 import simplekml
 
@@ -175,10 +177,21 @@ def load_tarcrits(path):
 # ---------------------
 
 def init_dem(dem_path):
+    """
+    Initializes the DEM raster, sets global nodata value, and
+    initializes the pyproj.Geod object for geodesic calculations.
+    """
+    global DEM_NODATA
     global GEOD
     ds = rasterio.open(dem_path)
-    GEOD = Geod(ds.crs.to_proj4())
+    DEM_NODATA = ds.nodata
+    # The CRS may be projected, so we get the underlying geodetic CRS
+    # to access its ellipsoid for geodesic calculations.
+    geod_crs = ds.crs.geodetic_crs
+    ellps = geod_crs.ellipsoid
+    GEOD = Geod(a=ellps.semi_major_axis, rf=ellps.inverse_flattening)
     return ds
+
 
 # -------------------------
 # Sample DEM & Gradient

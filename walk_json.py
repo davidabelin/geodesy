@@ -24,7 +24,8 @@ def walk_json_recursive(data, depth=0, prefix=""):
         # Sort keys for consistent output order (optional but helpful)
         for key in sorted(data.keys()):
             value = data[key]
-            # Pass the key information down as the prefix for the next level
+            #if key in ['STONE_NUM', 'LATITUDE', 'LONGITUDE']:
+                # Pass the key information down as the prefix for the next level
             walk_json_recursive(value, depth + 1, prefix=f"'{key}' ")
 
     elif isinstance(data, list):

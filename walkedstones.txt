@@ -1,0 +1,1025 @@
+--- Walking JSON structure in: DC_Boundary_Stones_official.geojson ---
+Successfully loaded 'DC_Boundary_Stones_official.geojson' as a single JSON object/array.
+Root:  4 keys:
+  'crs'  2 keys:
+    'properties'  1 keys:
+      'name'  "urn:ogc:def:crs:OGC:1.3:CRS84"
+    'type'  "name"
+  'features'  [39]:
+    [0]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.04098788140097
+          [1]  38.995964317643214
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-17T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_1"
+        'GLOBALID'  "{33BFADE0-B15B-4EFA-A172-C1EF508..."
+        'LATITUDE'  38.99595651
+        'LOCATION_DESCRIPTION'  "150 feet west of the exit from C..."
+        'LONGITUDE'  -77.04098558
+        'NARRATIVE'  " "
+        'OBJECTID'  1
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NORTH"
+        'XCOORD'  396449.535
+        'YCOORD'  147558.137
+        'Z'  79.041
+        'Z_FT'  259.32
+      'type'  "Feature"
+    [1]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.0541311611376
+          [1]  38.98570634971451
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-18T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_2"
+        'GLOBALID'  "{0FC0F58B-3453-4231-B438-82909EB..."
+        'LATITUDE'  38.98569855
+        'LOCATION_DESCRIPTION'  "5 feet East of a driveway at 270..."
+        'LONGITUDE'  -77.05412886
+        'NARRATIVE'  " "
+        'OBJECTID'  2
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NW9"
+        'XCOORD'  395310.295
+        'YCOORD'  146419.994
+        'Z'  75.173
+        'Z_FT'  246.63
+      'type'  "Feature"
+    [2]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.02774566095205
+          [1]  38.985628142432816
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-17T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_3"
+        'GLOBALID'  "{49011B83-3FAD-46D4-A525-5910EBD..."
+        'LATITUDE'  38.98562034
+        'LOCATION_DESCRIPTION'  "A bronze plaque exists on the si..."
+        'LONGITUDE'  -77.02774336
+        'NARRATIVE'  "SURVEYED CENTER OF THE PLAQUE"
+        'OBJECTID'  3
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NE1"
+        'XCOORD'  397596.322
+        'YCOORD'  146410.287
+        'Z'  108.329
+        'Z_FT'  355.41
+      'type'  "Feature"
+    [3]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.06726924011944
+          [1]  38.97545014552221
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-18T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_4"
+        'GLOBALID'  "{6972EA74-9EC3-4394-9848-6246FB6..."
+        'LATITUDE'  38.97544235
+        'LOCATION_DESCRIPTION'  "Center of a front lawn at 6422 W..."
+        'LONGITUDE'  -77.06726693
+        'NARRATIVE'  " "
+        'OBJECTID'  4
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NW8"
+        'XCOORD'  394171.1779
+        'YCOORD'  145282.2134
+        'Z'  100.078
+        'Z_FT'  328.34
+      'type'  "Feature"
+    [4]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.01459660744523
+          [1]  38.97535906912009
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-17T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_5"
+        'GLOBALID'  "{2CF112A4-EB02-4A63-8B66-E978DF2..."
+        'LATITUDE'  38.97535127
+        'LOCATION_DESCRIPTION'  "South corner of a front lawn at ..."
+        'LONGITUDE'  -77.01459431
+        'NARRATIVE'  " "
+        'OBJECTID'  5
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NE2"
+        'XCOORD'  398735.3701
+        'YCOORD'  145270.0561
+        'Z'  85.408
+        'Z_FT'  280.21
+      'type'  "Feature"
+    [5]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.00169311894567
+          [1]  38.96528040500714
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-17T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_6"
+        'GLOBALID'  "{D8179C55-2BB1-4EFF-BD1E-053E735..."
+        'LATITUDE'  38.9652726
+        'LOCATION_DESCRIPTION'  "About 140 feet northwest of inte..."
+        'LONGITUDE'  -77.00169083
+        'NARRATIVE'  " "
+        'OBJECTID'  6
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NE3"
+        'XCOORD'  399853.465
+        'YCOORD'  144151.1289
+        'Z'  56.4
+        'Z_FT'  185.04
+      'type'  "Feature"
+    [6]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.08040578491928
+          [1]  38.965190163927105
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-18T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_7"
+        'GLOBALID'  "{FF800E4A-AC90-4934-94CD-B5821CB..."
+        'LATITUDE'  38.96518237
+        'LOCATION_DESCRIPTION'  "Under a tree on the South corner..."
+        'LONGITUDE'  -77.08040347
+        'NARRATIVE'  " "
+        'OBJECTID'  7
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NW7"
+        'XCOORD'  393031.8656
+        'YCOORD'  144144.1793
+        'Z'  104.242
+        'Z_FT'  342.0
+      'type'  "Feature"
+    [7]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.09354993016942
+          [1]  38.9549163986232
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-18T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_8"
+        'GLOBALID'  "{8A6443B6-4F50-4D54-B207-21F97F8..."
+        'LATITUDE'  38.9549086
+        'LOCATION_DESCRIPTION'  "Just West of a bus stop opposite..."
+        'LONGITUDE'  -77.09354761
+        'NARRATIVE'  " "
+        'OBJECTID'  8
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NW6"
+        'XCOORD'  391891.5661
+        'YCOORD'  143004.7817
+        'Z'  84.994
+        'Z_FT'  278.85
+      'type'  "Feature"
+    [8]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -76.98820955429748
+          [1]  38.95474060193709
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-17T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_9"
+        'GLOBALID'  "{10BA6E3A-4DD6-4198-8409-37BB1C1..."
+        'LATITUDE'  38.9547328
+        'LOCATION_DESCRIPTION'  "About 75 feet northwest of the i..."
+        'LONGITUDE'  -76.98820727
+        'NARRATIVE'  " "
+        'OBJECTID'  9
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NE4"
+        'XCOORD'  401022.1615
+        'YCOORD'  142981.1776
+        'Z'  36.905
+        'Z_FT'  121.08
+      'type'  "Feature"
+    [9]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.10668385845668
+          [1]  38.94464687048468
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-08T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_10"
+        'GLOBALID'  "{19F8959B-D728-4D43-8F9E-A1E1350..."
+        'LATITUDE'  38.94463908
+        'LOCATION_DESCRIPTION'  "About 300 ft. SE of a concrete c..."
+        'LONGITUDE'  -77.10668154
+        'NARRATIVE'  " "
+        'OBJECTID'  10
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NW5"
+        'XCOORD'  390751.824
+        'YCOORD'  141866.021
+        'Z'  62.02
+        'Z_FT'  203.48
+      'type'  "Feature"
+    [10]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -76.97501113059688
+          [1]  38.944421643516414
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-17T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_11"
+        'GLOBALID'  "{92AB4003-7246-4306-A927-EBCF7A1..."
+        'LATITUDE'  38.94441385
+        'LOCATION_DESCRIPTION'  "Center of a front lawn at 4609 E..."
+        'LONGITUDE'  -76.97500885
+        'NARRATIVE'  " "
+        'OBJECTID'  11
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NE5"
+        'XCOORD'  402166.4792
+        'YCOORD'  141835.9109
+        'Z'  18.526
+        'Z_FT'  60.78
+      'type'  "Feature"
+    [11]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.11567394111647
+          [1]  38.93761378375727
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-04T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_12"
+        'GLOBALID'  "{FD22F65E-2844-4D17-B166-0D36CE1..."
+        'LATITUDE'  38.93760599
+        'LOCATION_DESCRIPTION'  "The back yard of 5609 Daleclaria..."
+        'LONGITUDE'  -77.11567162
+        'NARRATIVE'  " "
+        'OBJECTID'  12
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NW4"
+        'XCOORD'  389971.489
+        'YCOORD'  141086.236
+        'Z'  44.65
+        'Z_FT'  146.48
+      'type'  "Feature"
+    [12]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -76.96133223617024
+          [1]  38.93372272087303
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-17T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_13"
+        'GLOBALID'  "{D0D37F5C-F112-4B51-A5FB-1A5F3B2..."
+        'LATITUDE'  38.93371493
+        'LOCATION_DESCRIPTION'  "South corner of a front lawn at ..."
+        'LONGITUDE'  -76.96132996
+        'NARRATIVE'  " "
+        'OBJECTID'  13
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NE6"
+        'XCOORD'  403352.8032
+        'YCOORD'  140648.6499
+        'Z'  17.206
+        'Z_FT'  56.45
+      'type'  "Feature"
+    [13]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.13223874553475
+          [1]  38.924640993988824
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-18T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_14"
+        'GLOBALID'  "{AFB77496-3F7D-4B32-A308-A982E85..."
+        'LATITUDE'  38.92463321
+        'LOCATION_DESCRIPTION'  "Center of a back yard at 4013 Ta..."
+        'LONGITUDE'  -77.13223642
+        'NARRATIVE'  " "
+        'OBJECTID'  14
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NW3"
+        'XCOORD'  388533.267
+        'YCOORD'  139648.0958
+        'Z'  69.559
+        'Z_FT'  228.21
+      'type'  "Feature"
+    [14]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -76.94865175958137
+          [1]  38.92379599079567
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-17T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_15"
+        'GLOBALID'  "{74C2D185-9ED1-45FA-8D7D-814C88B..."
+        'LATITUDE'  38.9237882
+        'LOCATION_DESCRIPTION'  "About 100 ft. SE of the South co..."
+        'LONGITUDE'  -76.94864949
+        'NARRATIVE'  " "
+        'OBJECTID'  15
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NE7"
+        'XCOORD'  404452.856
+        'YCOORD'  139547.2399
+        'Z'  25.262
+        'Z_FT'  82.88
+      'type'  "Feature"
+    [15]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.14598971066769
+          [1]  38.913888917300135
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-03T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_16"
+        'GLOBALID'  "{3BAEA793-41A7-48B9-B4DE-F5D784D..."
+        'LATITUDE'  38.91388113
+        'LOCATION_DESCRIPTION'  "On the NE corner of 5298 Old Dom..."
+        'LONGITUDE'  -77.14598738
+        'NARRATIVE'  " "
+        'OBJECTID'  16
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NW2"
+        'XCOORD'  387338.96
+        'YCOORD'  138456.344
+        'Z'  93.162
+        'Z_FT'  305.65
+      'type'  "Feature"
+    [16]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -76.9354855718971
+          [1]  38.91349058967939
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-17T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_17"
+        'GLOBALID'  "{F0768BAC-3CA5-4B10-9A11-10EA666..."
+        'LATITUDE'  38.9134828
+        'LOCATION_DESCRIPTION'  "About 500 ft. NE of intersection..."
+        'LONGITUDE'  -76.93548331
+        'NARRATIVE'  " "
+        'OBJECTID'  17
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NE8"
+        'XCOORD'  405595.369
+        'YCOORD'  138403.979
+        'Z'  4.938
+        'Z_FT'  16.2
+      'type'  "Feature"
+    [17]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.15914668628133
+          [1]  38.9035693181707
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-18T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_18"
+        'GLOBALID'  "{627EC3CB-C071-45ED-ABB4-2A4F305..."
+        'LATITUDE'  38.90356154
+        'LOCATION_DESCRIPTION'  "N corner of a back yard at 3607 ..."
+        'LONGITUDE'  -77.15914435
+        'NARRATIVE'  " "
+        'OBJECTID'  18
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NW1"
+        'XCOORD'  386195.9
+        'YCOORD'  137312.693
+        'Z'  130.595
+        'Z_FT'  428.46
+      'type'  "Feature"
+    [18]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -76.92232181295836
+          [1]  38.903176694569986
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-17T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_19"
+        'GLOBALID'  "{7DDA3F37-EABF-449B-BB05-657821B..."
+        'LATITUDE'  38.9031689
+        'LOCATION_DESCRIPTION'  "West corner of the front lawn at..."
+        'LONGITUDE'  -76.92231955
+        'NARRATIVE'  " "
+        'OBJECTID'  19
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "NE9"
+        'XCOORD'  406738.0024
+        'YCOORD'  137259.942
+        'Z'  37.862
+        'Z_FT'  124.22
+      'type'  "Feature"
+    [19]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.17230347459162
+          [1]  38.89325290661569
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-03T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_20"
+        'GLOBALID'  "{4E9D300D-3B50-4339-8105-756C709..."
+        'LATITUDE'  38.89324513
+        'LOCATION_DESCRIPTION'  "Andrew Ellicott Park, 2848 N. Ar..."
+        'LONGITUDE'  -77.17230114
+        'NARRATIVE'  " "
+        'OBJECTID'  20
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "WEST"
+        'XCOORD'  385052.527
+        'YCOORD'  136169.563
+        'Z'  104.481
+        'Z_FT'  342.785
+      'type'  "Feature"
+    [20]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -76.90916778799588
+          [1]  38.89286829261014
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-02T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_21"
+        'GLOBALID'  "{B33BEB30-CA66-4CA5-9647-05765D7..."
+        'LATITUDE'  38.8928605
+        'LOCATION_DESCRIPTION'  "About 100 ft. East of the inters..."
+        'LONGITUDE'  -76.90916553
+        'NARRATIVE'  " "
+        'OBJECTID'  21
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "EAST"
+        'XCOORD'  407880.12
+        'YCOORD'  136116.681
+        'Z'  28.624
+        'Z_FT'  93.91
+      'type'  "Feature"
+    [21]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.15909238694952
+          [1]  38.88295069485983
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-03T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_22"
+        'GLOBALID'  "{2C78C78B-6C2C-4BC3-B6B8-F89FB74..."
+        'LATITUDE'  38.88294292
+        'LOCATION_DESCRIPTION'  "A park along Van Buren Street, N..."
+        'LONGITUDE'  -77.15909005
+        'NARRATIVE'  " "
+        'OBJECTID'  22
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SW9"
+        'XCOORD'  386196.6208
+        'YCOORD'  135023.8586
+        'Z'  85.009
+        'Z_FT'  278.9
+      'type'  "Feature"
+    [22]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -76.92229572008263
+          [1]  38.882647834033556
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-02T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_23"
+        'GLOBALID'  "{0BF12036-1018-4E19-83B0-1AABDB6..."
+        'LATITUDE'  38.88264005
+        'LOCATION_DESCRIPTION'  "Opposite the end of D St., along..."
+        'LONGITUDE'  -76.92229346
+        'NARRATIVE'  " "
+        'OBJECTID'  23
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SE1"
+        'XCOORD'  406742.205
+        'YCOORD'  134981.08
+        'Z'  61.92
+        'Z_FT'  203.15
+      'type'  "Feature"
+    [23]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.14594760385089
+          [1]  38.872678971613354
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-03T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_24"
+        'GLOBALID'  "{66DD3803-57D5-4ACB-B182-11FDB62..."
+        'LATITUDE'  38.8726712
+        'LOCATION_DESCRIPTION'  "About 120 ft. SE of a water towe..."
+        'LONGITUDE'  -77.14594528
+        'NARRATIVE'  " "
+        'OBJECTID'  24
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SW8"
+        'XCOORD'  387335.2983
+        'YCOORD'  133881.7158
+        'Z'  124.414
+        'Z_FT'  408.18
+      'type'  "Feature"
+    [24]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -76.93542659376803
+          [1]  38.87241823769313
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-02T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_25"
+        'GLOBALID'  "{B726377D-7511-471F-8A3C-E30F7C7..."
+        'LATITUDE'  38.87241045
+        'LOCATION_DESCRIPTION'  "N corner of a front lawn at 4345..."
+        'LONGITUDE'  -76.93542433
+        'NARRATIVE'  " "
+        'OBJECTID'  25
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SE2"
+        'XCOORD'  405603.709
+        'YCOORD'  133844.6301
+        'Z'  88.276
+        'Z_FT'  289.62
+      'type'  "Feature"
+    [25]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.13272826341706
+          [1]  38.862379823914274
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-03T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_26"
+        'GLOBALID'  "{90011988-0A74-4F39-92A8-821DA74..."
+        'LATITUDE'  38.86237205
+        'LOCATION_DESCRIPTION'  "Along the SW fence on the ground..."
+        'LONGITUDE'  -77.13272594
+        'NARRATIVE'  " "
+        'OBJECTID'  26
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SW7"
+        'XCOORD'  388480.7701
+        'YCOORD'  132736.6848
+        'Z'  81.778
+        'Z_FT'  268.3
+      'type'  "Feature"
+    [26]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -76.94857309685602
+          [1]  38.86216838243233
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-02T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_27"
+        'GLOBALID'  "{C00B57F3-A64B-41E7-9518-0FE6508..."
+        'LATITUDE'  38.8621606
+        'LOCATION_DESCRIPTION'  "Opposite 3908 Southern Ave., sur..."
+        'LONGITUDE'  -76.94857083
+        'NARRATIVE'  " "
+        'OBJECTID'  27
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SE3"
+        'XCOORD'  404463.5306
+        'YCOORD'  132706.0963
+        'Z'  74.231
+        'Z_FT'  243.54
+      'type'  "Feature"
+    [27]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.11926590167795
+          [1]  38.8518731123099
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-18T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_28"
+        'GLOBALID'  "{3F997A8A-DF42-4955-BF4E-F87235D..."
+        'LATITUDE'  38.85186534
+        'LOCATION_DESCRIPTION'  "In the median strip of S. Jeffer..."
+        'LONGITUDE'  -77.11926358
+        'NARRATIVE'  " "
+        'OBJECTID'  28
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SW6"
+        'XCOORD'  389647.6382
+        'YCOORD'  131568.7526
+        'Z'  64.974
+        'Z_FT'  213.17
+      'type'  "Feature"
+    [28]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.10674239761522
+          [1]  38.842088952891736
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-03T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_29"
+        'GLOBALID'  "{30A0D82D-6A45-435C-931C-AAA768E..."
+        'LATITUDE'  38.84208118
+        'LOCATION_DESCRIPTION'  "About 100 ft. NE of the intersec..."
+        'LONGITUDE'  -77.10674008
+        'NARRATIVE'  " "
+        'OBJECTID'  29
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SW5"
+        'XCOORD'  390733.437
+        'YCOORD'  130481.298
+        'Z'  37.401
+        'Z_FT'  122.707
+      'type'  "Feature"
+    [29]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -76.9748416940991
+          [1]  38.8416903023925
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-02T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_30"
+        'GLOBALID'  "{2B4DF732-3FA3-4B95-9EA5-E8B18D5..."
+        'LATITUDE'  38.84168253
+        'LOCATION_DESCRIPTION'  "Opposite the NE end of Valley Te..."
+        'LONGITUDE'  -76.97483942
+        'NARRATIVE'  " "
+        'OBJECTID'  30
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SE5"
+        'XCOORD'  402184.31
+        'YCOORD'  130431.9279
+        'Z'  34.659
+        'Z_FT'  113.71
+      'type'  "Feature"
+    [30]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.09318923480265
+          [1]  38.83155075989516
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-18T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_31"
+        'GLOBALID'  "{AD66CE91-AD96-48B6-9059-3B448DC..."
+        'LATITUDE'  38.83154299
+        'LOCATION_DESCRIPTION'  "Just off the sidewalk on King St..."
+        'LONGITUDE'  -77.09318693
+        'NARRATIVE'  " "
+        'OBJECTID'  31
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SW4"
+        'XCOORD'  391908.8495
+        'YCOORD'  129310.199
+        'Z'  60.012
+        'Z_FT'  196.89
+      'type'  "Feature"
+    [31]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -76.98797557716786
+          [1]  38.83144494967126
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-02T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_32"
+        'GLOBALID'  "{15EA3B4F-7DE4-4F7B-9829-57330A9..."
+        'LATITUDE'  38.83143718
+        'LOCATION_DESCRIPTION'  "About 20 ft. West of the entranc..."
+        'LONGITUDE'  -76.9879733
+        'NARRATIVE'  " "
+        'OBJECTID'  32
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SE6"
+        'XCOORD'  401044.2453
+        'YCOORD'  129294.3916
+        'Z'  58.51
+        'Z_FT'  191.96
+      'type'  "Feature"
+    [32]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.0010987247258
+          [1]  38.82120428263898
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-02T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_33"
+        'GLOBALID'  "{C446EA3F-2426-4829-BF45-3302E2A..."
+        'LATITUDE'  38.82119651
+        'LOCATION_DESCRIPTION'  "About 25 ft. East of the interse..."
+        'LONGITUDE'  -77.00109645
+        'NARRATIVE'  " "
+        'OBJECTID'  33
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SE7"
+        'XCOORD'  399904.7845
+        'YCOORD'  128157.5424
+        'Z'  12.527
+        'Z_FT'  41.1
+      'type'  "Feature"
+    [33]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.0793225012967
+          [1]  38.82066041090277
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-18T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_34"
+        'GLOBALID'  "{D9F77609-02E0-48EF-AEF1-6FB5B78..."
+        'LATITUDE'  38.82065264
+        'LOCATION_DESCRIPTION'  "North end of a parking lot of th..."
+        'LONGITUDE'  -77.0793202
+        'NARRATIVE'  " "
+        'OBJECTID'  34
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SW3"
+        'XCOORD'  393111.8066
+        'YCOORD'  128100.1608
+        'Z'  52.971
+        'Z_FT'  173.79
+      'type'  "Feature"
+    [34]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.0142527355468
+          [1]  38.81092742802307
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-02T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_35"
+        'GLOBALID'  "{32D89A1B-9504-4431-9FE4-E233A27..."
+        'LATITUDE'  38.81091966
+        'LOCATION_DESCRIPTION'  "SE corner of the D.C. Village Im..."
+        'LONGITUDE'  -77.01425045
+        'NARRATIVE'  "STONE UNDER 4' OF WATER, COORDIN..."
+        'OBJECTID'  35
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SE8"
+        'XCOORD'  398762.3166
+        'YCOORD'  127016.8414
+        'Z'  5.29
+        'Z_FT'  17.36
+      'type'  "Feature"
+    [35]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.06264022516531
+          [1]  38.807600193367904
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-18T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_36"
+        'GLOBALID'  "{D528ADD1-9D81-4FFB-AC21-B880BEA..."
+        'LATITUDE'  38.80759243
+        'LOCATION_DESCRIPTION'  "On the sidewalk just West of 7 R..."
+        'LONGITUDE'  -77.06263793
+        'NARRATIVE'  " "
+        'OBJECTID'  36
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SW2"
+        'XCOORD'  394559.5063
+        'YCOORD'  126649.2671
+        'Z'  8.662
+        'Z_FT'  28.42
+      'type'  "Feature"
+    [36]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.02373948878733
+          [1]  38.80351442046185
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-03-03T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_37"
+        'GLOBALID'  "{91D9434F-7C0D-4593-B8F5-2E49D56..."
+        'LATITUDE'  38.80350665
+        'LOCATION_DESCRIPTION'  "About 1000 ft. SW of the South e..."
+        'LONGITUDE'  -77.0237372
+        'NARRATIVE'  " "
+        'OBJECTID'  37
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SE9"
+        'XCOORD'  397938.158
+        'YCOORD'  126194.122
+        'Z'  2.041
+        'Z_FT'  6.696
+      'type'  "Feature"
+    [37]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.05439532083857
+          [1]  38.801251315937634
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-02-18T05:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_38"
+        'GLOBALID'  "{5262CCC2-91C5-4A13-A81B-36A88F0..."
+        'LATITUDE'  38.80124355
+        'LOCATION_DESCRIPTION'  "On the NW corner of a lot at 122..."
+        'LONGITUDE'  -77.05439303
+        'NARRATIVE'  " "
+        'OBJECTID'  38
+        'PIC_LINK'  "http://octo.dc.gov/sites/default..."
+        'STONE_NUM'  "SW1"
+        'XCOORD'  395275.2067
+        'YCOORD'  125944.0426
+        'Z'  8.909
+        'Z_FT'  29.23
+      'type'  "Feature"
+    [38]  3 keys:
+      'geometry'  2 keys:
+        'coordinates'  [2]:
+          [0]  -77.04058831906278
+          [1]  38.790346914335274
+        'type'  "Point"
+      'properties'  18 keys:
+        'CREATED'  (empty)
+        'CREATION_DT'  "2011-06-01T04:00:00Z"
+        'CREATOR'  (empty)
+        'EDITED'  "2017-12-29T23:04:48Z"
+        'EDITOR'  "DCGIS"
+        'GIS_ID'  "BoundaryStonesPt_39"
+        'GLOBALID'  "{86EE8AA1-8C81-48B5-A032-2D974F7..."
+        'LATITUDE'  38.79033915
+        'LOCATION_DESCRIPTION'  "Currently in seawall on the side..."
+        'LONGITUDE'  -77.04058603
+        'NARRATIVE'  "Could not survey due to site bei..."
+        'OBJECTID'  39
+        'PIC_LINK'  (empty)
+        'STONE_NUM'  "SOUTH"
+        'XCOORD'  396473.9993
+        'YCOORD'  124732.9642
+        'Z'  (empty)
+        'Z_FT'  (empty)
+      'type'  "Feature"
+  'name'  "Washington_DC_Boundary_Stones_Po..."
+  'type'  "FeatureCollection"
+--- End of walk for DC_Boundary_Stones_official.geojson ---

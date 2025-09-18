@@ -7,17 +7,17 @@ import geojson
 
 # --- Configuration ---
 # Absolute path to your input CSV file with point data
-CSV_FILE_PATH = r"data\start_points.csv"
+CSV_FILE_PATH = r"data\StonePoints.csv"
 # Absolute path to your Digital Elevation Model (DEM) GeoTIFF file
-DEM_FILE_PATH = r"data\downloaded\dc_dem.tif"
+DEM_FILE_PATH = r"data\dc_dem.tif"
 # Absolute path for the output GeoJSON file
-GEOJSON_OUTPUT_PATH = r"data\poi_alt.geojson"
+GEOJSON_OUTPUT_PATH = r"data\stone_alts.geojson"
 
 # EPSG code for the coordinate system of your input LAT/LON points
 # NAD83 geographic coordinates (latitude/longitude)
-INPUT_POINTS_EPSG = 4269 # For NAD83
+#INPUT_POINTS_EPSG = 4269 # For NAD83
 # If your points were WGS84, you would use:
-# INPUT_POINTS_EPSG = 4326 # For WGS84
+INPUT_POINTS_EPSG = 4326 # For WGS84
 
 # Conversion factor
 METERS_TO_FEET = 3.28084

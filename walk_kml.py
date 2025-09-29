@@ -1,11 +1,11 @@
-# C:\Users\David\Documents\Local_Python\geodesy\dev\walk_kml.py
+# C:\Users\David\Documents\Local_Python\geodesy\walk_kml.py
+
 import xml.etree.ElementTree as ET
 import os
 
 # --- Configuration ---
 # Use a raw string (r'...') for Windows paths to handle backslashes correctly
-kml_file_path = r"data\StonePnts.kml"
-#\centerpnts.kml'
+kml_file_path = r"data\map_refpnts.kml"    #or data\centerpnts.kml etc.
 # --- End Configuration ---
 
 # Define the KML namespace - KML files use namespaces, which we need for searching

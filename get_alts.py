@@ -7,11 +7,11 @@ import geojson
 
 # --- Configuration ---
 # Absolute path to your input CSV file with point data
-CSV_FILE_PATH = r"data\StonePoints.csv"
+CSV_FILE_PATH = r"data\map_refpnts.csv"
 # Absolute path to your Digital Elevation Model (DEM) GeoTIFF file
 DEM_FILE_PATH = r"data\dc_dem.tif"
 # Absolute path for the output GeoJSON file
-GEOJSON_OUTPUT_PATH = r"data\stone_alts.geojson"
+GEOJSON_OUTPUT_PATH = r"data\map_refpnts.geojson"
 
 # EPSG code for the coordinate system of your input LAT/LON points
 # NAD83 geographic coordinates (latitude/longitude)
@@ -147,13 +147,14 @@ def main():
         return
 
     # Print results in CSV format to console
-    print("\n--- Output in CSV format (to console) ---")
-    print("LOC,LAT,LON,ALT_FT") # Header
+    #print("\n--- Output in CSV format (to console) ---")
+    print("LOC,LAT,LON,ALT_M") # Header
     for point in points_with_altitudes:
-        alt_ft_str = f"{point['ALT_FT']:.2f}" if point['ALT_FT'] is not None else "N/A"
+        alt_ft_str = f"{point['ALT_FT']:.3f}" if point['ALT_FT'] is not None else "N/A"
+        alt_m_str = f"{point['ALT_M']:.3f}" if point['ALT_M'] is not None else "N/A"
         lat_str = f"{point['LAT']:.7f}" # Consistent formatting
         lon_str = f"{point['LON']:.7f}" # Consistent formatting
-        print(f"{point['LOC']},{lat_str},{lon_str},{alt_ft_str}")
+        print(f"{point['LOC']},{lat_str},{lon_str},{alt_m_str}")
 
     # Create GeoJSON features
     geojson_features = []
@@ -163,8 +164,8 @@ def main():
             'LOC': point['LOC'],
             'LAT_Orig': point['LAT'], # Original LAT from CSV
             'LON_Orig': point['LON'], # Original LON from CSV
-            'ALT_M': round(point['ALT_M'], 2) if point['ALT_M'] is not None else None,
-            'ALT_FT': round(point['ALT_FT'], 2) if point['ALT_FT'] is not None else None
+            'ALT_M': round(point['ALT_M'], 3) if point['ALT_M'] is not None else None,
+            'ALT_FT': round(point['ALT_FT'], 3) if point['ALT_FT'] is not None else None
         }
         # GeoJSON geometry uses (longitude, latitude) order
         feature = geojson.Feature(

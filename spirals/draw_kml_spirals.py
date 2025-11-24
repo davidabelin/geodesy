@@ -41,16 +41,16 @@ def generate_kml_from_csv(csv_filepath, kml_filepath, include_points=False):
     # For lines 100% opaque: Alpha = 1.0 * 255 = 255 (decimal) = 0xFF (hex).
     # For point icons: Fully opaque. Alpha = 1.0 * 255 = 255 (decimal) = 0xFF (hex).
     color_palette_base = [
-        "0000FF", "00FF00", "FF0000", "00FFFF", "FF00FF", "FFFF00", # Blue, Green, Red, Cyan, Magenta, Yellow
-        "00A5FF", "800080", "2A2AA5", "32CD32", "CBC0FF", "808000", # Orange, Purple, Brown, Lime, Pink, Teal
-        "008080"  # Olive
+        "0000FF", "00FF00", "FF0000", "00FFFF", "FF00FF", "AAAA00", # Blue, Green, Red, Cyan, Magenta, DarkYellow
+        "00A5FF", "500050", "2A2AA5", "32CD32", "A9A0DD", "505000", # Orange, DarkPurple, Brown, Lime, DarkPink, DarkTeal
+        "005050"  # DarkOlive
     ]
-    # This line sets the alpha to 'DD' for all line and icon colors:
-    line_color_palette = [f"DD{color_hex}" for color_hex in color_palette_base]
-    icon_color_palette = [f"DD{color_hex}" for color_hex in color_palette_base]
-
-    # This line sets the alpha to 'FF' (100% opacity) for all line colors:
+    # This line sets the alpha value for all line and icon colors:
+    # 'FF' (100% opacity) for icons, 'AA' (67% opacity) for lines   :
     #line_color_palette = [f"FF{color_hex}" for color_hex in color_palette_base]
+    line_color_palette = [f"AA{color_hex}" for color_hex in color_palette_base]
+    icon_color_palette = [f"AA{color_hex}" for color_hex in color_palette_base]
+
 
     group_to_color_index = {}
     next_color_idx = 0
@@ -174,7 +174,7 @@ def generate_kml_from_csv(csv_filepath, kml_filepath, include_points=False):
             
             # Style the line
             linestring.style.linestyle.color = current_line_color # Hopefully 85% *opaque* color
-            linestring.style.linestyle.width = 2.0
+            linestring.style.linestyle.width = 1.0
         # No special handling for len(coordinates) == 1 for lines, as points are created individually above.
 
     # Save the KML file

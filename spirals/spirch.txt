@@ -1,0 +1,30 @@
+Currently in square_spiral_plot.py:
+
+Mapping (CCW): 
+dir 0 (E): center = lower-left,     sweep 0 -> 90
+dir 1 (N): center = lower-right,    sweep 90 -> 180
+dir 2 (W): center = upper-right,    sweep 180 -> 270
+dir 3 (S): center = upper-left,     sweep 270 -> 360
+
+Don't I want:
+Mapping (CCW): 
+dir 0 (E): center : lower_left,     sweep 0 -> 90
+dir 1 (S): center = upper-left,     sweep 90 -> 180
+dir 2 (W): center = upper-right,    sweep 180 -> 270
+dir 3 (N): center = lower-right,    sweep 270 -> 360
+
+Current output:
+Square 0: dir=0, x=0.0, y=0.0, side_length=1.0
+Square 1: dir=1, x=0.0, y=1.0, side=1.0
+Square 2: dir=2, x=-2.0, y=0.0, side=2.0
+Square 3: dir=3, x=-2.0, y=-3.0, side=3.0
+Square 4: dir=0, x=1.0, y=-3.0, side=5.0
+Square 5: dir=1, x=-2.0, y=2.0, side=8.0
+Square 6: dir=2, x=-15.0, y=-3.0, side=13.0
+Square 7: dir=3, x=-15.0, y=-24.0, side=21.0
+
+Desired output:
+Square 0: dir=0, x=0.0, y=0.0, side=1.0
+Square 1: dir=1, x=0.0, y=0.0, side=1.0
+Square 2: dir=2, x=-2.0, y=0.0, side=2.0
+... and so on.

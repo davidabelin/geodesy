@@ -4,8 +4,9 @@ import math
 import json
 import argparse
 from collections import defaultdict
+from functools import lru_cache
 from pathlib import Path
-from typing import List, Tuple, Callable, Optional
+from typing import List, Tuple, Callable, Optional, Union
 from pyproj import Geod
 
 # Optional dependencies
@@ -38,10 +39,70 @@ EARTH_RADIUS_FEET = EARTH_RADIUS_MILES * 5280
 MILES_PER_FOOT = 1 / 5280.0
 MILES_PER_YARD = 3 / 5280.0
 MILES_PER_POLE = 16.5 / 5280.0  # 1 rod = 16.5 ft
+METERS_PER_MILE = 1609.344
+MILES_PER_METER = 1 / METERS_PER_MILE
+KM_PER_MILE = 1.609344
+MILES_PER_KM = 1 / KM_PER_MILE
 DEG2RAD = math.pi / 180.0
 RAD2DEG = 180.0 / math.pi
 FIp = (math.sqrt(5)+1)/2
 FIm = (math.sqrt(5)-1)/2
+DEFAULT_ELLIPSOID = "WGS84"
+ELLIPSOID_SPHERE = "sphere"
+
+def _normalize_unit(unit: Optional[str]) -> str:
+    if not unit:
+        return "miles"
+    return unit.strip().lower()
+
+def _to_miles(distance: float, unit: Optional[str] = "miles") -> float:
+    u = _normalize_unit(unit)
+    if u in ("mile", "miles", "mi"):
+        return distance
+    if u in ("foot", "feet", "ft"):
+        return distance * MILES_PER_FOOT
+    if u in ("yard", "yards", "yd"):
+        return distance * MILES_PER_YARD
+    if u in ("pole", "poles", "rod", "rods"):
+        return distance * MILES_PER_POLE
+    if u in ("meter", "meters", "m"):
+        return distance * MILES_PER_METER
+    if u in ("kilometer", "kilometers", "km"):
+        return distance * MILES_PER_KM
+    raise ValueError(f"Unknown distance unit: {unit}")
+
+def _from_miles(distance_miles: float, unit: Optional[str] = "miles") -> float:
+    u = _normalize_unit(unit)
+    if u in ("mile", "miles", "mi"):
+        return distance_miles
+    if u in ("foot", "feet", "ft"):
+        return distance_miles / MILES_PER_FOOT
+    if u in ("yard", "yards", "yd"):
+        return distance_miles / MILES_PER_YARD
+    if u in ("pole", "poles", "rod", "rods"):
+        return distance_miles / MILES_PER_POLE
+    if u in ("meter", "meters", "m"):
+        return distance_miles / MILES_PER_METER
+    if u in ("kilometer", "kilometers", "km"):
+        return distance_miles / MILES_PER_KM
+    raise ValueError(f"Unknown distance unit: {unit}")
+
+def _normalize_ellipsoid(ellipsoid: Union[str, bool, None]) -> str:
+    if isinstance(ellipsoid, bool):
+        return DEFAULT_ELLIPSOID if ellipsoid else ELLIPSOID_SPHERE
+    if ellipsoid is None:
+        return DEFAULT_ELLIPSOID
+    if isinstance(ellipsoid, str):
+        key = ellipsoid.strip().replace("-", "").replace("_", "").upper()
+        if key in ("WGS84", "NAD83"):
+            return key
+        if key in ("SPHERE", "SPHERICAL"):
+            return ELLIPSOID_SPHERE
+    raise ValueError(f"Unsupported ellipsoid: {ellipsoid} (use WGS84, NAD83, or sphere)")
+
+@lru_cache(maxsize=None)
+def _get_geod(ellipsoid: str) -> Geod:
+    return Geod(ellps=ellipsoid)
 
 #===============================================================================
 # Core Geodesic Functions
@@ -63,8 +124,8 @@ def spherical_triangle_properties(point_A, point_B, point_C):
 
     Returns:
         A dictionary containing:
-        - angles: A dictionary of angles {A, B, C} (in degrees).
-        - side_lengths: A dictionary of side lengths {AB, BC, CA} (same units a R).
+        - angles: A dictionary of angles {A, B, C} (in radians).
+        - side_lengths: A dictionary of side lengths {AB, BC, CA} (same units as R).
     """
 
     lat_A, lon_A = point_A
@@ -144,8 +205,8 @@ def haversine(phi1, lam1, phi2, lam2, unit='miles'):
     dlam = (lam2 - lam1) * DEG2RAD
     a = math.sin(dphi/2)**2 + math.cos(phi1*DEG2RAD)*math.cos(phi2*DEG2RAD)*math.sin(dlam/2)**2
     c = 2 * math.asin(min(1, math.sqrt(a)))
-    dist = EARTH_RADIUS_MILES * c
-    return dist if unit=='miles' else dist * 5280
+    dist_miles = EARTH_RADIUS_MILES * c
+    return _from_miles(dist_miles, unit)
 
 
 def initial_bearing(phi1: float, lam1: float, phi2: float, lam2: float) -> float:
@@ -177,11 +238,11 @@ def normalize_longitude(lon_deg):
     return (lon_deg + 180) % 360 - 180
 
 def cos_supplement(x):
-    """Cosine of (π - x) = -cos(x)."""
+    """Cosine of (pi - x) = -cos(x)."""
     return -math.cos(x)
 
 def sin_supplement(x):
-    """Sine of (π - x) = sin(x)."""
+    """Sine of (pi - x) = sin(x)."""
     return math.sin(x)
 
 def cot_a(a, b, c):
@@ -211,23 +272,21 @@ def delambre(a, b, c, A, B, C):
 # Geodetic Problems (Sphere & Ellipsoid)
 #===============================================================================
 
-_GEOID = Geod(ellps='WGS84')
-
 def direct_geodetic(phi1: float, lam1: float, az1: float, dist: float,
-                    unit: str='miles', ellipsoid: bool=False) -> Tuple[float, float, float]:
+                    unit: str='miles', ellipsoid: Union[str, bool, None]=DEFAULT_ELLIPSOID) -> Tuple[float, float, float]:
     """
     Forward geodetic: given lat1, lon1, azimuth, distance -> lat2, lon2, back azimuth.
-    Supports ellipsoidal (pyproj) and spherical.
+    Ellipsoid can be WGS84 (default), NAD83, or sphere.
     """
-    if unit=='miles':
-        dist_m = dist * 1609.344
-    else:
-        dist_m = dist * 0.3048
-    if ellipsoid:
-        lon2, lat2, az2 = _GEOID.fwd(lam1, phi1, az1, dist_m)
+    ellps = _normalize_ellipsoid(ellipsoid)
+    dist_miles = _to_miles(dist, unit)
+    if ellps != ELLIPSOID_SPHERE:
+        geod = _get_geod(ellps)
+        dist_m = dist_miles * METERS_PER_MILE
+        lon2, lat2, az2 = geod.fwd(lam1, phi1, az1, dist_m)
         return lat2, lon2, az2
     # spherical fallback
-    sigma = dist / EARTH_RADIUS_MILES
+    sigma = dist_miles / EARTH_RADIUS_MILES
     phi1r, lam1r, az1r = phi1*DEG2RAD, lam1*DEG2RAD, az1*DEG2RAD
     phi2 = math.asin(math.sin(phi1r)*math.cos(sigma) +
                      math.cos(phi1r)*math.sin(sigma)*math.cos(az1r))
@@ -239,14 +298,17 @@ def direct_geodetic(phi1: float, lam1: float, az1: float, dist: float,
     return phi2*RAD2DEG, lam2*RAD2DEG, az2*RAD2DEG
 
 def inverse_geodetic(phi1: float, lam1: float, phi2: float, lam2: float,
-                      unit: str='miles', ellipsoid: bool=False) -> Tuple[float, float, float]:
+                      unit: str='miles', ellipsoid: Union[str, bool, None]=DEFAULT_ELLIPSOID) -> Tuple[float, float, float]:
     """
     Inverse geodetic: given two lat/lon points -> az1, az2, distance.
+    Ellipsoid can be WGS84 (default), NAD83, or sphere.
     """
-    if ellipsoid:
-        az1, az2, dist_m = _GEOID.inv(lam1, phi1, lam2, phi2)
-        dist = dist_m / (1609.344 if unit=='miles' else 0.3048)
-        return az1 % 360, az2 % 360, dist
+    ellps = _normalize_ellipsoid(ellipsoid)
+    if ellps != ELLIPSOID_SPHERE:
+        geod = _get_geod(ellps)
+        az1, az2, dist_m = geod.inv(lam1, phi1, lam2, phi2)
+        dist_miles = dist_m * MILES_PER_METER
+        return az1 % 360, az2 % 360, _from_miles(dist_miles, unit)
     # spherical fallback
     phi1r, phi2r = phi1*DEG2RAD, phi2*DEG2RAD
     dlam = (lam2 - lam1)*DEG2RAD
@@ -256,10 +318,8 @@ def inverse_geodetic(phi1: float, lam1: float, phi2: float, lam2: float,
                       math.cos(phi1r)*math.sin(phi2r) - math.sin(phi1r)*math.cos(phi2r)*math.cos(dlam))
     az2 = math.atan2(math.sin(-dlam)*math.cos(phi1r),
                       math.cos(phi2r)*math.sin(phi1r) - math.sin(phi2r)*math.cos(phi1r)*math.cos(dlam))
-    dist = EARTH_RADIUS_MILES * sigma
-    if unit!='miles':
-        dist *= 5280
-    return az1*RAD2DEG % 360, az2*RAD2DEG % 360, dist
+    dist_miles = EARTH_RADIUS_MILES * sigma
+    return az1*RAD2DEG % 360, az2*RAD2DEG % 360, _from_miles(dist_miles, unit)
 
 # shorthand endpoint throws
 def throw_point(start_lat: float,
@@ -267,29 +327,26 @@ def throw_point(start_lat: float,
                    bearing: float,
                    distance: float,
                    units: str='miles', radius: float=EARTH_RADIUS_MILES,
-                   ellipsoid: bool=False) -> Tuple[float,float,float]:
+                   ellipsoid: Union[str, bool, None]=DEFAULT_ELLIPSOID) -> Tuple[float,float,float]:
     """
     Compute endpoint given start, distance, and bearing. Supports feet/yards/poles.
     """
-    if ellipsoid:
-        return direct_geodetic(start_lat, start_lon, bearing, distance, unit=units)
-    # convert units to miles
-    if units == 'feet': d = distance * MILES_PER_FOOT
-    elif units == 'yards': d = distance * MILES_PER_YARD
-    elif units == 'poles': d = distance * MILES_PER_POLE
-    else: d = distance
-    φ1 = math.radians(start_lat)
-    λ1 = math.radians(start_lon)
-    θ = math.radians(bearing)
-    δ = d / radius
-    φ2 = math.asin(math.sin(φ1)*math.cos(δ) + math.cos(φ1)*math.sin(δ)*math.cos(θ))
-    y = math.sin(θ)*math.sin(δ)*math.cos(φ1)
-    x = math.cos(δ) - math.sin(φ1)*math.sin(φ2)
-    λ2 = λ1 + math.atan2(y, x)
-    lat2 = math.degrees(φ2)
-    lon2 = math.degrees((λ2 + 3*math.pi) % (2*math.pi) - math.pi)
-    final_bearing = (math.degrees(math.atan2(y, x)) + 360) % 360
-    return lat2, lon2, final_bearing
+    ellps = _normalize_ellipsoid(ellipsoid)
+    if ellps != ELLIPSOID_SPHERE:
+        return direct_geodetic(start_lat, start_lon, bearing, distance, unit=units, ellipsoid=ellps)
+    dist_miles = _to_miles(distance, units)
+    phi1 = math.radians(start_lat)
+    lam1 = math.radians(start_lon)
+    az1 = math.radians(bearing)
+    sigma = dist_miles / radius
+    phi2 = math.asin(math.sin(phi1)*math.cos(sigma) + math.cos(phi1)*math.sin(sigma)*math.cos(az1))
+    lam2 = lam1 + math.atan2(math.sin(az1)*math.sin(sigma)*math.cos(phi1),
+                              math.cos(sigma) - math.sin(phi1)*math.sin(phi2))
+    az2 = math.atan2(math.sin(az1)*math.cos(phi1)*math.cos(sigma) - math.sin(phi1)*math.sin(sigma),
+                     math.cos(az1)*math.cos(sigma))
+    lat2 = math.degrees(phi2)
+    lon2 = math.degrees((lam2 + 3*math.pi) % (2*math.pi) - math.pi)
+    return lat2, lon2, az2*RAD2DEG
 
 #===============================================================================
 # Root-Solving Wrappers
@@ -320,7 +377,7 @@ def fsolve_root(func: Callable[..., float], x0: float, *args, **kwargs) -> float
 
 def find_longitudes_for_known_latitude_and_distance(
                             lat1_deg, lon1_deg, distance_miles, 
-                            lat2_target_deg, ellipsoid: bool=False, tol=1e-9
+                            lat2_target_deg, ellipsoid: Union[str, bool, None]=DEFAULT_ELLIPSOID, tol=1e-9
     ):
     """
     Finds the longitude(s) of a second point, given the first point (lat1, lon1),
@@ -331,8 +388,7 @@ def find_longitudes_for_known_latitude_and_distance(
         lon1_deg (float): Longitude of the first point in degrees.
         distance_miles (float): Distance from the first point to the second in miles.
         lat2_target_deg (float): Latitude of the second point in degrees.
-        ellipsoid (bool): If True, use ellipsoidal calculations for refinement.
-                          If False, use purely spherical calculations.
+        ellipsoid (str|bool|None): WGS84 (default), NAD83, or sphere.
         tol (float): Tolerance for floating point comparisons.
 
     Returns:
@@ -342,6 +398,8 @@ def find_longitudes_for_known_latitude_and_distance(
               and infinite solutions exist for lon2 in spherical case.
     """
     from scipy.optimize import fsolve
+
+    ellps = _normalize_ellipsoid(ellipsoid)
 
     if distance_miles < 0:
         raise ValueError("Distance cannot be negative.")
@@ -366,18 +424,19 @@ def find_longitudes_for_known_latitude_and_distance(
         # If so, any longitude is a solution. This is ill-defined for "the" longitude.
         # Ellipsoidal solver below might handle this better if pyproj is robust.
         # For now, let spherical part indicate this ambiguity for non-ellipsoidal.
-        if not ellipsoid: return [float('nan')] # Indicates infinite solutions
+        if ellps == ELLIPSOID_SPHERE:
+            return [float('nan')] # Indicates infinite solutions
         # If ellipsoidal, proceed, fsolve might work or fail gracefully.
 
     if abs(math.cos(lat2_target_rad)) < tol: # lat2_target is a pole
         # Distance from (lat1, lon1) to this pole must be distance_miles
-        _, _, dist_to_pole = inverse_geodetic(lat1_deg, lon1_deg, lat2_target_deg, lon1_deg, unit='miles', ellipsoid=ellipsoid)
+        _, _, dist_to_pole = inverse_geodetic(lat1_deg, lon1_deg, lat2_target_deg, lon1_deg, unit='miles', ellipsoid=ellps)
         if abs(dist_to_pole - distance_miles) < tol:
             # The point is the pole. The longitude can be considered that of the geodesic.
             # For a sphere, it's lon1_deg. For ellipsoid, direct_geodetic can find it.
-            if ellipsoid:
-                az_to_pole, _, _ = inverse_geodetic(lat1_deg, lon1_deg, lat2_target_deg, lon1_deg, unit='miles', ellipsoid=True)
-                _, lon_at_pole, _ = direct_geodetic(lat1_deg, lon1_deg, az_to_pole, distance_miles, unit='miles', ellipsoid=True)
+            if ellps != ELLIPSOID_SPHERE:
+                az_to_pole, _, _ = inverse_geodetic(lat1_deg, lon1_deg, lat2_target_deg, lon1_deg, unit='miles', ellipsoid=ellps)
+                _, lon_at_pole, _ = direct_geodetic(lat1_deg, lon1_deg, az_to_pole, distance_miles, unit='miles', ellipsoid=ellps)
                 return [normalize_longitude(lon_at_pole)]
             else: # Spherical
                 return [normalize_longitude(lon1_deg)] # Longitude of meridian to pole
@@ -408,7 +467,7 @@ def find_longitudes_for_known_latitude_and_distance(
     lon2_guess_rad_1 = lon1_rad + delta_lambda_rad
     lon2_guess_rad_2 = lon1_rad - delta_lambda_rad
 
-    if not ellipsoid: # Purely spherical solution
+    if ellps == ELLIPSOID_SPHERE: # Purely spherical solution
         solutions.append(normalize_longitude(math.degrees(lon2_guess_rad_1)))
         if abs(delta_lambda_rad) > tol and abs(delta_lambda_rad - math.pi) > tol: # Avoid duplicate for 0 or pi
             solutions.append(normalize_longitude(math.degrees(lon2_guess_rad_2)))
@@ -426,52 +485,46 @@ def find_longitudes_for_known_latitude_and_distance(
     lon2_guess_deg_1 = normalize_longitude(math.degrees(lon2_guess_rad_1))
     lon2_sol1_arr, _, ier1, _ = fsolve(
         objective_func, x0=[lon2_guess_deg_1], 
-        args=(lat1_deg, lon1_deg, lat2_target_deg, distance_miles, ellipsoid),
+        args=(lat1_deg, lon1_deg, lat2_target_deg, distance_miles, ellps),
         full_output=True, xtol=1e-10 # Set tolerance for fsolve
     )
     if ier1 == 1: # Solution found
         # Check if the solution is valid (distance matches closely)
-        final_check_dist_1 = objective_func(lon2_sol1_arr, lat1_deg, lon1_deg, lat2_target_deg, distance_miles, ellipsoid) + distance_miles
+        final_check_dist_1 = objective_func(lon2_sol1_arr, lat1_deg, lon1_deg, lat2_target_deg, distance_miles, ellps) + distance_miles
         if abs(final_check_dist_1 - distance_miles) < distance_miles * 1e-7: # Relative tolerance for distance match
              solutions.append(normalize_longitude(lon2_sol1_arr[0]))
 
     # Refine second guess (if distinct)
     if abs(delta_lambda_rad) > tol and abs(delta_lambda_rad - math.pi) > tol:
         lon2_guess_deg_2 = normalize_longitude(math.degrees(lon2_guess_rad_2))
-        # Only solve if guess2 is significantly different from guess1 to avoid redundant computation
-        # (fsolve might converge to the same root if initial guesses are too close)
-        is_different_guess = True
-        if solutions: # if first solution was found
-            if abs(normalize_longitude(lon2_guess_deg_2 - solutions[0])) < 1e-3 or \
-               abs(normalize_longitude(lon2_guess_deg_2 + solutions[0])) < 1e-3 : # check if it's same or antipodal to first solution's guess
-                  # Heuristic: if guesses are very close, fsolve might find same root or struggle
-                  pass # Potentially skip if too close, or let fsolve try
 
         lon2_sol2_arr, _, ier2, _ = fsolve(
             objective_func, x0=[lon2_guess_deg_2],
-            args=(lat1_deg, lon1_deg, lat2_target_deg, distance_miles, ellipsoid),
+            args=(lat1_deg, lon1_deg, lat2_target_deg, distance_miles, ellps),
             full_output=True, xtol=1e-10
         )
         if ier2 == 1:
-            final_check_dist_2 = objective_func(lon2_sol2_arr, lat1_deg, lon1_deg, lat2_target_deg, distance_miles, ellipsoid) + distance_miles
+            final_check_dist_2 = objective_func(lon2_sol2_arr, lat1_deg, lon1_deg, lat2_target_deg, distance_miles, ellps) + distance_miles
             if abs(final_check_dist_2 - distance_miles) < distance_miles * 1e-7:
                 solutions.append(normalize_longitude(lon2_sol2_arr[0]))
 
     return sorted(list(set(s for s in solutions if not math.isnan(s)))) # Unique, sorted, non-NaN solutions
 
+
 def find_latitudes_for_known_longitude_and_distance(
                         lat1_deg: float, lon1_deg: float,
                         distance_miles: float, lon2_target_deg: float,
-                        ellipsoid: bool=False, tol: float=1e-9
+                        ellipsoid: Union[str, bool, None]=DEFAULT_ELLIPSOID, tol: float=1e-9
     ) -> List[float]:
     """
     Find latitude(s) lat2 such that distance(P1, P2)=distance and lon2=lon2_target.
     """
+    ellps = _normalize_ellipsoid(ellipsoid)
     def obj(lat2_param) -> float: # lat2_param is a 1-element numpy array from fsolve
         # Extract the scalar float value from the numpy array passed by fsolve
         current_lat2_deg = float(lat2_param[0])
         _, _, d = inverse_geodetic(lat1_deg, lon1_deg, current_lat2_deg,
-                                   lon2_target_deg, unit='miles', ellipsoid=ellipsoid)
+                                   lon2_target_deg, unit='miles', ellipsoid=ellps)
         return d - distance_miles
     # initial guesses (approx deg lat per mile)
     delta_deg = distance_miles / 69.0
@@ -647,7 +700,7 @@ def load_coords_from_csv(filepath, coords_dict):
 def walk_angles(init_lat: float, init_lon: float,
                 init_bearing: float=0.0, num_turns: int=4,
                 turn_angle: float=90.0, walk_dist: float=10.0,
-                change_rate: float=1.0, ellipsoid: bool=False
+                change_rate: float=1.0, ellipsoid: Union[str, bool, None]=DEFAULT_ELLIPSOID
     ) -> List[Tuple[float,float]]:
     """
     Params
@@ -665,7 +718,7 @@ def walk_angles(init_lat: float, init_lon: float,
         walk_dist (float, optional): Initial distance for the first leg, in miles. Defaults to 10.0.
         change_rate (float, optional): Factor by which walk_dist changes for subsequent legs.
                                        1.0 means constant distance. Defaults to 1.0.
-        ellipsoid (bool, optional): If True, use ellipsoidal calculations. Defaults to False (spherical).
+        ellipsoid (str|bool|None, optional): WGS84 (default), NAD83, or sphere.
 
     Returns:
         points: list a sequence of generated (lat, lon) walk-points
@@ -683,10 +736,10 @@ def walk_angles(init_lat: float, init_lon: float,
 def golden_spiral_in(lat0: float, lon0: float,
                            initial_bearing: float, base_dist: float,
                            legs: int, phi: float=(1+math.sqrt(5))/2,
-                           ccw: bool=False, ellipsoid: bool=False
+                           ccw: bool=False, ellipsoid: Union[str, bool, None]=DEFAULT_ELLIPSOID
     ) -> List[Tuple[float,float]]:
     """
-    Generate points of a spherical right-angle golden-ratio spiral.
+    Generate points of a right-angle golden-ratio spiral.
     Spiral is INward: sides get progressively *smaller* from base_dist.
     Turns are clockwise by default; or, set --ccw True.
     Returns list of (lat, lon) including starting point.
@@ -706,10 +759,10 @@ def golden_spiral_in(lat0: float, lon0: float,
 def golden_spiral_out(  lat0: float, lon0: float,
                         initial_bearing: float, base_dist: float,
                         legs: int, phi: float=(1+math.sqrt(5))/2,
-                        ccw: bool=False, ellipsoid: bool=False
+                        ccw: bool=False, ellipsoid: Union[str, bool, None]=DEFAULT_ELLIPSOID
     ) -> List[Tuple[float,float]]:
     """
-    Generate points of a spherical right-angle golden-ratio spiral.
+    Generate points of a right-angle golden-ratio spiral.
     Spiral is OUTward: sides get progressively *larger* from base_dist.
     Turns are clockwise by default; or, set --ccw True.
     Returns list of #{legs} (lat, lon) points (includes start).
@@ -918,8 +971,24 @@ def get_altitudes_for_points(csv_path, dem_path, input_points_epsg):
 ### Having everything here in one place now will help with that migration later.
 #===============================================================================
 
+def _parse_ellipsoid_arg(value: str) -> str:
+    try:
+        return _normalize_ellipsoid(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(str(exc))
+
+def _add_ellipsoid_arg(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        '--ellipsoid',
+        nargs='?',
+        const=DEFAULT_ELLIPSOID,
+        default=DEFAULT_ELLIPSOID,
+        type=_parse_ellipsoid_arg,
+        help='Ellipsoid: WGS84 (default), NAD83, or sphere.'
+    )
+
 if __name__ == '__main__':
-    p = argparse.ArgumentParser(description='Spherical Geometry Toolkit')
+    p = argparse.ArgumentParser(description='Geodesy Toolkit')
     sub = p.add_subparsers(dest='cmd')
     
     d_help = 'Forward geodetic: lat1, lon1, az1, dist -> lat2, lon2, az2'
@@ -927,14 +996,14 @@ if __name__ == '__main__':
     d.add_argument('lat1',type=float); d.add_argument('lon1',type=float)
     d.add_argument('az1',type=float); d.add_argument('dist',type=float)
     d.add_argument('--unit',choices=['miles','feet'],default='miles')
-    d.add_argument('--ellipsoid',action='store_true', help='Use WGS84 ellipsoid (default: spherical)')
+    _add_ellipsoid_arg(d)
     
     i_help = 'Inverse geodetic: lat1, lon1, lat2, lon2 -> az1, az2, dist'
     i = sub.add_parser('inverse', help=i_help)
     i.add_argument('lat1',type=float); i.add_argument('lon1',type=float)
     i.add_argument('lat2',type=float); i.add_argument('lon2',type=float)
     i.add_argument('--unit',choices=['miles','feet'],default='miles')
-    i.add_argument('--ellipsoid',action='store_true', help='Use WGS84 ellipsoid (default: spherical)')
+    _add_ellipsoid_arg(i)
     
     # TO DO FIX THIS
     #alt_help = 'Look Up Altitudes for Points'
@@ -951,7 +1020,7 @@ if __name__ == '__main__':
     spw.add_argument('num_turns', type=int, default=4, help='Number of steps to take')
     spw.add_argument('change_rate', type=float, default=1.0, help='Ratio of side distance each step (1.0=same)')    
     spw.add_argument('tag', type=str, default='', help='Point label (default is digits in sequence)')
-    spw.add_argument('--ellipsoid', action='store_true', help='Use WGS84 ellipsoid for calculations (default: spherical)')
+    _add_ellipsoid_arg(spw)
     
     sp = sub.add_parser('golden-spiral-in', help='Generate inward-growing golden spiral points')
     sp.add_argument('lat0', type=float, default=39.0, help='Start latitude')
@@ -961,7 +1030,7 @@ if __name__ == '__main__':
     sp.add_argument('legs', type=int, default=5, help='Number of legs')
     sp.add_argument('tag', type=str, default='', help='Point label (default=serial_num)')
     sp.add_argument('--ccw', action='store_true', help='Counter-clockwise spiral')
-    sp.add_argument('--ellipsoid', action='store_true', help='Use WGS84 ellipsoid for calculations (default: spherical)')
+    _add_ellipsoid_arg(sp)
     
     spp = sub.add_parser('golden-spiral-plot-in', help='Plot golden spiral')
     spp.add_argument('--lat0', type=float, required=True)
@@ -970,7 +1039,7 @@ if __name__ == '__main__':
     spp.add_argument('--bearing', type=float, default=90.0)
     spp.add_argument('--legs', type=int, default=5)
     spp.add_argument('--ccw', action='store_true')
-    spp.add_argument('--ellipsoid', action='store_true', help='Use WGS84 ellipsoid for calculations (default: spherical)')
+    _add_ellipsoid_arg(spp)
     spp.add_argument('--projection', choices=['plate','ortho'], default='ortho')
     spp.add_argument('--pad', type=float, default=0.01)
     
@@ -982,19 +1051,21 @@ if __name__ == '__main__':
     sp.add_argument('legs', type=int, default=5, help='Number of legs')
     sp.add_argument('tag', type=str, default='', help='Point label (default=serial_num)')
     sp.add_argument('--ccw', action='store_true', help='Counter-clockwise spiral')
-    sp.add_argument('--ellipsoid', action='store_true', help='Use WGS84 ellipsoid for calculations (default: spherical)')
+    _add_ellipsoid_arg(sp)
     
     f3 = sub.add_parser('find-lat', help='Find latitudes for fixed lon and distance')
     f3.add_argument('lat1', type=float)
     f3.add_argument('lon1', type=float)
     f3.add_argument('lon2', type=float)
     f3.add_argument('dist', type=float)
+    _add_ellipsoid_arg(f3)
     
     f2 = sub.add_parser('find-lon', help='Find longitudes for fixed lat and distance')
     f2.add_argument('lat1', type=float)
     f2.add_argument('lon1', type=float)
     f2.add_argument('lat2', type=float)
     f2.add_argument('dist', type=float)
+    _add_ellipsoid_arg(f2)
     
     g = sub.add_parser('gauss'); g.add_argument('alpha',type=float); g.add_argument('beta',type=float); g.add_argument('gamma',type=float); g.add_argument('delta',type=float); g.add_argument('epsilon',type=float)
     tg = sub.add_parser('testgauss')
@@ -1012,7 +1083,7 @@ if __name__ == '__main__':
     elif args.cmd == 'golden-spiral-plot-in':
         pts = golden_spiral_in(args.lat0, args.lon0,
                                      args.bearing, args.base,
-                                     args.legs, ccw=args.ccw)
+                                     args.legs, ccw=args.ccw, ellipsoid=args.ellipsoid)
         golden_spiral_plot_in(pts, projection=args.projection, pad=args.pad)
     elif args.cmd == 'golden-spiral-out':
         pts = golden_spiral_out(args.lat0, args.lon0,
@@ -1022,11 +1093,11 @@ if __name__ == '__main__':
         for i,(lat,lon) in enumerate(pts): print(f'{args.tag}{i}, {lat}, {lon}')
     elif args.cmd == 'find-lat':
         sols = find_latitudes_for_known_longitude_and_distance(
-            args.lat1, args.lon1, args.dist, args.lon2)
+            args.lat1, args.lon1, args.dist, args.lon2, ellipsoid=args.ellipsoid)
         print(sols)
     elif args.cmd == 'find-lon':
         sols = find_longitudes_for_known_latitude_and_distance(
-            args.lat1, args.lon1, args.dist, args.lat2)
+            args.lat1, args.lon1, args.dist, args.lat2, ellipsoid=args.ellipsoid)
         print(sols)
     elif args.cmd == 'walk':
         pts = walk_angles(args.lat0, args.lon0, args.init_bearing,

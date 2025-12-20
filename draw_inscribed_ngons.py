@@ -23,7 +23,7 @@ def draw_ngons(
     show_labels: bool = False,
     show_diagonals: bool = False,
 ) -> None:
-    fig, ax = plt.subplots(figsize=(10,10))
+    _, ax = plt.subplots(figsize=(10,10))
     ax.set_aspect("equal")
     ax.set_title(f"Inscribed regular n-gons (r = {radius})")
     ax.set_xlabel("x")

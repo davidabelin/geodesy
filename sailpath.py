@@ -422,10 +422,10 @@ def main():
     parser.add_argument("--output-kml", default=None,
                         help="If omitted in batch mode, defaults to input CSV path with '.kml'.")
     parser.add_argument("--no-kml", action="store_true")
-    parser.add_argument("--kml-pointer-scale", type=float, default=0.05)
+    parser.add_argument("--kml-pointer-scale", type=float, default=0.1)
     parser.add_argument("--kml-pointer-min", type=float, default=100.0)
     parser.add_argument("--kml-pointer-max", type=float, default=300.0)
-    parser.add_argument("--kml-cardinal-halfwidth", type=float, default=15.0,
+    parser.add_argument("--kml-cardinal-halfwidth", type=float, default=5.0,
                         help="Half-width (degrees) for bins around centers (default 15°).")
     # Gridlines toggle (default ON)
     parser.add_argument("--no-gridlines", action="store_true",

@@ -1,3 +1,5 @@
+# Originally C:\Users\David\Documents\Local_Python\geodesy\geometry_v0.py
+
 import csv
 import os
 import math

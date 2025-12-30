@@ -33,7 +33,7 @@ Version 3.0
 
 This script **requires** a DEM file for all altitude-based calculations. Any point flagged with `optimize_altitude=True` will cause the script to exit if the DEM cannot be loaded.
 
-Below is the fully integrated `point_jiggler.py` combining your original code with:
+Below is the fully integrated `point_jiggler.py` combining our original code with:
 
 1. Mandatory `--dem` argument.
 2. DEM loading and `GEOD` initialization based on the DEM’s CRS.
@@ -100,9 +100,11 @@ Core Concepts:
 """
 import sys
 import csv
+import os
 import itertools
 import argparse
 import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
 from scipy.optimize import minimize
 from pyproj import Geod, CRS as PyprojCRS
 import rasterio
@@ -293,26 +295,62 @@ def sample_slope(dem_ds, lat, lon):
 # --------------------------------
 # Objective Function
 # --------------------------------
-def objective_function(x, names, pts, targets, tris, dem_ds, w):
-    for i, n in enumerate(names):
-        pts[n]['lat'], pts[n]['lon'] = x[2*i], x[2*i+1]
-    ge, tr, al = 0, 0, 0
-    
-    all_pairs = list(itertools.combinations(names, 2))
-    for a, b in all_pairs:
+def _make_slices(total, slice_count):
+    if total <= 0:
+        return []
+    slice_count = max(1, min(slice_count, total))
+    base = total // slice_count
+    rem = total % slice_count
+    out = []
+    start = 0
+    for i in range(slice_count):
+        end = start + base + (1 if i < rem else 0)
+        out.append((start, end))
+        start = end
+    return out
+
+def _geom_pairs_slice(pairs, pts, targets, start, end):
+    ge = 0.0
+    dists = targets.get('dists') or []
+    azs = targets.get('azs') or []
+    for a, b in pairs[start:end]:
         pa, pb = pts[a], pts[b]
         az1, _, dist = GEOD.inv(pa['lon'], pa['lat'], pb['lon'], pb['lat'])
-        if targets['dists']: ge += min([(dist - t)**2 for t in targets['dists']])
-        if targets['azs']: ge += min([((az1 % 360) - t)**2 for t in targets['azs']])
+        if dists:
+            ge += min((dist - t)**2 for t in dists)
+        if azs:
+            ge += min(((az1 % 360) - t)**2 for t in azs)
+    return ge
+
+def _triangles_slice(triples, pts, tris, start, end):
+    tr = 0.0
+    for a, b, c in triples[start:end]:
+        pa, pb, pc = pts[a], pts[b], pts[c]
+        ds = sorted([GEOD.inv(p['lon'], p['lat'], q['lon'], q['lat'])[2]
+                     for p, q in [(pa, pb), (pb, pc), (pc, pa)]])
+        for g in tris:
+            if g['type'] == 's' and ds[0] > 0: # Side Ratios
+                tr += sum(((ds[i] / ds[0]) - (g['ABC'][i] / g['ABC'][0]))**2 for i in range(1,3))
+    return tr
+
+def objective_function(x, names, pts, targets, tris, dem_ds, w, all_pairs, pair_slices, all_triples, triple_slices, executor):
+    for i, n in enumerate(names):
+        pts[n]['lat'], pts[n]['lon'] = x[2*i], x[2*i+1]
+    ge, tr, al = 0.0, 0.0, 0.0
     
-    if tris:
-        for a, b, c in itertools.combinations(names, 3):
-            pa, pb, pc = pts[a], pts[b], pts[c]
-            ds = sorted([GEOD.inv(p['lon'], p['lat'], q['lon'], q['lat'])[2]
-                         for p, q in [(pa, pb), (pb, pc), (pc, pa)]])
-            for g in tris:
-                if g['type'] == 's' and ds[0] > 0: # Side Ratios
-                    tr += sum(((ds[i] / ds[0]) - (g['ABC'][i] / g['ABC'][0]))**2 for i in range(1,3))
+    if all_pairs:
+        if executor is not None and pair_slices:
+            futs = [executor.submit(_geom_pairs_slice, all_pairs, pts, targets, s, e) for s, e in pair_slices]
+            ge = sum(f.result() for f in futs)
+        else:
+            ge = _geom_pairs_slice(all_pairs, pts, targets, 0, len(all_pairs))
+    
+    if tris and all_triples:
+        if executor is not None and triple_slices:
+            futs = [executor.submit(_triangles_slice, all_triples, pts, tris, s, e) for s, e in triple_slices]
+            tr = sum(f.result() for f in futs)
+        else:
+            tr = _triangles_slice(all_triples, pts, tris, 0, len(all_triples))
     
     for n in names:
         p = pts[n]
@@ -335,6 +373,8 @@ def main():
     p.add_argument('--tri-weight', type=float, default=1.0)
     p.add_argument('--alt-weight', type=float, default=1.0)
     p.add_argument('--max-it', type=int, default=100)
+    p.add_argument('--fast', action='store_true',
+                   help='Use all logical CPUs (threads) to speed up distance/triangle evaluation.')
     args = p.parse_args()
 
     pts = parse_kml_v3(args.in_kml)
@@ -357,8 +397,26 @@ def main():
         
     w = {'geom': args.geom_weight, 'tri': args.tri_weight, 'alt': args.alt_weight}
 
-    res = minimize(objective_function, x0, args=(names, pts, tgs, tcs, dem_ds, w),
-                 method='L-BFGS-B', options={'maxiter': args.max_it, 'disp': True})
+    all_pairs = list(itertools.combinations(names, 2))
+    all_triples = list(itertools.combinations(names, 3)) if tcs else []
+
+    executor = None
+    pair_slices = []
+    triple_slices = []
+    if args.fast:
+        max_workers = os.cpu_count() or 1
+        executor = ThreadPoolExecutor(max_workers=max_workers)
+        pair_slices = _make_slices(len(all_pairs), max_workers * 4)
+        triple_slices = _make_slices(len(all_triples), max_workers * 4)
+
+    try:
+        res = minimize(objective_function, x0,
+                     args=(names, pts, tgs, tcs, dem_ds, w, all_pairs, pair_slices, all_triples, triple_slices, executor),
+                     method='L-BFGS-B', options={'maxiter': args.max_it, 'disp': True})
+    finally:
+        if executor is not None:
+            executor.shutdown(wait=True)
+        dem_ds.close()
                  
     if not res.success:
         print('Optimization failed or did not converge:', res.message)

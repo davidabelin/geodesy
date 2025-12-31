@@ -1,5 +1,5 @@
 # C:\Users\David\Documents\Local_Data\WashDC\streets.py v2.4
-# DATAFILES: ..\data\Roadway_SubBlock.geojson
+# DATAFILES: data\Roadway_SubBlock.geojson
 
 import geopandas as gpd
 import numpy as np
@@ -286,9 +286,9 @@ def main():
     # Load Data
     # -----------------------------
     # Load the GeoJSON file from the Roadway SubBlock dataset
-    gdf = gpd.read_file('../data/Roadway_SubBlock.geojson')
+    gdf = gpd.read_file('data/Roadway_SubBlock.geojson')
     # Optionally, load smaller datafile with *only* downtown Washington, DC:
-    #gdf = gpd.read_file('../data/dwntwn_streets.geojson')
+    #gdf = gpd.read_file('data/dwntwn_streets.geojson')
 
     # -------
     # Optional: limit to only wanted data
@@ -296,8 +296,8 @@ def main():
     # Filter gdf for *only* downtown Washington, DC
     # Default: set to approx. Ellicott/L'Enfant map
     # Format: (min_lon, min_lat, max_lon, max_lat)
-    downtown_bbox = (-77.058, 38.86, -76.973, 38.935)
-    gdf = gdf.cx[downtown_bbox[0]:downtown_bbox[2], downtown_bbox[1]:downtown_bbox[3]]
+    #downtown_bbox = (-77.058, 38.86, -76.973, 38.935)
+    #gdf = gdf.cx[downtown_bbox[0]:downtown_bbox[2], downtown_bbox[1]:downtown_bbox[3]]
     
     # Define keywords to filter out
     keywords_to_remove = ['Alley', 'Driveway', 'Ramp', ' Trail ', 'Trail', 'Walkway']
@@ -428,10 +428,10 @@ def main():
     # -----------------------------
 
     # Save the roads as a new GeoJSON (this file will have all the aggregated properties included)
-    roads_gdf.to_file('../data/dc_circles.geojson', driver='GeoJSON')
+    roads_gdf.to_file('data/dc_circles.geojson', driver='GeoJSON')
     # Select subsets of the data by column (to save)
-    subcols = ['ROUTEID', 'ROUTENAME', 'geometry', 'endpoints', 'bearing', 'length_m']
-    #gdf[subcols].to_file('../data/dwntwn_streets_subset.geojson', driver='GeoJSON')
+    #subcols = ['ROUTEID', 'ROUTENAME', 'geometry', 'endpoints', 'bearing', 'length_m']
+    #gdf[subcols].to_file('data/dwntwn_streets_subset.geojson', driver='GeoJSON')
 
     # -----------------------------
     # Create plots and charts
@@ -440,7 +440,7 @@ def main():
 
     # Polar Chart of Total Lengths
     # -----------------------------
-    plot_polar_chart(total_lengths, bin_edges, clip_sum)
+    #plot_polar_chart(total_lengths, bin_edges, clip_sum)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ title or "Geodesy Web" }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; max-width: 980px; }
+      a { color: #0b5fff; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .card { border: 1px solid #ddd; border-radius: 10px; padding: 16px; margin: 12px 0; }
+      label { display: block; margin-top: 10px; font-weight: 600; }
+      input[type="text"], input[type="number"] { width: 100%; padding: 8px; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .btn { padding: 10px 14px; border-radius: 8px; border: 1px solid #444; background: #111; color: #fff; cursor: pointer; }
+      .btn.secondary { background: #fff; color: #111; border-color: #ddd; }
+      pre { white-space: pre-wrap; background: #f7f7f7; padding: 12px; border-radius: 8px; }
+      .muted { color: #666; }
+    </style>
+  </head>
+  <body>
+    <div style="margin-bottom: 18px;">
+      <a href="{{ url_for('index') }}">Home</a> |
+      <a href="{{ url_for('roadways') }}">Roadways</a> |
+      <a href="{{ url_for('jobs_list') }}">Jobs</a>
+    </div>
+    {% block body %}{% endblock %}
+  </body>
+</html>
+

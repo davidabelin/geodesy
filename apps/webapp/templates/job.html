@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h1>Job {{ job['id'] }}</h1>
+  <div class="card">
+    <div>Status: <b>{{ job['status'] }}</b></div>
+    <div class="muted">Created: {{ job['created_at'] }}</div>
+    {% if job['started_at'] %}<div class="muted">Started: {{ job['started_at'] }}</div>{% endif %}
+    {% if job['finished_at'] %}<div class="muted">Finished: {{ job['finished_at'] }}</div>{% endif %}
+    {% if job['returncode'] is not none %}<div>Return code: {{ job['returncode'] }}</div>{% endif %}
+    <div style="margin-top: 10px;"><b>Command</b></div>
+    <pre>{{ ("python " ~ (" ".join(job['argv']))) }}</pre>
+  </div>
+
+  {% if downloads %}
+  <div class="card">
+    <div><b>Outputs</b></div>
+    <ul>
+      {% for d in downloads %}
+        <li>{{ d['key'] }}: <a href="{{ d['url'] }}">{{ d['rel'] }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <div class="card">
+    <div><b>Stdout</b></div>
+    <pre>{{ job.get('stdout') or "" }}</pre>
+    <div><b>Stderr</b></div>
+    <pre>{{ job.get('stderr') or "" }}</pre>
+  </div>
+
+  <div style="margin-top: 10px;">
+    <a class="btn secondary" href="{{ url_for('job_detail', job_id=job['id']) }}">Refresh</a>
+  </div>
+{% endblock %}
+

@@ -74,6 +74,7 @@ def _cmd_dc_centerlines(args: argparse.Namespace) -> int:
 
     run_dc_centerlines_pipeline(
         input_path=input_path,
+        input_layer=args.layer,
         output_kml_path=_resolve_out_path(args.output_kml),
         output_ew_csv_path=_resolve_out_path(args.ew_csv),
         output_ns_csv_path=_resolve_out_path(args.ns_csv),
@@ -94,6 +95,8 @@ def _cmd_intersections(args: argparse.Namespace) -> int:
     run_intersections(
         a_input=args.a_input,
         b_input=args.b_input,
+        a_layer=args.a_layer,
+        b_layer=args.b_layer,
         a_field=args.a_field,
         a_value=args.a_value,
         b_field=args.b_field,
@@ -109,6 +112,19 @@ def _cmd_intersections(args: argparse.Namespace) -> int:
         kml_color=args.kml_color,
         dedupe_grid_m=args.dedupe_grid_m,
     )
+    return 0
+
+
+def _cmd_centerlines_gpkg(args: argparse.Namespace) -> int:
+    from .pipelines.datasets import build_centerlines_gpkg
+
+    out = build_centerlines_gpkg(
+        input_path=Path(args.input),
+        output_path=Path(args.output),
+        layer=args.layer,
+        overwrite=bool(args.overwrite),
+    )
+    print(out)
     return 0
 
 
@@ -234,11 +250,18 @@ def build_parser() -> argparse.ArgumentParser:
         "dc-centerlines",
         help="DC centerlines pipeline (Shapefile): merge segments, classify EW/NS, style, export KML + CSVs.",
     )
+    default_centerlines_gpkg = data_dir() / "centerlines.gpkg"
+    default_centerlines_shp = data_dir() / "DC_Street_Centerlines/Street_Centerlines_2013.shp"
     cc.add_argument(
         "--input",
         type=Path,
-        default=data_dir() / "DC_Street_Centerlines/Street_Centerlines_2013.shp",
-        help="Input Shapefile path (default: roadways/data/DC_Street_Centerlines/Street_Centerlines_2013.shp).",
+        default=default_centerlines_gpkg if default_centerlines_gpkg.exists() else default_centerlines_shp,
+        help="Input vector path (GPKG/SHP). Relative paths resolved from CWD.",
+    )
+    cc.add_argument(
+        "--layer",
+        default="centerlines" if default_centerlines_gpkg.exists() else None,
+        help="Optional: layer name when reading a multi-layer dataset (e.g. GPKG).",
     )
     cc.add_argument(
         "--output-kml",
@@ -304,6 +327,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     ix.add_argument("--a-input", type=Path, required=True, help="A layer input path (shp/geojson/...)")
     ix.add_argument("--b-input", type=Path, default=None, help="Optional B input path (defaults to A).")
+    ix.add_argument("--a-layer", default=None, help="Optional layer name for A (e.g. for GPKG).")
+    ix.add_argument("--b-layer", default=None, help="Optional layer name for B (e.g. for GPKG).")
     ix.add_argument("--a-field", default=None, help="Optional: A attribute field to filter by equality.")
     ix.add_argument("--a-value", default=None, help="Optional: A attribute value for --a-field.")
     ix.add_argument("--b-field", default=None, help="Optional: B attribute field to filter by equality.")
@@ -363,6 +388,29 @@ def build_parser() -> argparse.ArgumentParser:
         help="Dedupe intersection points onto this grid size in working CRS units (default 0.5).",
     )
     ix.set_defaults(func=_cmd_intersections)
+
+    ds = sub.add_parser("datasets", help="Dataset management utilities.")
+    ds_sub = ds.add_subparsers(dest="ds_cmd", required=True)
+
+    gpkg = ds_sub.add_parser(
+        "centerlines-gpkg",
+        help="Build roadways/data/centerlines.gpkg from the centerlines Shapefile.",
+    )
+    gpkg.add_argument(
+        "--input",
+        type=str,
+        default=str(data_dir() / "DC_Street_Centerlines/Street_Centerlines_2013.shp"),
+        help="Input Shapefile path.",
+    )
+    gpkg.add_argument(
+        "--output",
+        type=str,
+        default=str(data_dir() / "centerlines.gpkg"),
+        help="Output GeoPackage path.",
+    )
+    gpkg.add_argument("--layer", default="centerlines", help="Output layer name.")
+    gpkg.add_argument("--overwrite", action="store_true", help="Overwrite existing output.")
+    gpkg.set_defaults(func=_cmd_centerlines_gpkg)
 
     return p
 

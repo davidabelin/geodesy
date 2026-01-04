@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h1>Intersections</h1>
+  <form class="card" method="post">
+    <div class="row">
+      <div>
+        <label>A input</label>
+        <input type="text" name="a_input" value="roadways/data/DC_Street_Centerlines/Street_Centerlines_2013.shp" />
+      </div>
+      <div>
+        <label>B input</label>
+        <input type="text" name="b_input" value="roadways/data/DC_Street_Centerlines/Street_Centerlines_2013.shp" />
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>A filter field</label>
+        <input type="text" name="a_field" value="STREETTYPE" />
+      </div>
+      <div>
+        <label>A filter value</label>
+        <input type="text" name="a_value" value="ST" />
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>B filter field</label>
+        <input type="text" name="b_field" value="STREETTYPE" />
+      </div>
+      <div>
+        <label>B filter value</label>
+        <input type="text" name="b_value" value="AVE" />
+      </div>
+    </div>
+    <label><input type="checkbox" name="derive_full_name" checked /> Derive FULL_NAME</label>
+    <label>Group-by (optional)</label>
+    <input type="text" name="group_by" value="FULL_NAME" />
+    <div class="row">
+      <div>
+        <label>Output GeoJSON</label>
+        <input type="text" name="output_geojson" value="intersections.geojson" />
+      </div>
+      <div>
+        <label>Output CSV (optional)</label>
+        <input type="text" name="output_csv" value="intersections.csv" />
+      </div>
+    </div>
+    <label>Output KML (optional)</label>
+    <input type="text" name="output_kml" value="intersections.kml" />
+    <div style="margin-top: 12px;">
+      <button class="btn" type="submit">Run</button>
+    </div>
+  </form>
+{% endblock %}
+

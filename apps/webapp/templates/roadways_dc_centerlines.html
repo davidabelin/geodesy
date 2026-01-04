@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h1>DC Centerlines</h1>
+  <form class="card" method="post">
+    <div class="row">
+      <div>
+        <label>Streettype (optional)</label>
+        <input type="text" name="streettype" placeholder="AVE, ST, Rd, Avenue, ..." />
+      </div>
+      <div>
+        <label>Roadtype</label>
+        <input type="text" name="roadtype" value="Street" />
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Style</label>
+        <input type="text" name="style" value="dc-street-v1" />
+      </div>
+      <div>
+        <label>Line width</label>
+        <input type="number" step="0.1" name="line_width" value="1" />
+      </div>
+    </div>
+    <label>Output KML (relative goes under roadways/out/)</label>
+    <input type="text" name="output_kml" value="centerlines.kml" />
+    <div class="row">
+      <div>
+        <label>EW CSV (optional)</label>
+        <input type="text" name="ew_csv" placeholder="ew.csv" />
+      </div>
+      <div>
+        <label>NS CSV (optional)</label>
+        <input type="text" name="ns_csv" placeholder="ns.csv" />
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Snap gap meters (optional)</label>
+        <input type="number" step="0.1" name="snap_gap_m" />
+      </div>
+      <div>
+        <label>Snap gap fraction (optional)</label>
+        <input type="number" step="0.01" name="snap_gap_frac" />
+      </div>
+    </div>
+    <label><input type="checkbox" name="keep_other" /> Keep unclassified</label>
+    <div style="margin-top: 12px;">
+      <button class="btn" type="submit">Run</button>
+    </div>
+  </form>
+{% endblock %}
+

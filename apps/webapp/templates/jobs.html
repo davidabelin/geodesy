@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h1>Jobs</h1>
+  <div class="card">
+    {% if jobs %}
+      <ul>
+        {% for j in jobs %}
+          <li>
+            <a href="{{ url_for('job_detail', job_id=j['id']) }}">{{ j['id'] }}</a>
+            — {{ j['status'] }}{% if j['returncode'] is not none %} (rc={{ j['returncode'] }}){% endif %}
+            <span class="muted"> {{ j['created_at'] }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="muted">No jobs yet.</div>
+    {% endif %}
+  </div>
+{% endblock %}
+

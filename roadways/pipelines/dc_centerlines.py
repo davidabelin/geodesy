@@ -136,6 +136,7 @@ def _dist_ft_componentwise(
 def run_dc_centerlines_pipeline(
     *,
     input_path: Path,
+    input_layer: str | None = None,
     output_kml_path: Path,
     output_ew_csv_path: Path,
     output_ns_csv_path: Path,
@@ -161,7 +162,10 @@ def run_dc_centerlines_pipeline(
     output_ew_csv_path.parent.mkdir(parents=True, exist_ok=True)
     output_ns_csv_path.parent.mkdir(parents=True, exist_ok=True)
 
-    gdf = gpd.read_file(str(input_path))
+    read_kwargs = {}
+    if input_layer:
+        read_kwargs["layer"] = input_layer
+    gdf = gpd.read_file(str(input_path), **read_kwargs)
     required = ["ST_NAME", "QUADRANT", "ROADTYPE"]
     missing = [c for c in required if c not in gdf.columns]
     if missing:

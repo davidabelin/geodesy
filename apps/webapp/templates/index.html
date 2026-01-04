@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h1>Geodesy Web (dev)</h1>
+  <div class="card">
+    <div>Roadways tools</div>
+    <div class="muted">Forms run the existing `python -m roadways ...` commands in a background worker.</div>
+    <div style="margin-top: 10px;">
+      <a class="btn secondary" href="{{ url_for('roadways') }}">Open Roadways</a>
+    </div>
+  </div>
+{% endblock %}
+

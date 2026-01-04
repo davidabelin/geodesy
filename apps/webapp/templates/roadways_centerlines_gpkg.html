@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h1>Build Centerlines GeoPackage</h1>
+  <form class="card" method="post">
+    <label>Input Shapefile (optional)</label>
+    <input type="text" name="input" value="roadways/data/DC_Street_Centerlines/Street_Centerlines_2013.shp" />
+    <label>Output GPKG (optional)</label>
+    <input type="text" name="output" value="roadways/data/centerlines.gpkg" />
+    <label>Layer name</label>
+    <input type="text" name="layer" value="centerlines" />
+    <label><input type="checkbox" name="overwrite" /> Overwrite existing</label>
+    <div style="margin-top: 12px;">
+      <button class="btn" type="submit">Run</button>
+    </div>
+  </form>
+{% endblock %}
+

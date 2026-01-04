@@ -95,6 +95,8 @@ def run_intersections(
     *,
     a_input: Path,
     b_input: Optional[Path],
+    a_layer: Optional[str],
+    b_layer: Optional[str],
     a_field: Optional[str],
     a_value: Optional[str],
     b_field: Optional[str],
@@ -114,8 +116,15 @@ def run_intersections(
     a_input = Path(a_input)
     b_input = Path(b_input) if b_input is not None else a_input
 
-    a = gpd.read_file(str(a_input))
-    b = gpd.read_file(str(b_input))
+    a_read_kwargs = {}
+    if a_layer:
+        a_read_kwargs["layer"] = a_layer
+    b_read_kwargs = {}
+    if b_layer:
+        b_read_kwargs["layer"] = b_layer
+
+    a = gpd.read_file(str(a_input), **a_read_kwargs)
+    b = gpd.read_file(str(b_input), **b_read_kwargs)
 
     if derive_full_name:
         _maybe_make_full_name(a, st_name_field="ST_NAME", quadrant_field="QUADRANT", out_field=full_name_field)

@@ -1,12 +1,50 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from .._paths import out_dir
 from ..kml import require_simplekml, write_kml_lines
 from ._common import require_geopandas, require_pyproj_geod, require_shapely_ops, try_matplotlib
+
+
+def _normalize_streettype(value: str) -> str:
+    s = str(value or "").strip().lower()
+    if not s:
+        return ""
+    s = s.replace(".", "").replace("-", " ").strip()
+    alias = {
+        "avenue": "AVE",
+        "ave": "AVE",
+        "street": "ST",
+        "st": "ST",
+        "road": "RD",
+        "rd": "RD",
+        "place": "PL",
+        "pl": "PL",
+        "drive": "DR",
+        "dr": "DR",
+        "boulevard": "BLVD",
+        "blvd": "BLVD",
+        "circle": "CIR",
+        "cir": "CIR",
+        "court": "CT",
+        "ct": "CT",
+        "lane": "LN",
+        "ln": "LN",
+        "terrace": "TER",
+        "ter": "TER",
+        "parkway": "PKWY",
+        "pkwy": "PKWY",
+        "way": "WAY",
+        "square": "SQ",
+        "sq": "SQ",
+        "alley": "ALY",
+        "aly": "ALY",
+    }
+    if s in alias:
+        return alias[s]
+    return s.upper()
 
 
 def _street_sort_key(street_name: str) -> Tuple[str, int, object]:
@@ -61,14 +99,6 @@ def _kml_color_dc_street_v1(street_name: str, other_sorted: List[str]) -> str:
     return "ff" + hex_color[5:7] + hex_color[3:5] + hex_color[1:3]
 
 
-def _azimuth_deg_from_line(coords: List[Tuple[float, float]]) -> float:
-    Geod = require_pyproj_geod()
-    geod = Geod(ellps="WGS84")
-    (lon0, lat0), (lon1, lat1) = coords[0], coords[-1]
-    az12, _, _ = geod.inv(lon0, lat0, lon1, lat1)
-    return float(az12) % 360.0
-
-
 def _classify_azimuth(azimuth: float) -> str:
     ew_ranges = ((84, 96), (264, 276))
     ns_ranges = ((0, 6), (174, 186), (354, 360))
@@ -79,6 +109,14 @@ def _classify_azimuth(azimuth: float) -> str:
         if lo <= azimuth <= hi:
             return "NS"
     return "Other"
+
+
+def _azimuth_deg(coords_lonlat: List[Tuple[float, float]]) -> float:
+    Geod = require_pyproj_geod()
+    geod = Geod(ellps="WGS84")
+    (lon0, lat0), (lon1, lat1) = coords_lonlat[0], coords_lonlat[-1]
+    az12, _, _ = geod.inv(lon0, lat0, lon1, lat1)
+    return float(az12) % 360.0
 
 
 def _dist_ft_componentwise(
@@ -95,15 +133,14 @@ def _dist_ft_componentwise(
     return float(dist_m) * 3.28084
 
 
-def run_dc_roadways_pipeline(
+def run_dc_centerlines_pipeline(
     *,
-    geojson_path: Path,
+    input_path: Path,
     output_kml_path: Path,
     output_ew_csv_path: Path,
     output_ns_csv_path: Path,
-    road_type: str = "ST",
-    name_field: str = "ROUTENAME",
-    type_field: str = "STREETTYPE",
+    roadtype: Optional[str] = "Street",
+    streettype: str = "",
     style_scheme: str = "dc-street-v1",
     keep_other: bool = False,
     line_width: float = 1.0,
@@ -114,7 +151,7 @@ def run_dc_roadways_pipeline(
     GeometryCollection, LineString, MultiLineString, linemerge = require_shapely_ops()
     require_simplekml()
 
-    geojson_path = Path(geojson_path)
+    input_path = Path(input_path)
     output_kml_path = Path(output_kml_path)
     output_ew_csv_path = Path(output_ew_csv_path)
     output_ns_csv_path = Path(output_ns_csv_path)
@@ -124,14 +161,77 @@ def run_dc_roadways_pipeline(
     output_ew_csv_path.parent.mkdir(parents=True, exist_ok=True)
     output_ns_csv_path.parent.mkdir(parents=True, exist_ok=True)
 
-    gdf = gpd.read_file(str(geojson_path))
-    if type_field not in gdf.columns or name_field not in gdf.columns:
+    gdf = gpd.read_file(str(input_path))
+    required = ["ST_NAME", "QUADRANT", "ROADTYPE"]
+    missing = [c for c in required if c not in gdf.columns]
+    if missing:
+        raise ValueError(f"Missing required centerlines fields: {missing}")
+
+    if isinstance(roadtype, str) and roadtype.strip() == "":
+        roadtype = None
+
+    streettype = "" if str(streettype or "").strip().lower() == "none" else streettype
+    streettype = _normalize_streettype(streettype)
+    if streettype and "STREETTYPE" not in gdf.columns:
+        raise ValueError("Requested --streettype but input has no 'STREETTYPE' column.")
+
+    if roadtype:
+        gdf = gdf[gdf["ROADTYPE"].astype(str).str.casefold() == str(roadtype).casefold()].copy()
+    if streettype:
+        gdf = gdf[gdf["STREETTYPE"].astype(str).str.upper() == streettype].copy()
+
+    if gdf.empty:
+        roadtypes = (
+            gpd.read_file(str(input_path), columns=["ROADTYPE"])["ROADTYPE"]
+            .dropna()
+            .astype(str)
+            .value_counts()
+            .head(10)
+            .index.to_list()
+        )
+        streettypes = []
+        try:
+            streettypes = (
+                gpd.read_file(str(input_path), columns=["STREETTYPE"])["STREETTYPE"]
+                .dropna()
+                .astype(str)
+                .value_counts()
+                .head(15)
+                .index.to_list()
+            )
+        except Exception:
+            pass
         raise ValueError(
-            f"Missing required columns: {type_field!r} and/or {name_field!r}"
+            "No rows remain after filtering. "
+            f"ROADTYPE examples: {roadtypes}. "
+            f"STREETTYPE examples: {streettypes}. "
+            "Note: 'Avenue' is typically STREETTYPE='AVE', not ROADTYPE."
         )
 
-    gdf = gdf[gdf[type_field] == road_type].copy()
-    gdf_merge = gdf.to_crs(epsg=3857) if gdf.crs else gdf
+    quadrants = {"NW", "NE", "SW", "SE"}
+
+    def full_name(row) -> str:
+        base = str(row["ST_NAME"]).strip()
+        quad = str(row["QUADRANT"]).strip() if row["QUADRANT"] is not None else ""
+        if quad in quadrants:
+            return f"{base} {quad}"
+        return base
+
+    gdf["FULL_NAME"] = gdf.apply(full_name, axis=1)
+
+    def flatten_lines(geom) -> List[LineString]:
+        if geom is None:
+            return []
+        if isinstance(geom, LineString):
+            return [geom]
+        if isinstance(geom, MultiLineString):
+            return [g for g in geom.geoms if isinstance(g, LineString)]
+        if isinstance(geom, GeometryCollection):
+            out: List[LineString] = []
+            for g in geom.geoms:
+                out.extend(flatten_lines(g))
+            return out
+        return []
 
     def _kml_color_for_name(name: str, other_sorted: List[str], idx: int, n: int) -> str:
         from ..kml import kml_color_from_any
@@ -158,22 +258,8 @@ def run_dc_roadways_pipeline(
             "Use: dc-street-v1 | none | cmap:<matplotlib_cmap> | solid:<kml_hex>."
         )
 
-    def flatten_lines(geom) -> List[LineString]:
-        if geom is None:
-            return []
-        if isinstance(geom, LineString):
-            return [geom]
-        if isinstance(geom, MultiLineString):
-            return [g for g in geom.geoms if isinstance(g, LineString)]
-        if isinstance(geom, GeometryCollection):
-            out: List[LineString] = []
-            for g in geom.geoms:
-                out.extend(flatten_lines(g))
-            return out
-        return []
-
     merged_rows: List[Dict[str, object]] = []
-    for name, group in gdf_merge.groupby(name_field):
+    for name, group in gdf.groupby("FULL_NAME"):
         lines: List[LineString] = []
         for geom in group.geometry:
             lines.extend(flatten_lines(geom))
@@ -222,21 +308,17 @@ def run_dc_roadways_pipeline(
             merged_rows.append({"original_name": name, "geometry": merged})
         elif isinstance(merged, MultiLineString):
             for i, part in enumerate(merged.geoms):
-                merged_rows.append(
-                    {"original_name": name, "part": int(i), "geometry": part}
-                )
+                merged_rows.append({"original_name": name, "part": int(i), "geometry": part})
         elif isinstance(merged, GeometryCollection):
             i = 0
             for part in merged.geoms:
                 if isinstance(part, LineString):
-                    merged_rows.append(
-                        {"original_name": name, "part": int(i), "geometry": part}
-                    )
+                    merged_rows.append({"original_name": name, "part": int(i), "geometry": part})
                     i += 1
         else:
             raise TypeError(f"Unexpected merged geometry type: {merged.geom_type!r}")
 
-    merged_gdf = gpd.GeoDataFrame(merged_rows, geometry="geometry", crs=gdf_merge.crs)
+    merged_gdf = gpd.GeoDataFrame(merged_rows, geometry="geometry", crs=gdf.crs)
     if merged_gdf.empty:
         raise ValueError(
             "No merged road geometries were produced (all groups had empty/invalid geometry)."
@@ -245,34 +327,21 @@ def run_dc_roadways_pipeline(
         lambda row: f"{row['original_name']} Part-{row.get('part', 0)}",
         axis=1,
     )
-    merged_ll = merged_gdf.to_crs(epsg=4326) if merged_gdf.crs else merged_gdf.copy()
-    if merged_gdf.crs:
-        try:
-            is_geographic = bool(getattr(merged_gdf.crs, "is_geographic", False))
-        except Exception:
-            is_geographic = False
-        if is_geographic:
-            centroids_proj = merged_gdf.to_crs(epsg=3857).geometry.centroid
-            centroids_ll = gpd.GeoSeries(centroids_proj, crs="EPSG:3857").to_crs(epsg=4326)
-        else:
-            centroids_ll = gpd.GeoSeries(merged_gdf.geometry.centroid, crs=merged_gdf.crs).to_crs(
-                epsg=4326
-            )
-    else:
-        centroids_ll = merged_ll.geometry.centroid
+
+    merged_ll = merged_gdf.to_crs(epsg=4326)
+    centroids_ll = gpd.GeoSeries(merged_gdf.geometry.centroid, crs=merged_gdf.crs).to_crs(epsg=4326)
     merged_ll["centroid"] = centroids_ll
     merged_ll["azimuth"] = merged_ll.geometry.apply(
-        lambda line: _azimuth_deg_from_line([(float(c[0]), float(c[1])) for c in line.coords])
+        lambda line: _azimuth_deg([(float(c[0]), float(c[1])) for c in line.coords])
     )
     merged_ll["classification"] = merged_ll["azimuth"].apply(_classify_azimuth)
-    merged_gdf = merged_ll
 
     if not keep_other:
-        merged_gdf = merged_gdf[merged_gdf["classification"].isin(["EW", "NS"])].copy()
+        merged_ll = merged_ll[merged_ll["classification"].isin(["EW", "NS"])].copy()
 
     import re
 
-    all_names = [str(n) for n in merged_gdf["original_name"].dropna().unique()]
+    all_names = [str(n) for n in merged_ll["original_name"].dropna().unique()]
     all_names_sorted = sorted(all_names)
     idx_map = {n: i for i, n in enumerate(all_names_sorted)}
     other = sorted(
@@ -282,19 +351,19 @@ def run_dc_roadways_pipeline(
             if n and not re.match(r"^(\d+)", n) and not re.match(r"^([A-Z])\s", n)
         ]
     )
-    merged_gdf["kml_color"] = merged_gdf["original_name"].apply(
+    merged_ll["kml_color"] = merged_ll["original_name"].apply(
         lambda n: _kml_color_for_name(str(n), other, idx_map.get(str(n), 0), len(all_names_sorted))
     )
 
     _write_distances_csv(
-        merged_gdf[merged_gdf["classification"] == "EW"].copy(),
+        merged_ll[merged_ll["classification"] == "EW"].copy(),
         output_ew_csv_path,
     )
     _write_distances_csv(
-        merged_gdf[merged_gdf["classification"] == "NS"].copy(),
+        merged_ll[merged_ll["classification"] == "NS"].copy(),
         output_ns_csv_path,
     )
-    _write_classified_kml(merged_gdf, output_kml_path, line_width=float(line_width))
+    _write_classified_kml(merged_ll, output_kml_path, line_width=float(line_width))
 
 
 def _write_distances_csv(gdf, output_path: Path) -> None:
@@ -319,7 +388,7 @@ def _write_distances_csv(gdf, output_path: Path) -> None:
 
     classification = str(sorted_gdf.iloc[0]["classification"])
     records: List[Dict[str, object]] = []
-    for quadrant, group in sorted_gdf.groupby(lambda i: sorted_gdf.loc[i, "sort_key"][0]):
+    for _, group in sorted_gdf.groupby(lambda i: sorted_gdf.loc[i, "sort_key"][0]):
         if len(group) < 2:
             continue
         group = group.reset_index(drop=True)
@@ -346,7 +415,7 @@ def _write_distances_csv(gdf, output_path: Path) -> None:
 
 def _write_classified_kml(gdf, output_path: Path, line_width: float) -> None:
     simplekml = require_simplekml()
-    kml = simplekml.Kml(name="DC Roadways (classified)")
+    kml = simplekml.Kml(name="DC Street Centerlines (classified)")
     for street_name, group in gdf.groupby("original_name"):
         folder = kml.newfolder(name=str(street_name))
         for _, row in group.iterrows():

@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?><metadata>
+    <idinfo>
+        <citation>
+            <citeinfo>
+                <origin/>
+                <pubdate>20020610</pubdate>
+                <title>Historic Street Lines (HistStLn)</title>
+                <geoform>vector digital data</geoform>
+                <pubinfo>
+                    <publish>DC GIS</publish>
+                </pubinfo>
+                <onlink>http://dcatlas.dcgis.dc.gov/catalog/download.asp?downloadName=HistStLn&amp;downloadTYPE=KMZ</onlink>
+                <onlink>http://dcatlas.dcgis.dc.gov/catalog/download.asp?downloadName=HistStLn&amp;downloadTYPE=ESRI</onlink>
+                <lworkcit>
+                    <citeinfo>
+                        <pubdate>20020214</pubdate>
+                        <title>DC Geographic Information System</title>
+                    </citeinfo>
+                </lworkcit>
+            </citeinfo>
+        </citation>
+        <descript>
+            <abstract>L'Enfant Plan of Washington. The dataset contains street arcs of the L'Enfant Plan historic district, created as part of the DC Geographic Information System (DC GIS) for the D.C. Office of the Chief Technology Officer (OCTO) and participating D.C. government agencies. This district was identified from public records, including published maps and the National Register nomination form. It was created by buffering along the planimetric street centerline at specified distances, as referenced in the 1803 King Plats, ranging from 70 to 160 feet.</abstract>
+            <purpose>This data is used for the planning and management of Washington, D.C. by local government agencies.</purpose>
+        </descript>
+        <timeperd>
+            <timeinfo>
+                <sngdate>
+                    <caldate>20020610</caldate>
+                </sngdate>
+            </timeinfo>
+            <current>publication date</current>
+        </timeperd>
+        <status>
+            <progress>In work</progress>
+            <update>As needed</update>
+        </status>
+        <spdom>
+            <bounding>
+                <westbc>-77.14439820190412</westbc>
+                <eastbc>-76.91025208374039</eastbc>
+                <northbc>38.97497233487106</northbc>
+                <southbc>38.81464758982022</southbc>
+            </bounding>
+        </spdom>
+        <keywords>
+            <theme>
+                <themekt>None</themekt>
+                <themekey>Boundary</themekey>
+                <themekey>society</themekey>
+                <themekey>Historic Preservation</themekey>
+                <themekey>Historic District</themekey>
+                <themekey>Government Jurisdiction</themekey>
+            </theme>
+            <theme>
+                <themekt>ISO 19115 Topic Categories</themekt>
+                <themekey>society</themekey>
+            </theme>
+            <place>
+                <placekt>None</placekt>
+                <placekey>District of Columbia</placekey>
+                <placekey>Washington</placekey>
+                <placekey>D.C.</placekey>
+                <placekey>DC</placekey>
+                <placekey>DC GIS</placekey>
+                <placekey>DCGIS</placekey>
+            </place>
+        </keywords>
+        <accconst>None</accconst>
+        <useconst>This work is licensed under a Creative Commons Attribution 4.0 International License.</useconst>
+        <ptcontac>
+            <cntinfo>
+                <cntorgp>
+                    <cntorg>D.C. Office of the Chief Technology Officer</cntorg>
+                    <cntper>GIS Data Coordinator</cntper>
+                </cntorgp>
+                <cntaddr>
+                    <addrtype>mailing and physical</addrtype>
+                    <address>441 4th St NW,</address>
+                    <city>Washington</city>
+                    <state>DC</state>
+                    <postal>20001</postal>
+                    <country>US</country>
+                </cntaddr>
+                <cntvoice>(202) 727-1761</cntvoice>
+                <cntfax>(202) 727-5660</cntfax>
+                <cntemail>dcgis@dc.gov</cntemail>
+                <hours>8:30 am - 5:00 pm</hours>
+            </cntinfo>
+        </ptcontac>
+        <datacred>https://planning.dc.gov</datacred>
+        <native>Microsoft Windows XP Version 5.1 (Build 2600) Service Pack 2; ESRI ArcCatalog 9.2.2.1350</native>
+    </idinfo>
+    <dataqual>
+        <attracc>
+            <attraccr>Data believed to be complete and accurate as of the time period cited. Subject to change. Digital version compared with original source data for accuracy and completeness. In process of validation by source and/or responsible agency.</attraccr>
+        </attracc>
+        <logic>In process of validation by source and/or responsible agency.</logic>
+        <complete>Data believed to be complete and accurate, subject to change. Digital version compared with original source data for accuracy and completeness. In process of validation by source and/or responsible agency.</complete>
+        <posacc>
+            <horizpa>
+                <horizpar>In process of validation by source and/or responsible agency.</horizpar>
+            </horizpa>
+        </posacc>
+        <posacc>
+            <vertacc>
+                <vertaccr>N/A</vertaccr>
+            </vertacc>
+        </posacc>
+        <lineage>
+            <srcinfo>
+                <srccite>
+                    <citeinfo>
+                        <pubdate>19502001</pubdate>
+                        <title>National Register Nominations</title>
+                    </citeinfo>
+                </srccite>
+                <typesrc>hardcopyPaper</typesrc>
+                <srccitea>National Register Nominations</srccitea>
+                <srccontr>geography and attributes</srccontr>
+            </srcinfo>
+            <srcinfo>
+                <srccite>
+                    <citeinfo>
+                        <pubdate>20000101</pubdate>
+                        <title>Historic Washington, the District of Columbia inventory of historic sites</title>
+                    </citeinfo>
+                </srccite>
+                <srcscale>2400</srcscale>
+                <typesrc>hardcopyPaper</typesrc>
+                <srccitea>Historic Washington, the District of Columbia inventory of historic sites</srccitea>
+                <srccontr>boundaries and attributes</srccontr>
+            </srcinfo>
+            <procstep>
+                <procdesc>This district was identified from public records (including published maps and the National Register nomination form). and heads-up digitized using a combination of the 1995 orthophotographs and planimetric roads features. This dataset was not fitted to the master line dataset since it follows many property lines not in that dataset. It was created by buffering along the planimetric street centerline at specified distances, as referenced in the 1803 King Plats, ranging from 70 to 160 feet. Attribute data was provided by public records. Planimetrics were created at a scale of 1:1,000. This means that a well defined feature falls within two feet of the true position. All DC GIS data is stored and exported in Maryland State Plane coordinates NAD 83 meters.</procdesc>
+                <procdate>20010806</procdate>
+                <proccont>
+                    <cntinfo>
+                        <cntorgp>
+                            <cntorg>D.C. Office of the Chief Technology Officer</cntorg>
+                            <cntper>GIS DataCoordinator</cntper>
+                        </cntorgp>
+                        <cntaddr>
+                            <addrtype>mailing and physical</addrtype>
+                            <address>441 4th St NW, Suite 930 South</address>
+                            <city>Washington</city>
+                            <state>DC</state>
+                            <postal>20001</postal>
+                            <country>US</country>
+                        </cntaddr>
+                        <cntvoice>(202) 727-1761</cntvoice>
+                        <cntfax>(202) 727-5660</cntfax>
+                        <cntemail>dcgis@dc.gov</cntemail>
+                        <hours>8:30 am - 5:00 pm</hours>
+                    </cntinfo>
+                </proccont>
+            </procstep>
+        </lineage>
+    </dataqual>
+    <spdoinfo>
+        <direct>Vector</direct>
+        <ptvctinf>
+            <sdtsterm>
+                <sdtstype>Complete chain</sdtstype>
+                <ptvctcnt>2657</ptvctcnt>
+            </sdtsterm>
+            <sdtsterm>
+                <sdtstype>Complete chain</sdtstype>
+                <ptvctcnt>2657</ptvctcnt>
+            </sdtsterm>
+        </ptvctinf>
+    </spdoinfo>
+    <eainfo>
+        <detailed>
+            <enttyp>
+                <enttypl>DCGIS.HistStLn</enttypl>
+            </enttyp>
+            <attr>
+                <attrlabl>SNAPS_TO</attrlabl>
+                <attrdef>octo gis sequential identifier</attrdef>
+            </attr>
+            <attr>
+                <attrlabl>GIS_ID</attrlabl>
+                <attrdef>SIS id</attrdef>
+            </attr>
+            <attr>
+                <attrlabl>BUF_DIST</attrlabl>
+                <attrdef>half district value</attrdef>
+            </attr>
+            <attr>
+                <attrlabl>LENGTH</attrlabl>
+                <attrdef>Feature geometry.</attrdef>
+                <attrdefs>ESRI</attrdefs>
+                <attrdomv>
+                    					
+                    <udom>Coordinates defining the features.</udom>
+                    				
+                </attrdomv>
+            </attr>
+            <attr>
+                <attrlabl>HIST_BASE_</attrlabl>
+                <attrdef>unique id</attrdef>
+            </attr>
+            <attr>
+                <attrlabl>SHAPE.LEN</attrlabl>
+                <attrdef>street name</attrdef>
+            </attr>
+            <attr>
+                <attrlabl>SHAPE</attrlabl>
+                <attrdef>Feature geometry.</attrdef>
+                <attrdefs>ESRI</attrdefs>
+                <attrdomv>
+                    					
+                    <udom>Coordinates defining the features.</udom>
+                    				
+                </attrdomv>
+            </attr>
+            <attr>
+                <attrlabl>SIS_ID</attrlabl>
+                <attrdef>length</attrdef>
+            </attr>
+            <attr>
+                <attrlabl>DIST_HALF</attrlabl>
+                <attrdef>coverage artifact</attrdef>
+            </attr>
+            <attr>
+                <attrlabl>ST_NAME</attrlabl>
+                <attrdef>buffer distance</attrdef>
+            </attr>
+            <attr>
+                <attrlabl>OBJECTID</attrlabl>
+                <attrdef>Internal feature number.</attrdef>
+                <attrdefs>ESRI</attrdefs>
+                <attrdomv>
+                    					
+                    <udom>Sequential unique whole numbers that are automatically generated.</udom>
+                    				
+                </attrdomv>
+            </attr>
+        </detailed>
+    </eainfo>
+    <distinfo>
+        <distrib>
+            <cntinfo>
+                <cntorgp>
+                    <cntorg>D.C. Office of the Chief Technology Officer</cntorg>
+                    <cntper>GIS Data Coordinator</cntper>
+                </cntorgp>
+                <cntaddr>
+                    <addrtype>mailing and physical</addrtype>
+                    <address>441 4th St NWSuite 930 South</address>
+                    <city>Washington</city>
+                    <state>DC</state>
+                    <postal>20001</postal>
+                    <country>US</country>
+                </cntaddr>
+                <cntvoice>(202) 727-1761</cntvoice>
+                <cntfax>(202) 727-5660</cntfax>
+                <cntemail>dcgis@dc.gov</cntemail>
+                <hours>8:30 am - 5:00 pm</hours>
+                <cntinst>dcgis@dc.gov</cntinst>
+            </cntinfo>
+        </distrib>
+        <distliab>Acknowledgment of the DC Geographic Information Systems Program (DC GIS). The District of Columbia Government makes no claims as to the completeness, accuracy or content of any data contained hereon, and makes no representation of any kind, including, but not limited to, the warranty of the accuracy or fitness for a particular use, nor are any such warranties to be implied or inferred with respect to the information or data furnished herein.</distliab>
+        <custom>Contact OCTO GIS.</custom>
+    </distinfo>
+    <metainfo>
+        <metd>20070806</metd>
+        <metc>
+            <cntinfo>
+                <cntorgp>
+                    <cntorg>D.C. Office of the Chief Technology Officer</cntorg>
+                    <cntper>GIS Data Coordinator</cntper>
+                </cntorgp>
+                <cntaddr>
+                    <addrtype>mailing and physical</addrtype>
+                    <address>441 4th St NW, Suite 930 South</address>
+                    <city>Washington</city>
+                    <state>DC</state>
+                    <postal>20001</postal>
+                    <country>US</country>
+                </cntaddr>
+                <cntvoice>(202) 727-1761</cntvoice>
+                <cntfax>(202) 727-5660</cntfax>
+                <cntemail>dcgis@dc.gov</cntemail>
+                <hours>8:30 am - 5:00 pm</hours>
+                <cntinst>email</cntinst>
+            </cntinfo>
+        </metc>
+        <metstdn>FGDC Content Standard for Digital Geospatial Metadata</metstdn>
+        <metstdv>FGDC-STD-001-1998</metstdv>
+        <mettc>local time</mettc>
+    </metainfo>
+</metadata>

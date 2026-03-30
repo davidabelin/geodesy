@@ -371,65 +371,6 @@ data/SelectPnts_critlines.kml
 data/sph_PenLines.kml
 data/SquarePnts.kml
 data/Waterbodies_2019.geojson
-data/WHAT THE F U C K I N G  FUCK\!/az_mix.csv
-data/WHAT THE F U C K I N G  FUCK\!/az_MixLines.kml
-data/WHAT THE F U C K I N G  FUCK\!/az_out.csv
-data/WHAT THE F U C K I N G  FUCK\!/az_penplus.csv
-data/WHAT THE F U C K I N G  FUCK\!/az_PenPlusLines.kml
-data/WHAT THE F U C K I N G  FUCK\!/az_PPLines_filt.kml
-data/WHAT THE F U C K I N G  FUCK\!/az_PPLines_nofilt.kml
-data/WHAT THE F U C K I N G  FUCK\!/azd_pen.csv
-data/WHAT THE F U C K I N G  FUCK\!/azd_pen_ell.csv
-data/WHAT THE F U C K I N G  FUCK\!/azd_penplus.csv
-data/WHAT THE F U C K I N G  FUCK\!/azd_penplus_nofilt.csv
-data/WHAT THE F U C K I N G  FUCK\!/azd_PenPlusLines_nofilt.kml
-data/WHAT THE F U C K I N G  FUCK\!/azdist_filtered_pen.csv
-data/WHAT THE F U C K I N G  FUCK\!/azdist_filtered_stones.csv
-data/WHAT THE F U C K I N G  FUCK\!/BorderStones.kml
-data/WHAT THE F U C K I N G  FUCK\!/CapHillIntersections.kml
-data/WHAT THE F U C K I N G  FUCK\!/CapHillPnts.kml
-data/WHAT THE F U C K I N G  FUCK\!/CapPnts.kml
-data/WHAT THE F U C K I N G  FUCK\!/d_mix.csv
-data/WHAT THE F U C K I N G  FUCK\!/d_MixLines.kml
-data/WHAT THE F U C K I N G  FUCK\!/d_penplus.csv
-data/WHAT THE F U C K I N G  FUCK\!/d_PenPlusLines.kml
-data/WHAT THE F U C K I N G  FUCK\!/d_PP_filt.csv
-data/WHAT THE F U C K I N G  FUCK\!/d_PPLines_filt.kml
-data/WHAT THE F U C K I N G  FUCK\!/dc_avenues.kml
-data/WHAT THE F U C K I N G  FUCK\!/dc_color_aves.kml
-data/WHAT THE F U C K I N G  FUCK\!/DwnTwnIntersections.kml
-data/WHAT THE F U C K I N G  FUCK\!/E W Hill Lines.kml
-data/WHAT THE F U C K I N G  FUCK\!/ell_PenLines.kml
-data/WHAT THE F U C K I N G  FUCK\!/Intersections.kml
-data/WHAT THE F U C K I N G  FUCK\!/keypoints.csv
-data/WHAT THE F U C K I N G  FUCK\!/N S Hill Lines.kml
-data/WHAT THE F U C K I N G  FUCK\!/NE SW Hill Lines.kml
-data/WHAT THE F U C K I N G  FUCK\!/NW SE Hill Lines.kml
-data/WHAT THE F U C K I N G  FUCK\!/octant_highpnts.geojson
-data/WHAT THE F U C K I N G  FUCK\!/paired_lines.csv
-data/WHAT THE F U C K I N G  FUCK\!/PenLines.kml
-data/WHAT THE F U C K I N G  FUCK\!/PenLinesFiltered.kml
-data/WHAT THE F U C K I N G  FUCK\!/PenPlusLines.kml
-data/WHAT THE F U C K I N G  FUCK\!/PenPnts_critlines.kml
-data/WHAT THE F U C K I N G  FUCK\!/PenPntsOG.kml
-data/WHAT THE F U C K I N G  FUCK\!/PentagonPlusPoints.kml
-data/WHAT THE F U C K I N G  FUCK\!/RidgePnts.kml
-data/WHAT THE F U C K I N G  FUCK\!/RiverLinesFiltered.kml
-data/WHAT THE F U C K I N G  FUCK\!/RiverPnts.kml
-data/WHAT THE F U C K I N G  FUCK\!/SelectLinesFiltered.kml
-data/WHAT THE F U C K I N G  FUCK\!/SelectPnts.kml
-data/WHAT THE F U C K I N G  FUCK\!/SelectPnts_critlines.kml
-data/WHAT THE F U C K I N G  FUCK\!/sph_PenLines.kml
-data/WHAT THE F U C K I N G  FUCK\!/SquarePnts.kml
-data/WHAT THE F U C K I N G  FUCK\!/ThreeHigh.kml
-data/WHAT THE F U C K I N G  FUCK\!/XCenterLinesFiltered.kml
-data/WHAT THE F U C K I N G  FUCK\!/XEastLinesFiltered.kml
-data/WHAT THE F U C K I N G  FUCK\!/Xion_Center.kml
-data/WHAT THE F U C K I N G  FUCK\!/Xion_East.kml
-data/WHAT THE F U C K I N G  FUCK\!/Xion_North.kml
-data/WHAT THE F U C K I N G  FUCK\!/XNorthLinesFiltered.kml
-data/WHAT THE F U C K I N G  FUCK\!/XPnts.kml
-data/WHAT THE F U C K I N G  FUCK\!/XPnts_critlines.kml
 data/Xion_Center.kml
 data/Xion_East.kml
 data/Xion_North.kml
@@ -471,3 +412,7 @@ tmp_gtri.html
 *.qgs~
 *.qgs~
 commit_line.md
+qgis/Hawkins/3D map/*.png
+qgis/Hawkins/3D map/*.xml
+qgis/Hawkins/3D map/*.gpkg
+qgis/Hawkins/3D map/*.tif

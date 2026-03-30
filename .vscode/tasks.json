@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Hawkins Audit",
+      "type": "shell",
+      "command": "${workspaceFolder}\\qgis\\run_hawkins_3d_pipeline.bat",
+      "args": [
+        "--mode",
+        "audit"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Hawkins Pilot",
+      "type": "shell",
+      "command": "${workspaceFolder}\\qgis\\run_hawkins_3d_pipeline.bat",
+      "args": [
+        "--mode",
+        "pilot"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Hawkins Full",
+      "type": "shell",
+      "command": "${workspaceFolder}\\qgis\\run_hawkins_3d_pipeline.bat",
+      "args": [
+        "--mode",
+        "full"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

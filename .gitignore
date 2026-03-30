@@ -197,6 +197,7 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+!.vscode/tasks.json
 
 # YAML
 .yaml
@@ -252,6 +253,11 @@ qgis/DC_USGS_schematic_attachments.zip
 qgis/DC_USGS_schematic.qgs
 qgis/DC_USGS_schematic.qgs~
 qgis/DC_Waterways.qgz
+!qgis/qgis_runtime.py
+!qgis/hawkins_3d_core.py
+!qgis/hawkins_3d_pipeline.py
+!qgis/hawkins_3d_console_helper.py
+!qgis/run_hawkins_3d_pipeline.bat
 qgis/hilltops_attachments.zip
 qgis/hilltops.qgs
 qgis/hilltops.qgs~
@@ -452,6 +458,8 @@ qgis/Hawkins/hawkins_topo_project_attachments.zip
 qgis/Hawkins/hawkins_topo_project.qgs
 qgis/Hawkins/pale_hawkins_topology.gpkg
 qgis/Hawkins/pale_hawkins_topology.gpkg.aux.xml
+qgis/Hawkins/Hawkins_Georeferenced.tif.aux.xml
+qgis/Hawkins/generated/
 find
 qgis/Ellicot/washington_plan.png
 qgis/Hawkins/hawkins_edited.jpg
@@ -462,3 +470,4 @@ tmp_gtri.html
 *.qgs~
 *.qgs~
 *.qgs~
+commit_line.md

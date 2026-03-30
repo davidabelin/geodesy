@@ -11,3 +11,6 @@ pytest
 pyproj
 matplotlib>=3.10.8
 scipy>=1.17.0
+numpy>=2.4.0
+# QGIS Desktop Python work in this repo uses the OSGeo4W runtime on Windows,
+# not a pip-installed qgis/gdal stack.

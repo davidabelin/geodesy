@@ -2,7 +2,11 @@
 setlocal
 
 set "SCRIPT_DIR=%~dp0"
-set "QGIS_PYTHON=%LOCALAPPDATA%\Programs\OSGeo4W\bin\python-qgis-ltr.bat"
+if defined QGIS_PYTHON (
+    set "QGIS_PYTHON=%QGIS_PYTHON%"
+) else (
+    set "QGIS_PYTHON=%LOCALAPPDATA%\Programs\OSGeo4W\bin\python-qgis.bat"
+)
 
 if not exist "%QGIS_PYTHON%" (
     echo QGIS Python launcher not found at "%QGIS_PYTHON%".

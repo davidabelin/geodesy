@@ -1,3 +1,9 @@
+"""CLI entrypoint for the Hawkins 3D reconstruction workflow.
+
+Run this script through the OSGeo4W-provided ``python-qgis.bat`` launcher so
+GDAL, PROJ, and PyQGIS all come from the same QGIS Desktop runtime.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -13,6 +19,7 @@ from hawkins_3d_core import default_config, run_pipeline
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Build the command-line interface for audit, pilot, and full runs."""
     parser = argparse.ArgumentParser(
         description="Audit or build Hawkins-derived terrain assets with the QGIS runtime."
     )
@@ -38,6 +45,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Parse CLI arguments, run the pipeline, and print the JSON report."""
     args = build_parser().parse_args(argv)
     config = default_config(
         mode=args.mode,

@@ -1,3 +1,20 @@
+"""Core Hawkins terrain-reconstruction workflow for QGIS Desktop.
+
+This module is intentionally opinionated about the runtime and the current data
+sources in this repository:
+
+- the authoritative Hawkins source is ``Hawkins_Topography.img``
+- execution is expected through the OSGeo4W / QGIS Desktop Python runtime
+- pilot mode works in a smaller AOI and now produces auto-extracted candidate
+  contour lines for review
+- full mode is still conservative and does not auto-extract across the entire
+  map extent because the current heuristics are meant for pilot-scale review
+
+The pipeline output is a work package GeoPackage plus one or more QGIS project
+files. The GeoPackage separates editable/manual layers from auto-generated guide
+layers so that candidate extraction can improve without overwriting vetted work.
+"""
+
 from __future__ import annotations
 
 import json
@@ -11,6 +28,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
+from scipy import ndimage as ndi
 
 CURRENT_DIR = Path(__file__).resolve().parent
 if str(CURRENT_DIR) not in sys.path:
@@ -59,12 +77,43 @@ REQUIRED_CONTOUR_FIELDS = [
     ("source", ogr.OFTString),
 ]
 
+AUTO_CANDIDATE_FIELDS = [
+    ("candidate_id", ogr.OFTInteger),
+    ("aoi_name", ogr.OFTString),
+    ("mode", ogr.OFTString),
+    ("elev_src", ogr.OFTString),
+    ("elev_unit", ogr.OFTString),
+    ("elev_m", ogr.OFTReal),
+    ("is_index", ogr.OFTInteger),
+    ("confidence", ogr.OFTString),
+    ("source", ogr.OFTString),
+    ("note", ogr.OFTString),
+    ("mask_px", ogr.OFTInteger),
+    ("skel_px", ogr.OFTInteger),
+    ("stroke_w", ogr.OFTReal),
+    ("length_m", ogr.OFTReal),
+    ("is_closed", ogr.OFTInteger),
+    ("modern_dem", ogr.OFTString),
+    ("modern_samples", ogr.OFTInteger),
+    ("modern_min_m", ogr.OFTReal),
+    ("modern_med_m", ogr.OFTReal),
+    ("modern_max_m", ogr.OFTReal),
+    ("modern_range_m", ogr.OFTReal),
+    ("modern_rank", ogr.OFTInteger),
+]
+
+AUTO_CANDIDATE_MAX_PIXELS = 4_500_000
+AUTO_CANDIDATE_MIN_COMPONENT_PIXELS = 20
+AUTO_CANDIDATE_MIN_LENGTH_M = 18.0
+AUTO_CANDIDATE_SAMPLE_SPACING_M = 10.0
+
 
 @dataclass
 class Hawkins3DConfig:
+    """Configuration for one audit/pilot/full pipeline run."""
     mode: str
     source_raster: Path
-    fallback_raster: Path
+    fallback_raster: Path | None
     output_dir: Path
     aoi: str = "auto"
     contour_interval: str = "auto"
@@ -82,14 +131,17 @@ def default_config(
     contour_interval: str = "auto",
     z_unit: str = "auto",
 ) -> Hawkins3DConfig:
+    """Return the repo-default Hawkins pipeline configuration."""
     repo_root = find_repo_root(CURRENT_DIR)
     hawkins_dir = repo_root / "qgis/Hawkins"
-    resolved_output_dir = output_dir or (hawkins_dir / "generated")
-    resolved_source = source_raster or (hawkins_dir / "Hawkins_Georeferenced.tif")
+    resolved_output_dir = output_dir or (hawkins_dir / "3D map")
+    resolved_source = source_raster or (
+        hawkins_dir / "Hawkins_Topography_unzip/Hawkins_Topography.img"
+    )
     return Hawkins3DConfig(
         mode=mode,
         source_raster=resolved_source,
-        fallback_raster=hawkins_dir / "Hawkins_Topography_unzip/Hawkins_Topography.img",
+        fallback_raster=None,
         output_dir=resolved_output_dir,
         aoi=aoi,
         contour_interval=contour_interval,
@@ -99,6 +151,7 @@ def default_config(
 
 
 def run_pipeline(config: Hawkins3DConfig) -> dict[str, Any]:
+    """Run the Hawkins pipeline inside a managed QGIS application context."""
     app, created = init_qgis_app(gui=False)
     try:
         return _run_pipeline(config)
@@ -107,6 +160,7 @@ def run_pipeline(config: Hawkins3DConfig) -> dict[str, Any]:
 
 
 def _run_pipeline(config: Hawkins3DConfig) -> dict[str, Any]:
+    """Execute the end-to-end workflow and return a JSON-serializable report."""
     source_path = _resolve_source_raster(config)
     output_dir = config.output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -175,6 +229,26 @@ def _run_pipeline(config: Hawkins3DConfig) -> dict[str, Any]:
             "Full mode skips a full-resolution contour mask until manual contours are attributed."
         )
 
+    candidate_summary = _auto_extract_candidate_contours(
+        ds=ds,
+        work_package_path=config.manual_package or report_paths["work_package_gpkg"],
+        aoi_info=aoi_info,
+        config=config,
+        candidate_mask_path=report_paths["candidate_mask_tif"],
+    )
+    report["candidate_contours"] = candidate_summary
+    candidate_artifacts = candidate_summary.get("artifacts") or {}
+    if candidate_artifacts.get("candidate_mask_tif"):
+        report["artifacts"]["candidate_mask_tif"] = str(candidate_artifacts["candidate_mask_tif"])
+    if candidate_summary.get("status") == "ok" and candidate_summary.get("feature_count", 0) > 0:
+        report["notes"].append(
+            "Auto-generated contour candidates were written to hawkins_contours_candidates for review and copy/paste into hawkins_contours_manual."
+        )
+    elif candidate_summary.get("status") == "skipped":
+        report["notes"].append(
+            "Automatic contour candidate extraction was skipped for this AOI size; use pilot mode or a smaller manual AOI for auto-generated guides."
+        )
+
     workbench_path = _build_qgis_project(
         project_path=report_paths["workbench_qgs"],
         title=f"Hawkins {config.mode.title()} Workbench",
@@ -188,6 +262,7 @@ def _run_pipeline(config: Hawkins3DConfig) -> dict[str, Any]:
         extra_rasters=[
             report_paths["contour_mask_tif"] if report_paths["contour_mask_tif"].exists() else None,
             report_paths["index_mask_tif"] if report_paths["index_mask_tif"].exists() else None,
+            report_paths["candidate_mask_tif"] if report_paths["candidate_mask_tif"].exists() else None,
         ],
     )
     report["artifacts"]["workbench_qgs"] = str(workbench_path)
@@ -201,12 +276,20 @@ def _run_pipeline(config: Hawkins3DConfig) -> dict[str, Any]:
 
     if not contour_summary["ready_for_dem"]:
         report["status"] = "manual_input_required"
-        report["notes"].extend(
-            [
-                "The work package is ready for tracing and label attribution in QGIS Desktop.",
-                "Populate hawkins_contours_manual.elev_m for traced contours, then rerun pilot/full mode.",
-            ]
-        )
+        if candidate_summary.get("status") == "ok" and candidate_summary.get("feature_count", 0) > 0:
+            report["notes"].extend(
+                [
+                    "The work package is ready for contour review and label attribution in QGIS Desktop.",
+                    "Copy the usable features from hawkins_contours_candidates into hawkins_contours_manual, then populate hawkins_contours_manual.elev_m and rerun pilot/full mode.",
+                ]
+            )
+        else:
+            report["notes"].extend(
+                [
+                    "The work package is ready for contour review and label attribution in QGIS Desktop.",
+                    "Populate hawkins_contours_manual.elev_m for traced contours, or switch to pilot mode to generate auto-extracted contour candidates first.",
+                ]
+            )
         _write_json(report_paths["report_json"], report)
         report["artifacts"]["report_json"] = str(report_paths["report_json"])
         return report
@@ -265,17 +348,25 @@ def _run_pipeline(config: Hawkins3DConfig) -> dict[str, Any]:
 
 
 def _resolve_source_raster(config: Hawkins3DConfig) -> Path:
-    candidates = [config.source_raster, config.fallback_raster]
+    """Resolve the first existing raster from the configured source candidates."""
+    candidates: list[Path] = []
+    for candidate in (config.source_raster, config.fallback_raster):
+        if candidate is None:
+            continue
+        if candidate in candidates:
+            continue
+        candidates.append(candidate)
     for candidate in candidates:
         if candidate.exists():
             return candidate.resolve()
     raise FileNotFoundError(
-        "Neither the primary Hawkins raster nor the fallback raster exists: "
+        "None of the configured Hawkins raster sources exist: "
         + ", ".join(str(candidate) for candidate in candidates)
     )
 
 
 def _output_paths(mode: str, output_dir: Path) -> dict[str, Path]:
+    """Return the standard artifact paths for a given pipeline mode."""
     prefix = f"hawkins_{mode}"
     return {
         "report_json": output_dir / f"{prefix}_report.json",
@@ -285,6 +376,7 @@ def _output_paths(mode: str, output_dir: Path) -> dict[str, Path]:
         "crop_preview_png": output_dir / f"{prefix}_crop_preview.png",
         "contour_mask_tif": output_dir / f"{prefix}_contour_mask.tif",
         "index_mask_tif": output_dir / f"{prefix}_index_mask.tif",
+        "candidate_mask_tif": output_dir / f"{prefix}_candidate_mask.tif",
         "work_package_gpkg": output_dir / "hawkins_work.gpkg",
         "contours_gpkg": output_dir / f"{prefix}_contours.gpkg",
         "qa_gpkg": output_dir / f"{prefix}_qa.gpkg",
@@ -309,6 +401,7 @@ def _read_preview_rgb(dataset, target_size: int) -> np.ndarray:
 
 
 def _compute_color_masks(rgb: np.ndarray) -> dict[str, np.ndarray]:
+    """Build broad preview masks used by audit mode and AOI selection."""
     red = rgb[0].astype(np.int16)
     green = rgb[1].astype(np.int16)
     blue = rgb[2].astype(np.int16)
@@ -376,6 +469,7 @@ def _neighbor_counts(mask: np.ndarray) -> np.ndarray:
 
 
 def _audit_source(dataset, preview_masks: dict[str, np.ndarray]) -> dict[str, Any]:
+    """Summarize raster properties and pilot-AOI feasibility signals."""
     contour_density = float(np.mean(preview_masks["contour"]))
     index_density = float(np.mean(preview_masks["index"]))
     red_density = float(np.mean(preview_masks["red"]))
@@ -407,6 +501,7 @@ def _audit_source(dataset, preview_masks: dict[str, np.ndarray]) -> dict[str, An
 
 
 def _find_pilot_candidate(dataset, preview_masks: dict[str, np.ndarray]) -> dict[str, Any] | None:
+    """Pick a pilot AOI with strong contour density and limited cartographic clutter."""
     contour = preview_masks["contour"]
     index = preview_masks["index"]
     clutter = preview_masks["red"] | preview_masks["blue"]
@@ -487,6 +582,7 @@ def _pixel_window_to_bbox(dataset, pixel_window: tuple[int, int, int, int]) -> l
 
 
 def _resolve_aoi(config: Hawkins3DConfig, dataset, audit_result: dict[str, Any]) -> dict[str, Any]:
+    """Resolve ``auto`` or explicit AOI input into bbox and pixel-window form."""
     if config.mode == "full" and config.aoi == "auto":
         bbox = _pixel_window_to_bbox(dataset, (0, 0, dataset.RasterXSize, dataset.RasterYSize))
         return {
@@ -590,6 +686,7 @@ def _ensure_work_package(
     aoi_info: dict[str, Any],
     config: Hawkins3DConfig,
 ) -> Path:
+    """Create or update the GeoPackage that stores editable Hawkins work layers."""
     driver = ogr.GetDriverByName("GPKG")
     if work_package_path.exists():
         package = driver.Open(str(work_package_path), update=1)
@@ -640,6 +737,13 @@ def _ensure_work_package(
             ("confidence", ogr.OFTString),
             ("note", ogr.OFTString),
         ],
+    )
+    _ensure_layer(
+        package,
+        "hawkins_contours_candidates",
+        spatial_ref,
+        ogr.wkbLineString,
+        AUTO_CANDIDATE_FIELDS,
     )
 
     _upsert_aoi_feature(
@@ -704,7 +808,600 @@ def _upsert_aoi_feature(layer, aoi_name: str, mode: str, source_raster: str, bbo
     layer.CreateFeature(feature)
 
 
+def _spatial_ref_from_wkt(wkt: str):
+    spatial_ref = osr.SpatialReference()
+    if wkt:
+        spatial_ref.ImportFromWkt(wkt)
+    if hasattr(spatial_ref, "SetAxisMappingStrategy"):
+        spatial_ref.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+    return spatial_ref
+
+
+def _auto_extract_candidate_contours(
+    ds,
+    work_package_path: Path,
+    aoi_info: dict[str, Any],
+    config: Hawkins3DConfig,
+    candidate_mask_path: Path,
+) -> dict[str, Any]:
+    """Generate pilot-scale contour candidates and store them in the work package.
+
+    These features are guide geometry only. They are meant to help manual review
+    and later automation, not to be treated as final historical contours.
+    """
+    pixel_window = aoi_info["pixel_window"]
+    pixel_count = int(pixel_window[2] * pixel_window[3])
+    if pixel_count > AUTO_CANDIDATE_MAX_PIXELS:
+        return {
+            "status": "skipped",
+            "reason": "aoi_too_large",
+            "aoi_pixels": pixel_count,
+            "max_pixels": AUTO_CANDIDATE_MAX_PIXELS,
+        }
+
+    rgb = ds.ReadAsArray(
+        pixel_window[0],
+        pixel_window[1],
+        pixel_window[2],
+        pixel_window[3],
+    )[:3]
+    candidate_mask, mask_summary = _compute_candidate_contour_mask(rgb)
+    gt = _window_geotransform(ds.GetGeoTransform(), pixel_window[0], pixel_window[1])
+    _write_mask_raster(candidate_mask_path, candidate_mask, gt, ds.GetProjection())
+
+    candidates, candidate_summary = _vectorize_candidate_contours(
+        candidate_mask=candidate_mask,
+        geo_transform=gt,
+        aoi_name=aoi_info["name"],
+        mode=config.mode,
+    )
+    samplers = _reference_dem_samplers(aoi_info["bbox"], ds.GetProjection())
+    try:
+        sampled_count = 0
+        for candidate in candidates:
+            stats = _sample_candidate_reference_stats(candidate["points_map"], samplers)
+            candidate.update(stats)
+            if stats["modern_samples"] > 0:
+                sampled_count += 1
+    finally:
+        for sampler in samplers:
+            sampler["band"] = None
+            sampler["dataset"] = None
+
+    _rank_candidate_elevations(candidates)
+    _replace_candidate_features(
+        work_package_path=work_package_path,
+        aoi_name=aoi_info["name"],
+        candidates=candidates,
+    )
+
+    lengths = [candidate["length_m"] for candidate in candidates]
+    modern_sources = sorted({candidate["modern_dem"] for candidate in candidates if candidate["modern_dem"]})
+    return {
+        "status": "ok" if candidates else "no_candidates",
+        "aoi_name": aoi_info["name"],
+        "mask_summary": mask_summary,
+        "component_summary": candidate_summary,
+        "feature_count": len(candidates),
+        "sampled_feature_count": sampled_count,
+        "reference_dems": modern_sources,
+        "length_m": {
+            "min": float(min(lengths)) if lengths else 0.0,
+            "median": float(np.median(lengths)) if lengths else 0.0,
+            "max": float(max(lengths)) if lengths else 0.0,
+        },
+        "artifacts": {
+            "candidate_mask_tif": str(candidate_mask_path),
+        },
+        "notes": [
+            "Candidate contours are guide geometry only; validate against Hawkins before copying them into hawkins_contours_manual.",
+            "modern_med_m is from a modern DEM and is only a calibration hint, not a historical elevation assignment.",
+        ],
+    }
+
+
+def _compute_candidate_contour_mask(rgb: np.ndarray) -> tuple[np.ndarray, dict[str, Any]]:
+    """Build a stricter contour-ink mask than the broad audit preview mask."""
+    red = rgb[0].astype(np.int16)
+    green = rgb[1].astype(np.int16)
+    blue = rgb[2].astype(np.int16)
+    value = ((red + green + blue) / 3.0).astype(np.float32)
+
+    red_mask = (red >= green + 40) & (red >= blue + 55) & (np.abs(green - blue) <= 18)
+    blue_mask = (blue >= green + 18) & (blue >= red + 18)
+
+    brown_cut = float(np.percentile(value, 15))
+    neutral_cut = float(np.percentile(value, 8))
+    brown_mask = (
+        (red >= green)
+        & (green >= blue)
+        & ((red - green) >= 6)
+        & ((green - blue) >= 3)
+        & ((red - blue) >= 16)
+        & (value <= brown_cut)
+    )
+    neutral_dark_mask = (
+        (value <= neutral_cut)
+        & (np.abs(red - green) <= 14)
+        & (np.abs(green - blue) <= 14)
+    )
+
+    base_mask = (brown_mask | neutral_dark_mask) & ~red_mask & ~blue_mask
+    local_coverage = ndi.uniform_filter(base_mask.astype(np.float32), size=5, mode="constant")
+    candidate_mask = base_mask & (local_coverage <= 0.7)
+
+    labels, component_count = ndi.label(candidate_mask, structure=np.ones((3, 3), dtype=np.uint8))
+    component_sizes = np.bincount(labels.ravel())
+    keep = np.flatnonzero(component_sizes >= AUTO_CANDIDATE_MIN_COMPONENT_PIXELS)
+    keep = keep[keep != 0]
+    candidate_mask = np.isin(labels, keep)
+
+    return candidate_mask, {
+        "brown_cut": brown_cut,
+        "neutral_cut": neutral_cut,
+        "base_density": float(np.mean(base_mask)),
+        "candidate_density": float(np.mean(candidate_mask)),
+        "raw_component_count": int(component_count),
+        "kept_component_count": int(len(keep)),
+    }
+
+
+def _vectorize_candidate_contours(
+    candidate_mask: np.ndarray,
+    geo_transform: tuple[float, ...],
+    aoi_name: str,
+    mode: str,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Trace simple candidate linework from a raster contour mask."""
+    structure = np.ones((3, 3), dtype=np.uint8)
+    mask_labels, _ = ndi.label(candidate_mask, structure=structure)
+    mask_sizes = np.bincount(mask_labels.ravel())
+
+    skeleton = _skeletonize_mask(candidate_mask)
+    skeleton_labels, component_count = ndi.label(skeleton, structure=structure)
+    component_slices = ndi.find_objects(skeleton_labels)
+    neighbor_kernel = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]], dtype=np.uint8)
+    neighbor_counts = ndi.convolve(skeleton.astype(np.uint8), neighbor_kernel, mode="constant", cval=0)
+
+    candidates: list[dict[str, Any]] = []
+    skipped_branchy = 0
+    skipped_short = 0
+    skipped_trace_fail = 0
+
+    for index, component_slice in enumerate(component_slices, start=1):
+        if component_slice is None:
+            continue
+
+        component_mask = skeleton_labels[component_slice] == index
+        if not np.any(component_mask):
+            continue
+
+        component_degrees = neighbor_counts[component_slice][component_mask]
+        end_count = int(np.count_nonzero(component_degrees == 1))
+        branch_count = int(np.count_nonzero(component_degrees >= 3))
+        if branch_count != 0 or end_count not in (0, 2):
+            skipped_branchy += 1
+            continue
+
+        local_path = _trace_simple_skeleton_component(component_mask)
+        if not local_path:
+            skipped_trace_fail += 1
+            continue
+
+        y_offset = component_slice[0].start or 0
+        x_offset = component_slice[1].start or 0
+        global_path = [(y + y_offset, x + x_offset) for y, x in local_path]
+        first_y, first_x = global_path[0]
+        mask_label = int(mask_labels[first_y, first_x])
+        area_pixels = int(mask_sizes[mask_label]) if mask_label > 0 else int(len(global_path))
+        points_map = [_pixel_center_to_map(geo_transform, x, y) for y, x in global_path]
+        length_m = _polyline_length(points_map)
+        if length_m < AUTO_CANDIDATE_MIN_LENGTH_M:
+            skipped_short += 1
+            continue
+
+        geometry = ogr.Geometry(ogr.wkbLineString)
+        for x_map, y_map in points_map:
+            geometry.AddPoint_2D(x_map, y_map)
+        if end_count == 0 and points_map[0] != points_map[-1]:
+            geometry.AddPoint_2D(points_map[0][0], points_map[0][1])
+
+        skeleton_pixels = max(1, len(global_path) - (1 if end_count == 0 else 0))
+        stroke_width = area_pixels / skeleton_pixels
+        candidates.append(
+            {
+                "candidate_id": len(candidates) + 1,
+                "aoi_name": aoi_name,
+                "mode": mode,
+                "geometry": geometry,
+                "points_map": points_map,
+                "mask_px": area_pixels,
+                "skel_px": skeleton_pixels,
+                "stroke_w": float(stroke_width),
+                "length_m": float(length_m),
+                "is_closed": int(end_count == 0),
+                "is_index": int(stroke_width >= 1.8 or area_pixels >= 120),
+                "confidence": "candidate",
+                "source": "Hawkins_auto",
+                "note": "Auto-extracted from contour ink; validate before use.",
+                "modern_dem": "",
+                "modern_samples": 0,
+                "modern_min_m": None,
+                "modern_med_m": None,
+                "modern_max_m": None,
+                "modern_range_m": None,
+                "modern_rank": 0,
+            }
+        )
+
+    return candidates, {
+        "skeleton_component_count": int(component_count),
+        "traceable_components": int(len(candidates)),
+        "skipped_branchy_components": int(skipped_branchy),
+        "skipped_short_components": int(skipped_short),
+        "skipped_trace_fail_components": int(skipped_trace_fail),
+    }
+
+
+def _skeletonize_mask(mask: np.ndarray) -> np.ndarray:
+    """Thin a binary mask to one-pixel centerlines using Zhang-Suen logic."""
+    image = mask.astype(np.uint8, copy=True)
+    changed = True
+    iterations = 0
+    while changed and iterations < 200:
+        changed = False
+        for step in (0, 1):
+            padded = np.pad(image, 1, mode="constant")
+            p2 = padded[:-2, 1:-1]
+            p3 = padded[:-2, 2:]
+            p4 = padded[1:-1, 2:]
+            p5 = padded[2:, 2:]
+            p6 = padded[2:, 1:-1]
+            p7 = padded[2:, :-2]
+            p8 = padded[1:-1, :-2]
+            p9 = padded[:-2, :-2]
+
+            neighbors = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9
+            transitions = ((p2 == 0) & (p3 == 1)).astype(np.uint8)
+            transitions += ((p3 == 0) & (p4 == 1)).astype(np.uint8)
+            transitions += ((p4 == 0) & (p5 == 1)).astype(np.uint8)
+            transitions += ((p5 == 0) & (p6 == 1)).astype(np.uint8)
+            transitions += ((p6 == 0) & (p7 == 1)).astype(np.uint8)
+            transitions += ((p7 == 0) & (p8 == 1)).astype(np.uint8)
+            transitions += ((p8 == 0) & (p9 == 1)).astype(np.uint8)
+            transitions += ((p9 == 0) & (p2 == 1)).astype(np.uint8)
+
+            if step == 0:
+                mask_a = p2 * p4 * p6
+                mask_b = p4 * p6 * p8
+            else:
+                mask_a = p2 * p4 * p8
+                mask_b = p2 * p6 * p8
+
+            marker = (
+                (image == 1)
+                & (neighbors >= 2)
+                & (neighbors <= 6)
+                & (transitions == 1)
+                & (mask_a == 0)
+                & (mask_b == 0)
+            )
+            if np.any(marker):
+                image[marker] = 0
+                changed = True
+        iterations += 1
+    return image.astype(bool)
+
+
+def _trace_simple_skeleton_component(component_mask: np.ndarray) -> list[tuple[int, int]] | None:
+    """Trace a non-branching skeleton component into an ordered pixel path."""
+    coords = np.argwhere(component_mask)
+    pixels = {tuple(int(value) for value in coord) for coord in coords}
+    if not pixels:
+        return None
+
+    degree_map = {pixel: len(_pixel_neighbors(pixel, pixels)) for pixel in pixels}
+    end_points = sorted(pixel for pixel, degree in degree_map.items() if degree == 1)
+    if len(end_points) == 2:
+        start = end_points[0]
+        is_loop = False
+    elif len(end_points) == 0:
+        start = min(pixels)
+        is_loop = True
+    else:
+        return None
+
+    path = [start]
+    visited = {start}
+    previous = None
+    current = start
+
+    while True:
+        neighbors = [pixel for pixel in _pixel_neighbors(current, pixels) if pixel != previous]
+        if not neighbors:
+            break
+
+        next_pixel = None
+        for candidate in sorted(neighbors):
+            if candidate not in visited:
+                next_pixel = candidate
+                break
+
+        if next_pixel is None:
+            if is_loop and start in neighbors and len(visited) == len(pixels):
+                path.append(start)
+                return path
+            break
+
+        path.append(next_pixel)
+        visited.add(next_pixel)
+        previous, current = current, next_pixel
+
+    if len(visited) != len(pixels):
+        return None
+    return path
+
+
+def _pixel_neighbors(pixel: tuple[int, int], pixels: set[tuple[int, int]]) -> list[tuple[int, int]]:
+    y, x = pixel
+    neighbors: list[tuple[int, int]] = []
+    for dy in (-1, 0, 1):
+        for dx in (-1, 0, 1):
+            if dx == 0 and dy == 0:
+                continue
+            neighbor = (y + dy, x + dx)
+            if neighbor in pixels:
+                neighbors.append(neighbor)
+    return neighbors
+
+
+def _pixel_center_to_map(geo_transform: tuple[float, ...], pixel_x: int, pixel_y: int) -> tuple[float, float]:
+    map_x = geo_transform[0] + ((pixel_x + 0.5) * geo_transform[1]) + ((pixel_y + 0.5) * geo_transform[2])
+    map_y = geo_transform[3] + ((pixel_x + 0.5) * geo_transform[4]) + ((pixel_y + 0.5) * geo_transform[5])
+    return float(map_x), float(map_y)
+
+
+def _polyline_length(points: list[tuple[float, float]]) -> float:
+    if len(points) < 2:
+        return 0.0
+    total = 0.0
+    for start, end in zip(points[:-1], points[1:]):
+        total += math.hypot(end[0] - start[0], end[1] - start[1])
+    return total
+
+
+def _reference_dem_samplers(aoi_bbox: list[float], source_projection_wkt: str) -> list[dict[str, Any]]:
+    """Open overlapping modern DEMs and prepare coordinate transforms for sampling."""
+    source_srs = _spatial_ref_from_wkt(source_projection_wkt)
+    samplers: list[dict[str, Any]] = []
+    for path in _reference_dem_paths():
+        dataset = gdal.Open(str(path))
+        if dataset is None:
+            continue
+
+        target_srs = _spatial_ref_from_wkt(dataset.GetProjection())
+        overlap_area = _transformed_bbox_overlap(aoi_bbox, source_srs, dataset, target_srs)
+        if overlap_area <= 0:
+            dataset = None
+            continue
+
+        samplers.append(
+            {
+                "path": path,
+                "dataset": dataset,
+                "band": dataset.GetRasterBand(1),
+                "nodata": dataset.GetRasterBand(1).GetNoDataValue(),
+                "geo_transform": dataset.GetGeoTransform(),
+                "target_srs": target_srs,
+                "transform": osr.CoordinateTransformation(source_srs, target_srs),
+                "overlap_area": overlap_area,
+            }
+        )
+    return samplers
+
+
+def _transformed_bbox_overlap(
+    source_bbox: list[float],
+    source_srs,
+    dataset,
+    target_srs,
+) -> float:
+    try:
+        transform = osr.CoordinateTransformation(source_srs, target_srs)
+        xs: list[float] = []
+        ys: list[float] = []
+        for x in (source_bbox[0], source_bbox[2]):
+            for y in (source_bbox[1], source_bbox[3]):
+                tx, ty, _ = transform.TransformPoint(x, y)
+                xs.append(tx)
+                ys.append(ty)
+    except Exception:
+        return 0.0
+
+    source_bounds = [min(xs), min(ys), max(xs), max(ys)]
+    target_bounds = _dataset_bbox(dataset)
+    overlap_x = max(0.0, min(source_bounds[2], target_bounds[2]) - max(source_bounds[0], target_bounds[0]))
+    overlap_y = max(0.0, min(source_bounds[3], target_bounds[3]) - max(source_bounds[1], target_bounds[1]))
+    return float(overlap_x * overlap_y)
+
+
+def _dataset_bbox(dataset) -> list[float]:
+    gt = dataset.GetGeoTransform()
+    x_min = gt[0]
+    y_max = gt[3]
+    x_max = x_min + (dataset.RasterXSize * gt[1]) + (dataset.RasterYSize * gt[2])
+    y_min = y_max + (dataset.RasterXSize * gt[4]) + (dataset.RasterYSize * gt[5])
+    return [float(min(x_min, x_max)), float(min(y_min, y_max)), float(max(x_min, x_max)), float(max(y_min, y_max))]
+
+
+def _sample_candidate_reference_stats(
+    points_map: list[tuple[float, float]],
+    samplers: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Attach modern DEM min/median/max guide values to one candidate contour."""
+    sample_points = _resample_polyline(points_map, AUTO_CANDIDATE_SAMPLE_SPACING_M)
+    for sampler in samplers:
+        values: list[float] = []
+        for x, y in sample_points:
+            try:
+                tx, ty, _ = sampler["transform"].TransformPoint(x, y)
+            except Exception:
+                continue
+            value = _sample_raster_nearest(
+                band=sampler["band"],
+                geo_transform=sampler["geo_transform"],
+                raster_xsize=sampler["dataset"].RasterXSize,
+                raster_ysize=sampler["dataset"].RasterYSize,
+                x=tx,
+                y=ty,
+                nodata=sampler["nodata"],
+            )
+            if value is None:
+                continue
+            values.append(value)
+
+        if not values:
+            continue
+
+        return {
+            "modern_dem": sampler["path"].stem,
+            "modern_samples": len(values),
+            "modern_min_m": float(min(values)),
+            "modern_med_m": float(np.median(values)),
+            "modern_max_m": float(max(values)),
+            "modern_range_m": float(max(values) - min(values)),
+        }
+
+    return {
+        "modern_dem": "",
+        "modern_samples": 0,
+        "modern_min_m": None,
+        "modern_med_m": None,
+        "modern_max_m": None,
+        "modern_range_m": None,
+    }
+
+
+def _resample_polyline(points: list[tuple[float, float]], spacing: float) -> list[tuple[float, float]]:
+    if len(points) < 2:
+        return list(points)
+
+    samples: list[tuple[float, float]] = [points[0]]
+    for start, end in zip(points[:-1], points[1:]):
+        dx = end[0] - start[0]
+        dy = end[1] - start[1]
+        segment_length = math.hypot(dx, dy)
+        if segment_length == 0:
+            continue
+        sample_count = max(1, int(math.ceil(segment_length / spacing)))
+        for sample_index in range(1, sample_count + 1):
+            factor = sample_index / sample_count
+            samples.append((start[0] + (dx * factor), start[1] + (dy * factor)))
+    return samples
+
+
+def _sample_raster_nearest(
+    band,
+    geo_transform: tuple[float, ...],
+    raster_xsize: int,
+    raster_ysize: int,
+    x: float,
+    y: float,
+    nodata: float | None,
+) -> float | None:
+    pixel_x, pixel_y = _world_to_pixel(geo_transform, x, y)
+    column = int(math.floor(pixel_x))
+    row = int(math.floor(pixel_y))
+    if column < 0 or row < 0 or column >= raster_xsize or row >= raster_ysize:
+        return None
+
+    array = band.ReadAsArray(column, row, 1, 1)
+    if array is None or array.size == 0:
+        return None
+
+    value = float(array[0, 0])
+    if not np.isfinite(value):
+        return None
+    if nodata is not None and math.isclose(value, float(nodata), rel_tol=0.0, abs_tol=1e-6):
+        return None
+    return value
+
+
+def _world_to_pixel(geo_transform: tuple[float, ...], x: float, y: float) -> tuple[float, float]:
+    determinant = (geo_transform[1] * geo_transform[5]) - (geo_transform[2] * geo_transform[4])
+    if determinant == 0:
+        raise ValueError("GeoTransform is not invertible")
+    pixel_x = ((geo_transform[5] * (x - geo_transform[0])) - (geo_transform[2] * (y - geo_transform[3]))) / determinant
+    pixel_y = ((-geo_transform[4] * (x - geo_transform[0])) + (geo_transform[1] * (y - geo_transform[3]))) / determinant
+    return pixel_x, pixel_y
+
+
+def _rank_candidate_elevations(candidates: list[dict[str, Any]]) -> None:
+    """Assign a low-to-high rank based on modern DEM median elevation hints."""
+    ranked = sorted(
+        [candidate for candidate in candidates if candidate["modern_med_m"] is not None],
+        key=lambda candidate: candidate["modern_med_m"],
+    )
+    for rank, candidate in enumerate(ranked, start=1):
+        candidate["modern_rank"] = rank
+
+
+def _replace_candidate_features(
+    work_package_path: Path,
+    aoi_name: str,
+    candidates: list[dict[str, Any]],
+) -> None:
+    """Replace auto-generated candidate features for a single AOI in-place."""
+    datasource = ogr.Open(str(work_package_path), update=1)
+    if datasource is None:
+        raise ValueError(f"Failed to open work package for candidate update: {work_package_path}")
+
+    layer = datasource.GetLayerByName("hawkins_contours_candidates")
+    if layer is None:
+        raise ValueError("Work package does not contain hawkins_contours_candidates")
+
+    to_delete: list[int] = []
+    layer.ResetReading()
+    for feature in layer:
+        if str(feature.GetField("aoi_name") or "") == aoi_name:
+            to_delete.append(feature.GetFID())
+    for fid in to_delete:
+        layer.DeleteFeature(fid)
+
+    for candidate in candidates:
+        feature = ogr.Feature(layer.GetLayerDefn())
+        feature.SetGeometry(candidate["geometry"].Clone())
+        feature.SetField("candidate_id", int(candidate["candidate_id"]))
+        feature.SetField("aoi_name", str(candidate["aoi_name"]))
+        feature.SetField("mode", str(candidate["mode"]))
+        feature.SetField("is_index", int(candidate["is_index"]))
+        feature.SetField("confidence", str(candidate["confidence"]))
+        feature.SetField("source", str(candidate["source"]))
+        feature.SetField("note", str(candidate["note"]))
+        feature.SetField("mask_px", int(candidate["mask_px"]))
+        feature.SetField("skel_px", int(candidate["skel_px"]))
+        feature.SetField("stroke_w", float(candidate["stroke_w"]))
+        feature.SetField("length_m", float(candidate["length_m"]))
+        feature.SetField("is_closed", int(candidate["is_closed"]))
+        feature.SetField("modern_dem", str(candidate["modern_dem"] or ""))
+        feature.SetField("modern_samples", int(candidate["modern_samples"]))
+        if candidate["modern_min_m"] is not None:
+            feature.SetField("modern_min_m", float(candidate["modern_min_m"]))
+        if candidate["modern_med_m"] is not None:
+            feature.SetField("modern_med_m", float(candidate["modern_med_m"]))
+        if candidate["modern_max_m"] is not None:
+            feature.SetField("modern_max_m", float(candidate["modern_max_m"]))
+        if candidate["modern_range_m"] is not None:
+            feature.SetField("modern_range_m", float(candidate["modern_range_m"]))
+        feature.SetField("modern_rank", int(candidate["modern_rank"]))
+        layer.CreateFeature(feature)
+
+    layer = None
+    datasource = None
+
+
 def _manual_contour_summary(work_package: Path, aoi_bbox: list[float], config: Hawkins3DConfig) -> dict[str, Any]:
+    """Report whether the vetted manual layer has enough attributed contours for a DEM."""
     datasource = ogr.Open(str(work_package))
     if datasource is None:
         return {"ready_for_dem": False, "reason": "work_package_missing"}
@@ -779,6 +1476,7 @@ def _build_vetted_contours_package(
     aoi_bbox: list[float],
     config: Hawkins3DConfig,
 ) -> Path:
+    """Copy accepted manual contours into a clean package used for DEM generation."""
     source_ds = ogr.Open(str(source_package))
     source_layer = source_ds.GetLayerByName("hawkins_contours_manual")
     if source_layer is None:
@@ -846,6 +1544,7 @@ def _build_dem_from_contours(
     source_ds,
     sample_spacing: float,
 ) -> Path:
+    """Interpolate a DEM from vetted contour lines by sampling points along them."""
     contour_ds = ogr.Open(str(contour_gpkg))
     contour_layer = contour_ds.GetLayerByName("hawkins_contours")
     if contour_layer is None:
@@ -998,6 +1697,7 @@ def _resolve_contour_interval(contour_summary: dict[str, Any], contour_interval:
 
 
 def _derive_qa_contours(dem_path: Path, output_path: Path, contour_interval: float) -> Path:
+    """Generate QA contours from the derived DEM for visual comparison."""
     output_path.unlink(missing_ok=True)
     dem_ds = gdal.Open(str(dem_path))
     band = dem_ds.GetRasterBand(1)
@@ -1032,6 +1732,7 @@ def _derive_qa_contours(dem_path: Path, output_path: Path, contour_interval: flo
 
 
 def _qa_alignment_score(dem_path: Path, contour_interval: float, mask_path: Path) -> dict[str, Any]:
+    """Compare DEM-derived contours with the pilot contour mask for rough QA."""
     dem_ds = gdal.Open(str(dem_path))
     band = dem_ds.GetRasterBand(1)
     nodata = band.GetNoDataValue()
@@ -1106,6 +1807,7 @@ def _build_qgis_project(
     include_3d: bool,
     extra_rasters: list[Path | None],
 ) -> Path:
+    """Write a QGIS project that loads the current Hawkins work products."""
     project = QgsProject.instance()
     project.clear()
     project.setTitle(title)
@@ -1113,7 +1815,7 @@ def _build_qgis_project(
     root = project.layerTreeRoot()
     layers_for_3d: list = []
 
-    source_layer = QgsRasterLayer(str(source_raster), "Hawkins_Georeferenced")
+    source_layer = QgsRasterLayer(str(source_raster), source_raster.stem)
     if not source_layer.isValid():
         raise ValueError(f"Failed to load raster layer {source_raster}")
     project.addMapLayer(source_layer, addToLegend=False)
@@ -1136,6 +1838,23 @@ def _build_qgis_project(
         aoi_layer.setRenderer(QgsSingleSymbolRenderer(aoi_symbol))
         project.addMapLayer(aoi_layer, addToLegend=False)
         root.insertLayer(0, aoi_layer)
+
+    candidate_layer = QgsVectorLayer(
+        f"{contour_gpkg}|layername=hawkins_contours_candidates",
+        "hawkins_contours_candidates",
+        "ogr",
+    )
+    if candidate_layer.isValid():
+        candidate_symbol = QgsLineSymbol.createSimple(
+            {
+                "color": "#d97706",
+                "width": "0.38",
+                "line_style": "dash",
+            }
+        )
+        candidate_layer.setRenderer(QgsSingleSymbolRenderer(candidate_symbol))
+        project.addMapLayer(candidate_layer, addToLegend=False)
+        root.insertLayer(0, candidate_layer)
 
     contour_layer = QgsVectorLayer(
         f"{contour_gpkg}|layername=hawkins_contours_manual",
@@ -1219,6 +1938,7 @@ def _build_qgis_project(
 
 
 def _reference_dem_paths() -> list[Path]:
+    """Return modern DEMs that may be used as reference-only calibration aids."""
     repo_root = find_repo_root(CURRENT_DIR)
     candidates = [
         repo_root / "data/tif/USGS_one_meter_x32y431_MD_VA_Sandy_NCR_2014.tif",
@@ -1233,6 +1953,7 @@ def _project_extent_from_layer(layer) -> QgsRectangle:
 
 
 def _inject_3d_view(project_path: Path, crs: QgsCoordinateReferenceSystem, dem_layer, layers_for_3d: list, extent: QgsRectangle) -> None:
+    """Inject a predefined 3D map dock into a written QGIS project file."""
     terrain = q3d.QgsDemTerrainSettings()
     terrain.setLayer(dem_layer)
     terrain.setResolution(8)

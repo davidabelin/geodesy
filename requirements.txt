@@ -13,4 +13,5 @@ matplotlib>=3.10.8
 scipy>=1.17.0
 numpy>=2.4.0
 # QGIS Desktop Python work in this repo uses the OSGeo4W runtime on Windows,
-# not a pip-installed qgis/gdal stack.
+# not a pip-installed qgis/gdal stack. The Hawkins workflow is targeted at
+# the QGIS 4.x runtime exposed by OSGeo4W's python-qgis.bat launcher.

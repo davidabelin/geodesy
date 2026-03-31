@@ -1,3 +1,14 @@
+"""Helpers for bootstrapping PyQGIS from an OSGeo4W installation on Windows.
+
+This module centralizes the environment setup that both standalone scripts and
+QGIS-console snippets need:
+
+- locate the repository root
+- find a PROJ database compatible with modern GDAL/QGIS builds
+- prefer the QGIS 4.x runtime installed by OSGeo4W
+- add QGIS Python paths before importing ``qgis.core``
+"""
+
 from __future__ import annotations
 
 import os
@@ -7,6 +18,7 @@ from pathlib import Path
 
 
 def find_repo_root(start: Path | None = None) -> Path:
+    """Return the repository root by walking upward from ``start``."""
     candidate = (start or Path(__file__).resolve()).resolve()
     if candidate.is_file():
         candidate = candidate.parent
@@ -51,6 +63,7 @@ def _candidate_proj_dirs(repo_root: Path) -> list[Path]:
             [
                 local_root / "share/proj",
                 local_root / "apps/Qt5/share/proj",
+                local_root / "apps/Qt6/share/proj",
             ]
         )
 
@@ -76,6 +89,7 @@ def _candidate_proj_dirs(repo_root: Path) -> list[Path]:
 
 
 def configure_proj_env(anchor: Path | None = None) -> Path | None:
+    """Point PROJ-related environment variables at a valid PROJ data directory."""
     repo_root = find_repo_root(anchor)
 
     for candidate in _candidate_proj_dirs(repo_root):
@@ -117,8 +131,8 @@ def _candidate_qgis_prefixes() -> list[Path]:
         osgeo_root = Path(local_appdata) / "Programs/OSGeo4W/apps"
         candidates.extend(
             [
-                osgeo_root / "qgis-ltr",
                 osgeo_root / "qgis",
+                osgeo_root / "qgis-ltr",
                 osgeo_root / "qgis-dev",
             ]
         )
@@ -136,6 +150,7 @@ def _candidate_qgis_prefixes() -> list[Path]:
 
 
 def ensure_qgis_prefix_path() -> Path | None:
+    """Select the first usable QGIS prefix and expose it as ``QGIS_PREFIX_PATH``."""
     for candidate in _candidate_qgis_prefixes():
         if not (candidate / "python").exists():
             continue
@@ -145,6 +160,7 @@ def ensure_qgis_prefix_path() -> Path | None:
 
 
 def add_qgis_python_paths() -> list[Path]:
+    """Append the active QGIS Python directories to ``sys.path`` if needed."""
     prefix = ensure_qgis_prefix_path()
     candidates: list[Path] = []
 
@@ -156,13 +172,11 @@ def add_qgis_python_paths() -> list[Path]:
             ]
         )
 
-    local_appdata = os.environ.get("LOCALAPPDATA")
-    if local_appdata:
-        osgeo_root = Path(local_appdata) / "Programs/OSGeo4W/apps/qgis-ltr"
+    for qgis_prefix in _candidate_qgis_prefixes():
         candidates.extend(
             [
-                osgeo_root / "python",
-                osgeo_root / "python/plugins",
+                qgis_prefix / "python",
+                qgis_prefix / "python/plugins",
             ]
         )
 
@@ -180,6 +194,7 @@ def add_qgis_python_paths() -> list[Path]:
 
 
 def init_qgis_app(gui: bool = False):
+    """Create and initialize a ``QgsApplication`` if one does not already exist."""
     configure_proj_env()
     add_qgis_python_paths()
 
@@ -199,5 +214,6 @@ def init_qgis_app(gui: bool = False):
 
 
 def shutdown_qgis_app(app, created: bool) -> None:
+    """Shutdown a QGIS application created by :func:`init_qgis_app`."""
     if created and app is not None:
         app.exitQgis()

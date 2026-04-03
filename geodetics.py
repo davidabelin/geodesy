@@ -8,8 +8,8 @@ from collections import defaultdict
 from functools import lru_cache
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Tuple, Callable, Optional, Union, Iterable, Dict
-from pyproj import Geod
+from typing import Any, List, Tuple, Callable, Optional, Union, Iterable, Dict
+from pyproj import CRS, Geod
 
 # Optional dependencies
 try:
@@ -24,12 +24,19 @@ try:
     import rasterio
     from rasterio.mask import mask as rio_mask
     import geopandas as gpd
+    import pandas as pd
     import simplekml
-    from shapely.geometry import shape
+    from shapely.geometry import LineString, MultiLineString, Point, shape
+    from shapely.ops import nearest_points
 except ImportError:
     rasterio = None
     gpd = None
+    pd = None
     simplekml = None
+    LineString = None
+    MultiLineString = None
+    Point = None
+    nearest_points = None
 
 # Visualization (deferred imports in functions)
 
@@ -51,6 +58,13 @@ FIp = (math.sqrt(5)+1)/2
 FIm = (math.sqrt(5)-1)/2
 DEFAULT_ELLIPSOID = "WGS84"
 ELLIPSOID_SPHERE = "sphere"
+STREETS_DEFAULT_INPUT = Path("roadways") / "data" / "DC_Street_Centerlines" / "Street_Centerlines_2013.shp"
+STREETS_DEFAULT_OUTPUT = Path("roadways") / "data" / "centerline_stats.csv"
+STREET_NAME_FIELDS = ("ST_NAME", "FULLNAME", "NAME", "ROUTENAME")
+STREET_ID_FIELDS = ("STREETSEGID", "STREETSEGI", "OBJECTID", "FID")
+STREET_LENGTH_FIELDS = ("SHAPE.LEN", "SHAPELEN", "LENGTH", "SHAPE_LENGTH")
+STREET_ROADTYPE_FIELDS = ("ROADTYPE",)
+STREET_CARDINAL_TOLERANCE_DEG = 5.0
 
 def _normalize_unit(unit: Optional[str]) -> str:
     if not unit:
@@ -1385,6 +1399,506 @@ def _write_geojson(points: List[Dict[str, float]], output_path: str) -> None:
         json.dump(feature_collection, f, indent=2)
 
 
+@dataclass(frozen=True)
+class StreetMeasureSpec:
+    mode: str
+    crs: Optional[CRS]
+    geod: Optional[Geod]
+    coord_unit_to_meters: float = 1.0
+
+
+def _require_street_dependencies() -> None:
+    missing = []
+    if gpd is None:
+        missing.append('geopandas')
+    if pd is None:
+        missing.append('pandas')
+    if LineString is None or Point is None or nearest_points is None:
+        missing.append('shapely')
+    if missing:
+        raise RuntimeError(
+            "The streets centerlines command requires: "
+            + ", ".join(sorted(set(missing)))
+        )
+
+
+def _normalize_field_name(name: str) -> str:
+    return ''.join(ch for ch in str(name).upper() if ch.isalnum())
+
+
+def _find_preferred_field(columns: Iterable[str], preferred: Iterable[str]) -> Optional[str]:
+    actual_by_key = {_normalize_field_name(column): column for column in columns}
+    for candidate in preferred:
+        resolved = actual_by_key.get(_normalize_field_name(candidate))
+        if resolved:
+            return resolved
+    return None
+
+
+def _normalize_street_ellipsoid(value: Optional[str]) -> str:
+    if value is None:
+        return 'wgs84'
+    key = value.strip().lower().replace('-', '').replace('_', '')
+    aliases = {
+        'wgs84': 'wgs84',
+        'nad83': 'nad83',
+        'pseudomerc': 'pseudomerc',
+        'none': 'none',
+    }
+    if key in aliases:
+        return aliases[key]
+    raise ValueError("Unsupported --ell value (use wgs84, nad83, pseudomerc, or none).")
+
+
+def _parse_street_ellipsoid_arg(value: str) -> str:
+    try:
+        return _normalize_street_ellipsoid(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(str(exc))
+
+
+def _get_geod_from_crs(crs: CRS) -> Geod:
+    geod = crs.get_geod()
+    if geod is None:
+        raise ValueError(f"Unable to derive a geodesic model from CRS {crs!s}.")
+    return geod
+
+
+def _crs_linear_unit_to_meters(crs: Optional[CRS]) -> float:
+    if crs is None:
+        return 1.0
+    try:
+        axis_info = crs.axis_info
+    except Exception:
+        axis_info = None
+    if axis_info:
+        factor = getattr(axis_info[0], 'unit_conversion_factor', None)
+        if factor and factor > 0:
+            return float(factor)
+    return 1.0
+
+
+def _build_street_measure_spec(crs_like: Optional[Any], ellipsoid: str) -> StreetMeasureSpec:
+    crs = CRS.from_user_input(crs_like) if crs_like else None
+    if crs is not None:
+        if crs.is_projected:
+            return StreetMeasureSpec(
+                mode='projected',
+                crs=crs,
+                geod=None,
+                coord_unit_to_meters=_crs_linear_unit_to_meters(crs),
+            )
+        if crs.is_geographic:
+            return StreetMeasureSpec(
+                mode='geodesic',
+                crs=crs,
+                geod=_get_geod_from_crs(crs),
+                coord_unit_to_meters=1.0,
+            )
+        raise ValueError(f"Unsupported input CRS for street analysis: {crs!s}")
+
+    ell = _normalize_street_ellipsoid(ellipsoid)
+    if ell == 'pseudomerc':
+        return StreetMeasureSpec(
+            mode='projected',
+            crs=CRS.from_epsg(3857),
+            geod=None,
+            coord_unit_to_meters=1.0,
+        )
+    if ell == 'none':
+        return StreetMeasureSpec(mode='sphere', crs=None, geod=None, coord_unit_to_meters=1.0)
+    return StreetMeasureSpec(
+        mode='geodesic',
+        crs=None,
+        geod=_get_geod(ell.upper()),
+        coord_unit_to_meters=1.0,
+    )
+
+
+def _normalize_measurement_output(meters: float, unit: str) -> float:
+    return round(_from_miles(meters * MILES_PER_METER, unit), 3)
+
+
+def _is_usable_length_value(value: Any) -> bool:
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError):
+        return False
+    return math.isfinite(numeric) and numeric > 0
+
+
+def _coerce_street_text(value: Any) -> str:
+    if value is None:
+        return ''
+    if isinstance(value, float) and math.isnan(value):
+        return ''
+    return str(value).strip()
+
+
+def _iter_linestring_parts(geometry: Any) -> List[Any]:
+    if geometry is None or getattr(geometry, 'is_empty', False):
+        return []
+    geom_type = getattr(geometry, 'geom_type', None)
+    if geom_type == 'LineString':
+        return [geometry]
+    if geom_type == 'MultiLineString':
+        return [part for part in geometry.geoms if not part.is_empty]
+    return []
+
+
+def _planar_segment_length_meters(x1: float, y1: float, x2: float, y2: float, spec: StreetMeasureSpec) -> float:
+    return math.hypot(x2 - x1, y2 - y1) * spec.coord_unit_to_meters
+
+
+def _point_distance_meters(x1: float, y1: float, x2: float, y2: float, spec: StreetMeasureSpec) -> float:
+    if spec.mode == 'projected':
+        return _planar_segment_length_meters(x1, y1, x2, y2, spec)
+    if spec.mode == 'geodesic':
+        _, _, dist_m = spec.geod.inv(x1, y1, x2, y2)
+        return float(dist_m)
+    return haversine(y1, x1, y2, x2, unit='m')
+
+
+def _segment_bearing_degrees(x1: float, y1: float, x2: float, y2: float, spec: StreetMeasureSpec) -> float:
+    if spec.mode == 'projected':
+        return (math.degrees(math.atan2(x2 - x1, y2 - y1)) + 360.0) % 360.0
+    if spec.mode == 'geodesic':
+        az1, _, _ = spec.geod.inv(x1, y1, x2, y2)
+        return az1 % 360.0
+    return initial_bearing(y1, x1, y2, x2)
+
+
+def _linestring_length_meters(line: Any, spec: StreetMeasureSpec) -> float:
+    coords = list(line.coords)
+    if len(coords) < 2:
+        return 0.0
+    total = 0.0
+    for (x1, y1), (x2, y2) in zip(coords, coords[1:]):
+        total += _point_distance_meters(x1, y1, x2, y2, spec)
+    return total
+
+
+def _stored_length_to_meters(value: Any, spec: StreetMeasureSpec) -> Optional[float]:
+    if spec.mode != 'projected' or not _is_usable_length_value(value):
+        return None
+    return float(value) * spec.coord_unit_to_meters
+
+
+def _interpolate_segment_point(
+    x1: float,
+    y1: float,
+    x2: float,
+    y2: float,
+    spec: StreetMeasureSpec,
+    distance_from_start_m: float,
+) -> Any:
+    seg_len_m = _point_distance_meters(x1, y1, x2, y2, spec)
+    if seg_len_m <= 0:
+        return Point(x1, y1)
+    frac = max(0.0, min(1.0, distance_from_start_m / seg_len_m))
+    if spec.mode == 'projected':
+        return Point(
+            x1 + frac * (x2 - x1),
+            y1 + frac * (y2 - y1),
+        )
+    if spec.mode == 'geodesic':
+        az1, _, seg_dist = spec.geod.inv(x1, y1, x2, y2)
+        lon, lat, _ = spec.geod.fwd(x1, y1, az1, seg_dist * frac)
+        return Point(lon, lat)
+    az1, _, seg_dist_miles = inverse_geodetic(y1, x1, y2, x2, unit='miles', ellipsoid=ELLIPSOID_SPHERE)
+    lat, lon, _ = direct_geodetic(
+        y1,
+        x1,
+        az1,
+        seg_dist_miles * frac,
+        unit='miles',
+        ellipsoid=ELLIPSOID_SPHERE,
+    )
+    return Point(lon, lat)
+
+
+def _segment_midpoint(line: Any, spec: StreetMeasureSpec) -> Any:
+    coords = list(line.coords)
+    if not coords:
+        return Point(0.0, 0.0)
+    if len(coords) == 1:
+        return Point(coords[0])
+    segment_lengths = [
+        _point_distance_meters(x1, y1, x2, y2, spec)
+        for (x1, y1), (x2, y2) in zip(coords, coords[1:])
+    ]
+    total_length = sum(segment_lengths)
+    if total_length <= 0:
+        return Point(coords[0])
+    target = total_length / 2.0
+    travelled = 0.0
+    for ((x1, y1), (x2, y2)), seg_len_m in zip(zip(coords, coords[1:]), segment_lengths):
+        if seg_len_m <= 0:
+            continue
+        if travelled + seg_len_m >= target:
+            return _interpolate_segment_point(x1, y1, x2, y2, spec, target - travelled)
+        travelled += seg_len_m
+    return Point(coords[-1])
+
+
+def _angular_distance_deg(a: float, b: float) -> float:
+    return abs((a - b + 180.0) % 360.0 - 180.0)
+
+
+def _classify_street_bearing(bearing: float) -> str:
+    if min(_angular_distance_deg(bearing, 90.0), _angular_distance_deg(bearing, 270.0)) <= STREET_CARDINAL_TOLERANCE_DEG:
+        return 'EW'
+    if min(_angular_distance_deg(bearing, 0.0), _angular_distance_deg(bearing, 180.0)) <= STREET_CARDINAL_TOLERANCE_DEG:
+        return 'NS'
+    return 'DIAGONAL'
+
+
+def _build_segment_identifier(street_name: str, segment_id: Any, part_idx: Optional[int]) -> str:
+    base_id = _coerce_street_text(segment_id) or 'unknown'
+    identifier = f"{street_name} | seg={base_id}"
+    if part_idx is not None:
+        identifier += f":part{part_idx + 1}"
+    return identifier
+
+
+def _make_midpoint_ray(midpoint: Any, bounds: Tuple[float, float, float, float], side: str) -> Any:
+    minx, miny, maxx, maxy = bounds
+    width = maxx - minx
+    height = maxy - miny
+    margin = max(width, height, 1.0) * 2.0
+    if side == 'N':
+        endpoint = (midpoint.x, maxy + margin)
+    elif side == 'S':
+        endpoint = (midpoint.x, miny - margin)
+    elif side == 'E':
+        endpoint = (maxx + margin, midpoint.y)
+    elif side == 'W':
+        endpoint = (minx - margin, midpoint.y)
+    else:
+        raise ValueError(f"Unsupported side {side}")
+    return LineString([(midpoint.x, midpoint.y), endpoint])
+
+
+def _point_is_on_side(midpoint: Any, point: Any, side: str) -> bool:
+    eps = 1e-12
+    if side == 'N':
+        return point.y > midpoint.y + eps
+    if side == 'S':
+        return point.y < midpoint.y - eps
+    if side == 'E':
+        return point.x > midpoint.x + eps
+    if side == 'W':
+        return point.x < midpoint.x - eps
+    raise ValueError(f"Unsupported side {side}")
+
+
+def _first_hit_for_ray(
+    source_pos: int,
+    midpoint: Any,
+    ray: Any,
+    side: str,
+    candidates: Any,
+    spec: StreetMeasureSpec,
+) -> Tuple[str, str, str]:
+    candidate_positions = candidates.sindex.query(ray, predicate='intersects')
+    midpoint_point = Point(midpoint.x, midpoint.y)
+    best_identifier = ''
+    best_distance = ''
+    best_meters = None
+    for candidate_pos in candidate_positions:
+        if int(candidate_pos) == source_pos:
+            continue
+        candidate_geom = candidates.geometry.iloc[int(candidate_pos)]
+        intersection = candidate_geom.intersection(ray)
+        if intersection.is_empty:
+            continue
+        hit_point = nearest_points(midpoint_point, intersection)[1]
+        if not _point_is_on_side(midpoint_point, hit_point, side):
+            continue
+        dist_m = _point_distance_meters(midpoint.x, midpoint.y, hit_point.x, hit_point.y, spec)
+        if dist_m <= 0:
+            continue
+        if best_meters is None or dist_m < best_meters:
+            best_meters = dist_m
+            best_identifier = candidates['identifier'].iloc[int(candidate_pos)]
+            best_distance = dist_m
+    if best_meters is None:
+        return '', '', ''
+    return best_identifier, side, best_distance
+
+
+def _prepare_street_centerline_segments(gdf: Any, ellipsoid: str) -> Tuple[Any, StreetMeasureSpec]:
+    _require_street_dependencies()
+    if gdf is None or gdf.empty:
+        raise ValueError('Input street dataset is empty.')
+
+    gdf = gdf.copy()
+    name_field = _find_preferred_field(gdf.columns, STREET_NAME_FIELDS)
+    if name_field is None:
+        raise ValueError(
+            'Could not infer a street-name field. Tried: '
+            + ', '.join(STREET_NAME_FIELDS)
+        )
+    roadtype_field = _find_preferred_field(gdf.columns, STREET_ROADTYPE_FIELDS)
+    if roadtype_field is not None:
+        roadtype_mask = (
+            gdf[roadtype_field]
+            .fillna('')
+            .astype(str)
+            .str.strip()
+            .str.upper()
+            == 'STREET'
+        )
+        gdf = gdf[roadtype_mask].copy()
+
+    gdf = gdf[gdf.geometry.notnull()].copy()
+    gdf = gdf[gdf.geometry.geom_type.isin(['LineString', 'MultiLineString'])].copy()
+    if gdf.empty:
+        raise ValueError('No line geometries remain after street filtering.')
+
+    id_field = _find_preferred_field(gdf.columns, STREET_ID_FIELDS)
+    length_field = _find_preferred_field(gdf.columns, STREET_LENGTH_FIELDS)
+    spec = _build_street_measure_spec(gdf.crs, ellipsoid)
+
+    records = []
+    for row in gdf.itertuples(index=True):
+        geometry = row.geometry
+        street_name = _coerce_street_text(getattr(row, name_field))
+        if not street_name:
+            continue
+        parts = _iter_linestring_parts(geometry)
+        if not parts:
+            continue
+        raw_segment_id = getattr(row, id_field) if id_field is not None else row.Index
+        stored_length_value = getattr(row, length_field) if length_field is not None else None
+        for part_idx, part in enumerate(parts):
+            length_m = None
+            if len(parts) == 1:
+                length_m = _stored_length_to_meters(stored_length_value, spec)
+            if length_m is None:
+                length_m = _linestring_length_meters(part, spec)
+            if length_m <= 0:
+                continue
+            coords = list(part.coords)
+            if len(coords) < 2:
+                continue
+            bearing = _segment_bearing_degrees(coords[0][0], coords[0][1], coords[-1][0], coords[-1][1], spec)
+            midpoint = _segment_midpoint(part, spec)
+            part_label = part_idx if len(parts) > 1 else None
+            records.append({
+                'identifier': _build_segment_identifier(street_name, raw_segment_id, part_label),
+                'street_name': street_name,
+                'length_m': float(length_m),
+                'bearing': round(bearing, 3),
+                'street_class': _classify_street_bearing(bearing),
+                'midpoint': midpoint,
+                'geometry': part,
+            })
+
+    if not records:
+        raise ValueError('No usable street segments were found in the input dataset.')
+
+    segments = gpd.GeoDataFrame(records, geometry='geometry', crs=gdf.crs)
+    return segments[segments['street_class'].isin(['EW', 'NS'])].copy(), spec
+
+
+def _build_street_centerline_rows(segments: Any, spec: StreetMeasureSpec, unit: str) -> List[Dict[str, Any]]:
+    if segments.empty:
+        return []
+
+    segments = segments.reset_index(drop=True).copy()
+    bounds = tuple(float(value) for value in segments.total_bounds)
+    class_groups = {}
+    class_positions = {}
+    for street_class in ('EW', 'NS'):
+        class_gdf = segments[segments['street_class'] == street_class].copy()
+        class_gdf['source_pos'] = class_gdf.index
+        class_gdf = class_gdf.reset_index(drop=True)
+        class_groups[street_class] = class_gdf
+        class_positions[street_class] = {
+            int(source_pos): idx for idx, source_pos in enumerate(class_gdf['source_pos'])
+        }
+
+    rows = []
+    for source_pos, row in segments.iterrows():
+        street_class = row['street_class']
+        class_gdf = class_groups[street_class]
+        if class_gdf.empty:
+            continue
+        class_pos = class_positions[street_class][int(source_pos)]
+        if street_class == 'EW':
+            sides = ('N', 'S')
+        else:
+            sides = ('E', 'W')
+        hits = []
+        for side in sides:
+            ray = _make_midpoint_ray(row['midpoint'], bounds, side)
+            hit_identifier, hit_dir, hit_distance_m = _first_hit_for_ray(
+                class_pos,
+                row['midpoint'],
+                ray,
+                side,
+                class_gdf,
+                spec,
+            )
+            if hit_identifier:
+                hits.append((hit_identifier, hit_dir, _normalize_measurement_output(hit_distance_m, unit)))
+            else:
+                hits.append(('', '', ''))
+
+        rows.append({
+            'identifier': row['identifier'],
+            'length': _normalize_measurement_output(row['length_m'], unit),
+            'bearing': round(float(row['bearing']), 3),
+            'street_1': hits[0][0],
+            'dir_1': hits[0][1],
+            'dist_1': hits[0][2],
+            'street_2': hits[1][0],
+            'dir_2': hits[1][1],
+            'dist_2': hits[1][2],
+        })
+    return rows
+
+
+def _load_street_centerline_dataset(input_path: Union[str, Path]) -> Any:
+    _require_street_dependencies()
+    return gpd.read_file(str(input_path))
+
+
+def _write_street_centerline_csv(rows: List[Dict[str, Any]], output_path: Union[str, Path]) -> None:
+    fieldnames = ['identifier', 'length', 'bearing', 'street_1', 'dir_1', 'dist_1', 'street_2', 'dir_2', 'dist_2']
+    output = Path(output_path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with output.open('w', newline='', encoding='utf-8') as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
+
+
+def analyze_street_centerlines(
+    input_path: Union[str, Path] = STREETS_DEFAULT_INPUT,
+    output_path: Union[str, Path] = STREETS_DEFAULT_OUTPUT,
+    unit: str = 'feet',
+    ellipsoid: str = 'wgs84',
+) -> int:
+    dataset = _load_street_centerline_dataset(input_path)
+    segments, spec = _prepare_street_centerline_segments(dataset, ellipsoid)
+    rows = _build_street_centerline_rows(segments, spec, unit)
+    _write_street_centerline_csv(rows, output_path)
+    return len(rows)
+
+
+def _run_streets_centerlines(args: argparse.Namespace) -> None:
+    rows_written = analyze_street_centerlines(
+        input_path=args.input,
+        output_path=args.output,
+        unit=args.units,
+        ellipsoid=args.ell,
+    )
+    print(f"Wrote {rows_written} rows to {args.output}")
+
+
 #===============================================================================
 # CLI
 #===============================================================================
@@ -1414,6 +1928,36 @@ def _add_ellipsoid_arg(parser: argparse.ArgumentParser) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description='Geodesy toolkit')
     sub = parser.add_subparsers(dest='cmd')
+
+    streets = sub.add_parser('streets', help='Street segment analysis tools')
+    streets_sub = streets.add_subparsers(dest='streets_cmd', required=True)
+
+    centerlines = streets_sub.add_parser(
+        'centerlines',
+        help='Analyze centerline street segments and midpoint adjacencies',
+    )
+    centerlines.add_argument(
+        '--input',
+        default=str(STREETS_DEFAULT_INPUT),
+        help='Input line dataset path (default: %(default)s)',
+    )
+    centerlines.add_argument(
+        '--output',
+        default=str(STREETS_DEFAULT_OUTPUT),
+        help='Output CSV path (default: %(default)s)',
+    )
+    centerlines.add_argument(
+        '--units',
+        choices=['feet', 'miles', 'poles', 'm', 'km'],
+        default='feet',
+        help='Output distance units (default: %(default)s)',
+    )
+    centerlines.add_argument(
+        '--ell',
+        type=_parse_street_ellipsoid_arg,
+        default='wgs84',
+        help='Fallback ellipsoid when the input has no CRS: wgs84, nad83, pseudomerc, or none.',
+    )
 
     d_help = 'Forward geodetic: lat1, lon1, az1, dist -> lat2, lon2, az2'
     d = sub.add_parser('direct', help=d_help)
@@ -1536,6 +2080,11 @@ def main() -> None:
     sub.add_parser('testgauss')
 
     args = parser.parse_args()
+    if args.cmd == 'streets':
+        if args.streets_cmd == 'centerlines':
+            _run_streets_centerlines(args)
+            return
+        parser.error('A streets subcommand is required.')
     if args.cmd == 'direct':
         print(direct_geodetic(args.lat1, args.lon1, args.az1, args.dist, unit=args.unit, ellipsoid=args.ellipsoid))
         return

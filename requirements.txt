@@ -9,6 +9,10 @@ mypy>=1.5.1
 pre-commit>=3.4.0
 pytest
 pyproj
+geopandas
+pandas
+pyogrio
+shapely
 matplotlib>=3.10.8
 scipy>=1.17.0
 numpy>=2.4.0

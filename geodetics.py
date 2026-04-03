@@ -64,6 +64,8 @@ STREET_NAME_FIELDS = ("ST_NAME", "FULLNAME", "NAME", "ROUTENAME")
 STREET_ID_FIELDS = ("STREETSEGID", "STREETSEGI", "OBJECTID", "FID")
 STREET_LENGTH_FIELDS = ("SHAPE.LEN", "SHAPELEN", "LENGTH", "SHAPE_LENGTH")
 STREET_ROADTYPE_FIELDS = ("ROADTYPE",)
+STREET_TYPE_FIELDS = ("STREETTYPE", "USPS_ABBRE", "ST_TYPE", "TYPE")
+STREET_QUADRANT_FIELDS = ("QUADRANT", "QUAD", "QUADRANT_NM")
 STREET_CARDINAL_TOLERANCE_DEG = 5.0
 
 def _normalize_unit(unit: Optional[str]) -> str:
@@ -1653,12 +1655,14 @@ def _classify_street_bearing(bearing: float) -> str:
     return 'DIAGONAL'
 
 
-def _build_segment_identifier(street_name: str, segment_id: Any, part_idx: Optional[int]) -> str:
-    base_id = _coerce_street_text(segment_id) or 'unknown'
-    identifier = f"{street_name} | seg={base_id}"
-    if part_idx is not None:
-        identifier += f":part{part_idx + 1}"
-    return identifier
+def _build_street_display_name(street_name: str, quadrant: str) -> str:
+    if quadrant:
+        return f"{street_name} {quadrant}".strip()
+    return street_name
+
+
+def _build_segment_identifier(street_label: str, ordinal: int, width: int) -> str:
+    return f"{street_label} | {ordinal:0{width}d}"
 
 
 def _make_midpoint_ray(midpoint: Any, bounds: Tuple[float, float, float, float], side: str) -> Any:
@@ -1739,7 +1743,9 @@ def _prepare_street_centerline_segments(gdf: Any, ellipsoid: str) -> Tuple[Any, 
             'Could not infer a street-name field. Tried: '
             + ', '.join(STREET_NAME_FIELDS)
         )
+    quadrant_field = _find_preferred_field(gdf.columns, STREET_QUADRANT_FIELDS)
     roadtype_field = _find_preferred_field(gdf.columns, STREET_ROADTYPE_FIELDS)
+    streettype_field = _find_preferred_field(gdf.columns, STREET_TYPE_FIELDS)
     if roadtype_field is not None:
         roadtype_mask = (
             gdf[roadtype_field]
@@ -1750,6 +1756,16 @@ def _prepare_street_centerline_segments(gdf: Any, ellipsoid: str) -> Tuple[Any, 
             == 'STREET'
         )
         gdf = gdf[roadtype_mask].copy()
+    if streettype_field is not None:
+        streettype_mask = (
+            gdf[streettype_field]
+            .fillna('')
+            .astype(str)
+            .str.strip()
+            .str.upper()
+            .isin({'ST', 'STREET'})
+        )
+        gdf = gdf[streettype_mask].copy()
 
     gdf = gdf[gdf.geometry.notnull()].copy()
     gdf = gdf[gdf.geometry.geom_type.isin(['LineString', 'MultiLineString'])].copy()
@@ -1766,10 +1782,11 @@ def _prepare_street_centerline_segments(gdf: Any, ellipsoid: str) -> Tuple[Any, 
         street_name = _coerce_street_text(getattr(row, name_field))
         if not street_name:
             continue
+        quadrant = _coerce_street_text(getattr(row, quadrant_field)) if quadrant_field is not None else ''
+        street_label = _build_street_display_name(street_name, quadrant)
         parts = _iter_linestring_parts(geometry)
         if not parts:
             continue
-        raw_segment_id = getattr(row, id_field) if id_field is not None else row.Index
         stored_length_value = getattr(row, length_field) if length_field is not None else None
         for part_idx, part in enumerate(parts):
             length_m = None
@@ -1786,20 +1803,41 @@ def _prepare_street_centerline_segments(gdf: Any, ellipsoid: str) -> Tuple[Any, 
             midpoint = _segment_midpoint(part, spec)
             part_label = part_idx if len(parts) > 1 else None
             records.append({
-                'identifier': _build_segment_identifier(street_name, raw_segment_id, part_label),
+                'source_segment_id': getattr(row, id_field) if id_field is not None else row.Index,
                 'street_name': street_name,
+                'street_label': street_label,
                 'length_m': float(length_m),
                 'bearing': round(bearing, 3),
                 'street_class': _classify_street_bearing(bearing),
                 'midpoint': midpoint,
                 'geometry': part,
+                'part_idx': part_label,
+                'source_index': int(row.Index),
             })
 
     if not records:
         raise ValueError('No usable street segments were found in the input dataset.')
 
     segments = gpd.GeoDataFrame(records, geometry='geometry', crs=gdf.crs)
-    return segments[segments['street_class'].isin(['EW', 'NS'])].copy(), spec
+    segments = segments[segments['street_class'].isin(['EW', 'NS'])].copy()
+    if segments.empty:
+        return segments, spec
+
+    counts = segments['street_label'].value_counts()
+    sequence_widths = {
+        street_label: max(2, len(str(int(count))))
+        for street_label, count in counts.items()
+    }
+    segments['segment_number'] = segments.groupby('street_label', sort=False).cumcount() + 1
+    segments['identifier'] = segments.apply(
+        lambda row: _build_segment_identifier(
+            row['street_label'],
+            int(row['segment_number']),
+            sequence_widths[row['street_label']],
+        ),
+        axis=1,
+    )
+    return segments.copy(), spec
 
 
 def _build_street_centerline_rows(segments: Any, spec: StreetMeasureSpec, unit: str) -> List[Dict[str, Any]]:

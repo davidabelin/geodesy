@@ -420,3 +420,5 @@ qgis/Hawkins/3D map/*.gpkg-wal
 qgis/Hawkins/3D map/*.tif
 COMMIT LINE EDIT B4 EVERY COMMIT.md
 qgis/LEnfant/centerlenfant.png
+clenfout.png
+roadways/centerlines/clenfout.gpkg

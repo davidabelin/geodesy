@@ -548,6 +548,24 @@ def _default_cl_gis_output_path() -> Path:
     return CL_DEFAULT_GIS_OUTPUT
 
 
+def _resolve_cl_gis_output_path(
+    gis_output_path: Optional[Union[str, Path]],
+    output_path: Union[str, Path],
+) -> Path:
+    if gis_output_path is None:
+        return _default_cl_gis_output_path()
+    if isinstance(gis_output_path, Path):
+        candidate = gis_output_path
+        raw_value = gis_output_path.as_posix()
+    else:
+        raw_value = str(gis_output_path).strip()
+        candidate = Path(raw_value)
+    shorthand = raw_value.lower().lstrip(".")
+    if shorthand in {"gpkg", "shp"}:
+        return Path(output_path).with_suffix(f".{shorthand}")
+    return candidate
+
+
 def _infer_cl_vector_driver(output_path: Union[str, Path]) -> str:
     suffix = Path(output_path).suffix.lower()
     if suffix == '.gpkg':
@@ -1341,7 +1359,7 @@ def analyze_street_centerlines(
     _write_cl_csv(rows, output_path)
     summary_output = Path(summary_output_path) if summary_output_path else _default_cl_summary_output_path(output_path)
     chart_output = Path(chart_output_path) if chart_output_path else _default_cl_chart_output_path(output_path)
-    gis_output = Path(gis_output_path) if gis_output_path else _default_cl_gis_output_path()
+    gis_output = _resolve_cl_gis_output_path(gis_output_path, output_path)
     summary = _build_cl_summary(rows, unit)
     _write_cl_summary_csv(summary, summary_output)
     _write_cl_summary_chart(summary, chart_output, unit)
@@ -1354,7 +1372,7 @@ def analyze_street_centerlines(
 def _run_cl(args: argparse.Namespace) -> None:
     summary_output = Path(args.summary_output) if args.summary_output else _default_cl_summary_output_path(args.output)
     chart_output = Path(args.chart_output) if args.chart_output else _default_cl_chart_output_path(args.output)
-    gis_output = Path(args.gis_output) if args.gis_output else _default_cl_gis_output_path()
+    gis_output = _resolve_cl_gis_output_path(args.gis_output, args.output)
     rows_written = analyze_street_centerlines(
         input_path=args.input,
         output_path=args.output,
@@ -1385,17 +1403,17 @@ def main(argv: Optional[List[str]] = None) -> None:
     parser.add_argument(
         '--summary-output',
         default=None,
-        help='Optional per-street summary CSV path (default: <output stem>_by_street.csv)',
+        help='Per-street summary CSV path. If omitted, uses the main --output path with _by_street.csv appended.',
     )
     parser.add_argument(
         '--chart-output',
         default=None,
-        help='Optional per-street summary chart path (default: <output stem>_by_street.png)',
+        help='Per-street summary chart path. If omitted, uses the main --output path with _by_street.png appended.',
     )
     parser.add_argument(
         '--gis-output',
         default=str(CL_DEFAULT_GIS_OUTPUT),
-        help='Optional GIS output path (.gpkg recommended, .shp supported; default: %(default)s)',
+        help='GIS output path, or use gpkg/shp to reuse the main --output stem with that extension (default: %(default)s)',
     )
     parser.add_argument(
         '--units',

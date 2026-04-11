@@ -67,6 +67,45 @@ STREET_ROADTYPE_FIELDS = ("ROADTYPE",)
 STREET_TYPE_FIELDS = ("STREETTYPE", "USPS_ABBRE", "ST_TYPE", "TYPE")
 STREET_QUADRANT_FIELDS = ("QUADRANT", "QUAD", "QUADRANT_NM")
 STREET_CARDINAL_TOLERANCE_DEG = 5.0
+STREET_CENTERLINE_OUTPUT_FIELDS = [
+    'street',
+    'str_id',
+    'street_class',
+    'length',
+    'bearing',
+    'street_1',
+    'str_id1',
+    'dir_1',
+    'dist_1',
+    'street_2',
+    'str_id2',
+    'dir_2',
+    'dist_2',
+]
+STREET_CENTERLINE_SUMMARY_FIELDS = [
+    'street',
+    'street_class',
+    'segment_count',
+    'str_id_min',
+    'str_id_max',
+    'length_sum',
+    'length_mean',
+    'length_min',
+    'length_max',
+    'bearing_mean',
+    'bearing_min',
+    'bearing_max',
+    'dist_1_count',
+    'dist_1_mean',
+    'dist_1_min',
+    'dist_1_max',
+    'dist_2_count',
+    'dist_2_mean',
+    'dist_2_min',
+    'dist_2_max',
+    'unit',
+]
+STREET_CENTERLINE_GPKG_LAYER = 'centerline_bundles'
 
 def _normalize_unit(unit: Optional[str]) -> str:
     if not unit:
@@ -1415,7 +1454,7 @@ def _require_street_dependencies() -> None:
         missing.append('geopandas')
     if pd is None:
         missing.append('pandas')
-    if LineString is None or Point is None or nearest_points is None:
+    if LineString is None or MultiLineString is None or Point is None or nearest_points is None:
         missing.append('shapely')
     if missing:
         raise RuntimeError(
@@ -1665,6 +1704,32 @@ def _build_segment_identifier(street_label: str, ordinal: int, width: int) -> st
     return f"{street_label} | {ordinal:0{width}d}"
 
 
+def _default_street_summary_output_path(output_path: Union[str, Path]) -> Path:
+    output = Path(output_path)
+    return output.with_name(f"{output.stem}_by_street.csv")
+
+
+def _default_street_chart_output_path(output_path: Union[str, Path]) -> Path:
+    output = Path(output_path)
+    return output.with_name(f"{output.stem}_by_street.png")
+
+
+def _default_street_gis_output_path(output_path: Union[str, Path]) -> Path:
+    output = Path(output_path)
+    return output.with_suffix('.gpkg')
+
+
+def _infer_street_vector_driver(output_path: Union[str, Path]) -> str:
+    suffix = Path(output_path).suffix.lower()
+    if suffix == '.gpkg':
+        return 'GPKG'
+    if suffix == '.shp':
+        return 'ESRI Shapefile'
+    raise ValueError(
+        "Unsupported GIS output extension. Use .gpkg (recommended) or .shp."
+    )
+
+
 def _make_midpoint_ray(midpoint: Any, bounds: Tuple[float, float, float, float], side: str) -> Any:
     minx, miny, maxx, maxy = bounds
     width = maxx - minx
@@ -1703,12 +1768,11 @@ def _first_hit_for_ray(
     side: str,
     candidates: Any,
     spec: StreetMeasureSpec,
-) -> Tuple[str, str, str]:
+) -> Optional[Dict[str, Any]]:
     candidate_positions = candidates.sindex.query(ray, predicate='intersects')
     midpoint_point = Point(midpoint.x, midpoint.y)
-    best_identifier = ''
-    best_distance = ''
     best_meters = None
+    best_hit = None
     for candidate_pos in candidate_positions:
         if int(candidate_pos) == source_pos:
             continue
@@ -1724,11 +1788,15 @@ def _first_hit_for_ray(
             continue
         if best_meters is None or dist_m < best_meters:
             best_meters = dist_m
-            best_identifier = candidates['identifier'].iloc[int(candidate_pos)]
-            best_distance = dist_m
-    if best_meters is None:
-        return '', '', ''
-    return best_identifier, side, best_distance
+            candidate = candidates.iloc[int(candidate_pos)]
+            best_hit = {
+                'street': candidate['street_label'],
+                'str_id': int(candidate['segment_number']),
+                'side': side,
+                'distance_m': float(dist_m),
+                'hit_point': hit_point,
+            }
+    return best_hit
 
 
 def _prepare_street_centerline_segments(gdf: Any, ellipsoid: str) -> Tuple[Any, StreetMeasureSpec]:
@@ -1845,12 +1913,12 @@ def _build_street_centerline_rows(segments: Any, spec: StreetMeasureSpec, unit: 
         return []
 
     segments = segments.reset_index(drop=True).copy()
+    segments['source_pos'] = segments.index
     bounds = tuple(float(value) for value in segments.total_bounds)
     class_groups = {}
     class_positions = {}
     for street_class in ('EW', 'NS'):
         class_gdf = segments[segments['street_class'] == street_class].copy()
-        class_gdf['source_pos'] = class_gdf.index
         class_gdf = class_gdf.reset_index(drop=True)
         class_groups[street_class] = class_gdf
         class_positions[street_class] = {
@@ -1871,7 +1939,7 @@ def _build_street_centerline_rows(segments: Any, spec: StreetMeasureSpec, unit: 
         hits = []
         for side in sides:
             ray = _make_midpoint_ray(row['midpoint'], bounds, side)
-            hit_identifier, hit_dir, hit_distance_m = _first_hit_for_ray(
+            hit = _first_hit_for_ray(
                 class_pos,
                 row['midpoint'],
                 ray,
@@ -1879,21 +1947,57 @@ def _build_street_centerline_rows(segments: Any, spec: StreetMeasureSpec, unit: 
                 class_gdf,
                 spec,
             )
-            if hit_identifier:
-                hits.append((hit_identifier, hit_dir, _normalize_measurement_output(hit_distance_m, unit)))
-            else:
-                hits.append(('', '', ''))
+            hits.append(hit)
+
+        midpoint = row['midpoint']
+        ext_geom_1 = None
+        ext_geom_2 = None
+        if hits[0] is not None:
+            ext_geom_1 = LineString([
+                (midpoint.x, midpoint.y),
+                (hits[0]['hit_point'].x, hits[0]['hit_point'].y),
+            ])
+        if hits[1] is not None:
+            ext_geom_2 = LineString([
+                (midpoint.x, midpoint.y),
+                (hits[1]['hit_point'].x, hits[1]['hit_point'].y),
+            ])
 
         rows.append({
+            'source_pos': int(row['source_pos']),
+            'source_segment_id': row['source_segment_id'],
             'identifier': row['identifier'],
+            'street': row['street_label'],
+            'str_id': int(row['segment_number']),
+            'street_class': row['street_class'],
             'length': _normalize_measurement_output(row['length_m'], unit),
+            'length_m': float(row['length_m']),
             'bearing': round(float(row['bearing']), 3),
-            'street_1': hits[0][0],
-            'dir_1': hits[0][1],
-            'dist_1': hits[0][2],
-            'street_2': hits[1][0],
-            'dir_2': hits[1][1],
-            'dist_2': hits[1][2],
+            'street_1': hits[0]['street'] if hits[0] is not None else None,
+            'str_id1': hits[0]['str_id'] if hits[0] is not None else None,
+            'dir_1': hits[0]['side'] if hits[0] is not None else None,
+            'dist_1': (
+                _normalize_measurement_output(hits[0]['distance_m'], unit)
+                if hits[0] is not None else None
+            ),
+            'dist_1_m': hits[0]['distance_m'] if hits[0] is not None else None,
+            'street_2': hits[1]['street'] if hits[1] is not None else None,
+            'str_id2': hits[1]['str_id'] if hits[1] is not None else None,
+            'dir_2': hits[1]['side'] if hits[1] is not None else None,
+            'dist_2': (
+                _normalize_measurement_output(hits[1]['distance_m'], unit)
+                if hits[1] is not None else None
+            ),
+            'dist_2_m': hits[1]['distance_m'] if hits[1] is not None else None,
+            'unit': unit,
+            'mid_x': midpoint.x,
+            'mid_y': midpoint.y,
+            'hit1_x': hits[0]['hit_point'].x if hits[0] is not None else None,
+            'hit1_y': hits[0]['hit_point'].y if hits[0] is not None else None,
+            'hit2_x': hits[1]['hit_point'].x if hits[1] is not None else None,
+            'hit2_y': hits[1]['hit_point'].y if hits[1] is not None else None,
+            'ext_geom_1': ext_geom_1,
+            'ext_geom_2': ext_geom_2,
         })
     return rows
 
@@ -1904,14 +2008,259 @@ def _load_street_centerline_dataset(input_path: Union[str, Path]) -> Any:
 
 
 def _write_street_centerline_csv(rows: List[Dict[str, Any]], output_path: Union[str, Path]) -> None:
-    fieldnames = ['identifier', 'length', 'bearing', 'street_1', 'dir_1', 'dist_1', 'street_2', 'dir_2', 'dist_2']
     output = Path(output_path)
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open('w', newline='', encoding='utf-8') as handle:
-        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer = csv.DictWriter(handle, fieldnames=STREET_CENTERLINE_OUTPUT_FIELDS)
         writer.writeheader()
         for row in rows:
-            writer.writerow(row)
+            writer.writerow({
+                field: '' if row.get(field) is None else row.get(field)
+                for field in STREET_CENTERLINE_OUTPUT_FIELDS
+            })
+
+
+def _build_street_centerline_summary(rows: List[Dict[str, Any]], unit: str) -> Any:
+    if not rows:
+        return pd.DataFrame(columns=STREET_CENTERLINE_SUMMARY_FIELDS)
+
+    frame = pd.DataFrame([
+        {
+            'street': row['street'],
+            'street_class': row['street_class'],
+            'str_id': row['str_id'],
+            'length': row['length'],
+            'bearing': row['bearing'],
+            'dist_1': row['dist_1'],
+            'dist_2': row['dist_2'],
+        }
+        for row in rows
+    ])
+    summary = (
+        frame
+        .groupby(['street', 'street_class'], dropna=False, sort=True)
+        .agg(
+            segment_count=('str_id', 'count'),
+            str_id_min=('str_id', 'min'),
+            str_id_max=('str_id', 'max'),
+            length_sum=('length', 'sum'),
+            length_mean=('length', 'mean'),
+            length_min=('length', 'min'),
+            length_max=('length', 'max'),
+            bearing_mean=('bearing', 'mean'),
+            bearing_min=('bearing', 'min'),
+            bearing_max=('bearing', 'max'),
+            dist_1_count=('dist_1', 'count'),
+            dist_1_mean=('dist_1', 'mean'),
+            dist_1_min=('dist_1', 'min'),
+            dist_1_max=('dist_1', 'max'),
+            dist_2_count=('dist_2', 'count'),
+            dist_2_mean=('dist_2', 'mean'),
+            dist_2_min=('dist_2', 'min'),
+            dist_2_max=('dist_2', 'max'),
+        )
+        .reset_index()
+        .sort_values(['street_class', 'street'])
+        .reset_index(drop=True)
+    )
+    float_columns = [
+        'length_sum',
+        'length_mean',
+        'length_min',
+        'length_max',
+        'bearing_mean',
+        'bearing_min',
+        'bearing_max',
+        'dist_1_mean',
+        'dist_1_min',
+        'dist_1_max',
+        'dist_2_mean',
+        'dist_2_min',
+        'dist_2_max',
+    ]
+    if not summary.empty:
+        summary[float_columns] = summary[float_columns].round(3)
+        for field in ('segment_count', 'str_id_min', 'str_id_max', 'dist_1_count', 'dist_2_count'):
+            summary[field] = summary[field].astype(int)
+    summary['unit'] = unit
+    return summary[STREET_CENTERLINE_SUMMARY_FIELDS]
+
+
+def _write_street_centerline_summary_csv(summary: Any, output_path: Union[str, Path]) -> None:
+    output = Path(output_path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    summary.to_csv(output, index=False)
+
+
+def _write_street_centerline_summary_chart(
+    summary: Any,
+    output_path: Union[str, Path],
+    unit: str,
+) -> None:
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError as exc:
+        raise RuntimeError(
+            "The streets centerlines chart output requires matplotlib."
+        ) from exc
+
+    output = Path(output_path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    fig, axes = plt.subplots(4, 1, figsize=(18, 12), sharex=True, constrained_layout=True)
+    if summary.empty:
+        axes[0].text(0.5, 0.5, 'No street segments to plot.', ha='center', va='center')
+        for ax in axes:
+            ax.set_axis_off()
+        fig.savefig(output, dpi=200)
+        plt.close(fig)
+        return
+
+    ordered = summary.reset_index(drop=True)
+    x_values = list(range(len(ordered)))
+    labels = ordered['street'].tolist()
+    tick_step = max(1, math.ceil(len(labels) / 60.0))
+    tick_positions = x_values[::tick_step] if x_values else []
+    tick_labels = labels[::tick_step] if labels else []
+
+    axes[0].bar(x_values, ordered['segment_count'].tolist(), color='#4361ee')
+    axes[0].set_ylabel('Segments')
+    axes[0].set_title('Street Centerline Summary')
+
+    axes[1].bar(x_values, ordered['length_sum'].tolist(), color='#f9844a')
+    axes[1].set_ylabel(f'Total Length ({unit})')
+
+    axes[2].plot(
+        x_values,
+        ordered['dist_1_mean'].tolist(),
+        color='#43aa8b',
+        linewidth=1.5,
+        label='dist_1 mean',
+    )
+    axes[2].plot(
+        x_values,
+        ordered['dist_2_mean'].tolist(),
+        color='#577590',
+        linewidth=1.5,
+        label='dist_2 mean',
+    )
+    axes[2].set_ylabel(f'Mean Dist. ({unit})')
+    axes[2].legend(loc='upper right')
+
+    axes[3].plot(
+        x_values,
+        ordered['bearing_mean'].tolist(),
+        color='#bc4749',
+        linewidth=1.2,
+        marker='o',
+        markersize=2.5,
+    )
+    axes[3].set_ylabel('Bearing')
+    axes[3].set_xlabel('Street')
+    axes[3].set_ylim(-5.0, 365.0)
+    axes[3].set_xticks(tick_positions)
+    axes[3].set_xticklabels(tick_labels, rotation=90, fontsize=8)
+
+    for ax in axes:
+        ax.grid(axis='y', alpha=0.25)
+
+    fig.savefig(output, dpi=200)
+    plt.close(fig)
+
+
+def _build_street_centerline_bundle_geometry(
+    segment_geometry: Any,
+    extension_geometries: Iterable[Any],
+) -> Any:
+    parts = [segment_geometry]
+    parts.extend(geom for geom in extension_geometries if geom is not None)
+    return MultiLineString([list(part.coords) for part in parts])
+
+
+def _build_street_centerline_bundle_layer(segments: Any, rows: List[Dict[str, Any]]) -> Any:
+    if segments.empty or not rows:
+        return gpd.GeoDataFrame(
+            columns=[
+                'source_id',
+                'street',
+                'str_id',
+                'str_class',
+                'length',
+                'length_m',
+                'bearing',
+                'street_1',
+                'str_id1',
+                'dir_1',
+                'dist_1',
+                'dist1_m',
+                'street_2',
+                'str_id2',
+                'dir_2',
+                'dist_2',
+                'dist2_m',
+                'unit',
+                'mid_x',
+                'mid_y',
+                'hit1_x',
+                'hit1_y',
+                'hit2_x',
+                'hit2_y',
+                'geometry',
+            ],
+            geometry='geometry',
+            crs=getattr(segments, 'crs', None),
+        )
+
+    segments = segments.reset_index(drop=True).copy()
+    segments['source_pos'] = segments.index
+    rows_by_source = {int(row['source_pos']): row for row in rows}
+    records = []
+    for _, segment in segments.iterrows():
+        row = rows_by_source.get(int(segment['source_pos']))
+        if row is None:
+            continue
+        records.append({
+            'source_id': row['source_segment_id'],
+            'street': row['street'],
+            'str_id': row['str_id'],
+            'str_class': row['street_class'],
+            'length': row['length'],
+            'length_m': row['length_m'],
+            'bearing': row['bearing'],
+            'street_1': row['street_1'],
+            'str_id1': row['str_id1'],
+            'dir_1': row['dir_1'],
+            'dist_1': row['dist_1'],
+            'dist1_m': row['dist_1_m'],
+            'street_2': row['street_2'],
+            'str_id2': row['str_id2'],
+            'dir_2': row['dir_2'],
+            'dist_2': row['dist_2'],
+            'dist2_m': row['dist_2_m'],
+            'unit': row['unit'],
+            'mid_x': row['mid_x'],
+            'mid_y': row['mid_y'],
+            'hit1_x': row['hit1_x'],
+            'hit1_y': row['hit1_y'],
+            'hit2_x': row['hit2_x'],
+            'hit2_y': row['hit2_y'],
+            'geometry': _build_street_centerline_bundle_geometry(
+                segment.geometry,
+                (row['ext_geom_1'], row['ext_geom_2']),
+            ),
+        })
+    return gpd.GeoDataFrame(records, geometry='geometry', crs=segments.crs)
+
+
+def _write_street_centerline_vector(bundle_layer: Any, output_path: Union[str, Path]) -> None:
+    if bundle_layer.empty:
+        return
+    output = Path(output_path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    driver = _infer_street_vector_driver(output)
+    kwargs: Dict[str, Any] = {'driver': driver}
+    if driver == 'GPKG':
+        kwargs['layer'] = STREET_CENTERLINE_GPKG_LAYER
+    bundle_layer.to_file(output, **kwargs)
 
 
 def analyze_street_centerlines(
@@ -1919,22 +2268,42 @@ def analyze_street_centerlines(
     output_path: Union[str, Path] = STREETS_DEFAULT_OUTPUT,
     unit: str = 'feet',
     ellipsoid: str = 'wgs84',
+    summary_output_path: Optional[Union[str, Path]] = None,
+    chart_output_path: Optional[Union[str, Path]] = None,
+    gis_output_path: Optional[Union[str, Path]] = None,
 ) -> int:
     dataset = _load_street_centerline_dataset(input_path)
     segments, spec = _prepare_street_centerline_segments(dataset, ellipsoid)
     rows = _build_street_centerline_rows(segments, spec, unit)
     _write_street_centerline_csv(rows, output_path)
+    summary_output = Path(summary_output_path) if summary_output_path else _default_street_summary_output_path(output_path)
+    chart_output = Path(chart_output_path) if chart_output_path else _default_street_chart_output_path(output_path)
+    gis_output = Path(gis_output_path) if gis_output_path else _default_street_gis_output_path(output_path)
+    summary = _build_street_centerline_summary(rows, unit)
+    _write_street_centerline_summary_csv(summary, summary_output)
+    _write_street_centerline_summary_chart(summary, chart_output, unit)
+    bundle_layer = _build_street_centerline_bundle_layer(segments, rows)
+    _write_street_centerline_vector(bundle_layer, gis_output)
     return len(rows)
 
 
 def _run_streets_centerlines(args: argparse.Namespace) -> None:
+    summary_output = Path(args.summary_output) if args.summary_output else _default_street_summary_output_path(args.output)
+    chart_output = Path(args.chart_output) if args.chart_output else _default_street_chart_output_path(args.output)
+    gis_output = Path(args.gis_output) if args.gis_output else _default_street_gis_output_path(args.output)
     rows_written = analyze_street_centerlines(
         input_path=args.input,
         output_path=args.output,
         unit=args.units,
         ellipsoid=args.ell,
+        summary_output_path=summary_output,
+        chart_output_path=chart_output,
+        gis_output_path=gis_output,
     )
     print(f"Wrote {rows_written} rows to {args.output}")
+    print(f"Wrote per-street summary to {summary_output}")
+    print(f"Wrote summary chart to {chart_output}")
+    print(f"Wrote GIS layer to {gis_output}")
 
 
 #===============================================================================
@@ -1983,6 +2352,21 @@ def main() -> None:
         '--output',
         default=str(STREETS_DEFAULT_OUTPUT),
         help='Output CSV path (default: %(default)s)',
+    )
+    centerlines.add_argument(
+        '--summary-output',
+        default=None,
+        help='Optional per-street summary CSV path (default: <output stem>_by_street.csv)',
+    )
+    centerlines.add_argument(
+        '--chart-output',
+        default=None,
+        help='Optional per-street summary chart path (default: <output stem>_by_street.png)',
+    )
+    centerlines.add_argument(
+        '--gis-output',
+        default=None,
+        help='Optional GIS output path (.gpkg recommended, .shp supported; default: <output stem>.gpkg)',
     )
     centerlines.add_argument(
         '--units',

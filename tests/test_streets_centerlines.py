@@ -9,11 +9,11 @@ from shapely.geometry import LineString, MultiLineString
 import geodetics
 
 
-def _row_by_identifier(rows, identifier):
+def _row_by_street_id(rows, street, str_id):
     for row in rows:
-        if row["identifier"] == identifier:
+        if row["street"] == street and int(row["str_id"]) == int(str_id):
             return row
-    raise AssertionError(f"identifier not found: {identifier}")
+    raise AssertionError(f"street/str_id not found: {street} / {str_id}")
 
 
 def test_cli_defaults_for_streets_centerlines(monkeypatch):
@@ -31,6 +31,9 @@ def test_cli_defaults_for_streets_centerlines(monkeypatch):
     assert captured["streets_cmd"] == "centerlines"
     assert captured["input"] == str(geodetics.STREETS_DEFAULT_INPUT)
     assert captured["output"] == str(geodetics.STREETS_DEFAULT_OUTPUT)
+    assert captured["summary_output"] is None
+    assert captured["chart_output"] is None
+    assert captured["gis_output"] is None
     assert captured["units"] == "feet"
     assert captured["ell"] == "wgs84"
 
@@ -142,14 +145,16 @@ def test_build_rows_ignores_perpendicular_cross_streets_and_leaves_missing_side_
 
     segments, spec = geodetics._prepare_street_centerline_segments(gdf, "nad83")
     rows = geodetics._build_street_centerline_rows(segments, spec, "m")
-    main_row = _row_by_identifier(rows, "Main NW | 01")
+    main_row = _row_by_street_id(rows, "Main NW", 1)
 
-    assert main_row["street_1"] == "North NW | 01"
+    assert main_row["street_1"] == "North NW"
+    assert main_row["str_id1"] == 1
     assert main_row["dir_1"] == "N"
     assert main_row["dist_1"] == pytest.approx(5.0)
-    assert main_row["street_2"] == ""
-    assert main_row["dir_2"] == ""
-    assert main_row["dist_2"] == ""
+    assert main_row["street_2"] is None
+    assert main_row["str_id2"] is None
+    assert main_row["dir_2"] is None
+    assert main_row["dist_2"] is None
 
 
 def test_build_rows_orders_east_then_west_for_ns_segments():
@@ -171,12 +176,14 @@ def test_build_rows_orders_east_then_west_for_ns_segments():
 
     segments, spec = geodetics._prepare_street_centerline_segments(gdf, "none")
     rows = geodetics._build_street_centerline_rows(segments, spec, "m")
-    first_row = _row_by_identifier(rows, "1st NE | 01")
+    first_row = _row_by_street_id(rows, "1st NE", 1)
 
-    assert first_row["street_1"] == "2nd NE | 01"
+    assert first_row["street_1"] == "2nd NE"
+    assert first_row["str_id1"] == 1
     assert first_row["dir_1"] == "E"
     assert first_row["dist_1"] == pytest.approx(4.0)
-    assert first_row["street_2"] == "3rd NE | 01"
+    assert first_row["street_2"] == "3rd NE"
+    assert first_row["str_id2"] == 1
     assert first_row["dir_2"] == "W"
     assert first_row["dist_2"] == pytest.approx(3.0)
 
@@ -196,6 +203,9 @@ def test_measure_spec_prefers_input_crs_and_falls_back_to_ellipsoid():
 def test_analyze_street_centerlines_writes_csv_for_temp_gpkg(tmp_path):
     input_path = tmp_path / "roads.gpkg"
     output_path = tmp_path / "stats.csv"
+    summary_path = tmp_path / "stats_by_street.csv"
+    chart_path = tmp_path / "stats_by_street.png"
+    gis_path = tmp_path / "stats.gpkg"
     gdf = gpd.GeoDataFrame(
         {
             "FULLNAME": ["East", "North"],
@@ -223,7 +233,58 @@ def test_analyze_street_centerlines_writes_csv_for_temp_gpkg(tmp_path):
     with output_path.open(newline="", encoding="utf-8") as handle:
         rows = list(csv.DictReader(handle))
 
-    assert rows[0]["identifier"] == "East SE | 01"
+    assert rows[0]["street"] == "East SE"
+    assert rows[0]["str_id"] == "1"
+    assert rows[0]["street_class"] == "EW"
     assert rows[0]["length"] == "10.0"
-    assert rows[0]["street_1"] == "North SE | 01"
+    assert rows[0]["street_1"] == "North SE"
+    assert rows[0]["str_id1"] == "1"
     assert rows[0]["dir_1"] == "N"
+    assert summary_path.exists()
+    assert chart_path.exists()
+    assert chart_path.stat().st_size > 0
+    assert gis_path.exists()
+
+    with summary_path.open(newline="", encoding="utf-8") as handle:
+        summary_rows = list(csv.DictReader(handle))
+
+    assert summary_rows[0]["street"] == "East SE"
+    assert summary_rows[0]["segment_count"] == "1"
+    assert summary_rows[0]["unit"] == "m"
+
+    bundle_gdf = gpd.read_file(gis_path, layer=geodetics.STREET_CENTERLINE_GPKG_LAYER)
+    assert list(bundle_gdf["street"]) == ["East SE", "North SE"]
+    assert bundle_gdf.geometry.iloc[0].geom_type == "MultiLineString"
+
+
+def test_analyze_street_centerlines_supports_shapefile_gis_output(tmp_path):
+    input_path = tmp_path / "roads.gpkg"
+    output_path = tmp_path / "stats.csv"
+    gis_path = tmp_path / "stats_bundle.shp"
+    gdf = gpd.GeoDataFrame(
+        {
+            "FULLNAME": ["East", "North"],
+            "OBJECTID": [100, 200],
+            "TYPE": ["ST", "ST"],
+            "QUAD": ["SE", "SE"],
+        },
+        geometry=[
+            LineString([(0, 0), (10, 0)]),
+            LineString([(0, 5), (10, 5)]),
+        ],
+        crs="EPSG:3857",
+    )
+    gdf.to_file(input_path, driver="GPKG")
+
+    geodetics.analyze_street_centerlines(
+        input_path=input_path,
+        output_path=output_path,
+        unit="m",
+        ellipsoid="none",
+        gis_output_path=gis_path,
+    )
+
+    assert gis_path.exists()
+    bundle_gdf = gpd.read_file(gis_path)
+    assert "street" in bundle_gdf.columns
+    assert bundle_gdf.geometry.iloc[0].geom_type == "MultiLineString"

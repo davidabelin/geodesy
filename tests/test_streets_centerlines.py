@@ -6,7 +6,7 @@ import pytest
 from pyproj import CRS
 from shapely.geometry import LineString, MultiLineString
 
-import geodetics
+from roadways.centerlines import centerlines as cl
 
 
 def _row_by_street_id(rows, street, str_id):
@@ -16,24 +16,22 @@ def _row_by_street_id(rows, street, str_id):
     raise AssertionError(f"street/str_id not found: {street} / {str_id}")
 
 
-def test_cli_defaults_for_streets_centerlines(monkeypatch):
+def test_cli_defaults_for_centerlines_script(monkeypatch):
     captured = {}
 
     def fake_run(args):
         captured.update(vars(args))
 
-    monkeypatch.setattr(geodetics, "_run_streets_centerlines", fake_run)
-    monkeypatch.setattr(sys, "argv", ["geodetics.py", "streets", "centerlines"])
+    monkeypatch.setattr(cl, "_run_cl", fake_run)
+    monkeypatch.setattr(sys, "argv", ["centerlines.py"])
 
-    geodetics.main()
+    cl.main()
 
-    assert captured["cmd"] == "streets"
-    assert captured["streets_cmd"] == "centerlines"
-    assert captured["input"] == str(geodetics.STREETS_DEFAULT_INPUT)
-    assert captured["output"] == str(geodetics.STREETS_DEFAULT_OUTPUT)
+    assert captured["input"] == str(cl.CL_DEFAULT_INPUT)
+    assert captured["output"] == str(cl.CL_DEFAULT_OUTPUT)
     assert captured["summary_output"] is None
     assert captured["chart_output"] is None
-    assert captured["gis_output"] is None
+    assert captured["gis_output"] == str(cl.CL_DEFAULT_GIS_OUTPUT)
     assert captured["units"] == "feet"
     assert captured["ell"] == "wgs84"
 
@@ -57,7 +55,7 @@ def test_prepare_segments_filters_roadtype_and_uses_stored_length_or_fallback():
         crs="EPSG:3857",
     )
 
-    segments, spec = geodetics._prepare_street_centerline_segments(gdf, "none")
+    segments, spec = cl._prepare_cl_segments(gdf, "none")
 
     assert spec.mode == "projected"
     assert list(segments["identifier"]) == ["East NW | 01", "North NW | 01"]
@@ -86,7 +84,7 @@ def test_prepare_segments_explodes_multipart_and_marks_parts():
         crs="EPSG:3857",
     )
 
-    segments, _ = geodetics._prepare_street_centerline_segments(gdf, "wgs84")
+    segments, _ = cl._prepare_cl_segments(gdf, "wgs84")
 
     assert list(segments["identifier"]) == ["Split NE | 01", "Split NE | 02"]
     assert segments["length_m"].tolist() == [10.0, 10.0]
@@ -101,14 +99,11 @@ def test_identifier_numbering_uses_per_street_sequence_and_expands_when_needed()
             "STREETTYPE": ["ST"] * count,
             "QUADRANT": ["NW"] * count,
         },
-        geometry=[
-            LineString([(0, float(i)), (10, float(i))])
-            for i in range(count)
-        ],
+        geometry=[LineString([(0, float(i)), (10, float(i))]) for i in range(count)],
         crs="EPSG:3857",
     )
 
-    segments, _ = geodetics._prepare_street_centerline_segments(gdf, "wgs84")
+    segments, _ = cl._prepare_cl_segments(gdf, "wgs84")
 
     assert segments["identifier"].iloc[0] == "Long NW | 001"
     assert segments["identifier"].iloc[99] == "Long NW | 100"
@@ -116,10 +111,10 @@ def test_identifier_numbering_uses_per_street_sequence_and_expands_when_needed()
 
 
 def test_segment_midpoint_is_local_to_each_segment_geometry():
-    spec = geodetics._build_street_measure_spec(CRS.from_epsg(3857), "wgs84")
+    spec = cl._build_cl_measure_spec(CRS.from_epsg(3857), "wgs84")
 
-    straight_mid = geodetics._segment_midpoint(LineString([(0, 0), (10, 0)]), spec)
-    poly_mid = geodetics._segment_midpoint(LineString([(0, 0), (6, 0), (6, 8)]), spec)
+    straight_mid = cl._segment_midpoint(LineString([(0, 0), (10, 0)]), spec)
+    poly_mid = cl._segment_midpoint(LineString([(0, 0), (6, 0), (6, 8)]), spec)
 
     assert straight_mid.x == pytest.approx(5.0)
     assert straight_mid.y == pytest.approx(0.0)
@@ -143,8 +138,8 @@ def test_build_rows_ignores_perpendicular_cross_streets_and_leaves_missing_side_
         crs="EPSG:3857",
     )
 
-    segments, spec = geodetics._prepare_street_centerline_segments(gdf, "nad83")
-    rows = geodetics._build_street_centerline_rows(segments, spec, "m")
+    segments, spec = cl._prepare_cl_segments(gdf, "nad83")
+    rows = cl._build_cl_rows(segments, spec, "m")
     main_row = _row_by_street_id(rows, "Main NW", 1)
 
     assert main_row["street_1"] == "North NW"
@@ -174,8 +169,8 @@ def test_build_rows_orders_east_then_west_for_ns_segments():
         crs="EPSG:3857",
     )
 
-    segments, spec = geodetics._prepare_street_centerline_segments(gdf, "none")
-    rows = geodetics._build_street_centerline_rows(segments, spec, "m")
+    segments, spec = cl._prepare_cl_segments(gdf, "none")
+    rows = cl._build_cl_rows(segments, spec, "m")
     first_row = _row_by_street_id(rows, "1st NE", 1)
 
     assert first_row["street_1"] == "2nd NE"
@@ -189,9 +184,9 @@ def test_build_rows_orders_east_then_west_for_ns_segments():
 
 
 def test_measure_spec_prefers_input_crs_and_falls_back_to_ellipsoid():
-    projected = geodetics._build_street_measure_spec(CRS.from_epsg(26985), "none")
-    sphere = geodetics._build_street_measure_spec(None, "none")
-    pseudomerc = geodetics._build_street_measure_spec(None, "pseudomerc")
+    projected = cl._build_cl_measure_spec(CRS.from_epsg(26985), "none")
+    sphere = cl._build_cl_measure_spec(None, "none")
+    pseudomerc = cl._build_cl_measure_spec(None, "pseudomerc")
 
     assert projected.mode == "projected"
     assert projected.crs == CRS.from_epsg(26985)
@@ -222,11 +217,12 @@ def test_analyze_street_centerlines_writes_csv_for_temp_gpkg(tmp_path):
     )
     gdf.to_file(input_path, driver="GPKG")
 
-    rows_written = geodetics.analyze_street_centerlines(
+    rows_written = cl.analyze_street_centerlines(
         input_path=input_path,
         output_path=output_path,
         unit="m",
         ellipsoid="none",
+        gis_output_path=gis_path,
     )
 
     assert rows_written == 2
@@ -252,9 +248,22 @@ def test_analyze_street_centerlines_writes_csv_for_temp_gpkg(tmp_path):
     assert summary_rows[0]["segment_count"] == "1"
     assert summary_rows[0]["unit"] == "m"
 
-    bundle_gdf = gpd.read_file(gis_path, layer=geodetics.STREET_CENTERLINE_GPKG_LAYER)
+    bundle_gdf = gpd.read_file(gis_path, layer=cl.CL_GPKG_LAYER)
     assert list(bundle_gdf["street"]) == ["East SE", "North SE"]
     assert bundle_gdf.geometry.iloc[0].geom_type == "MultiLineString"
+
+    ew_segments = gpd.read_file(gis_path, layer=cl.CL_GPKG_SEGMENT_LAYERS["EW"])
+    ew_midpoints = gpd.read_file(gis_path, layer=cl.CL_GPKG_MIDPOINT_LAYERS["EW"])
+    ew_extensions = gpd.read_file(gis_path, layer=cl.CL_GPKG_EXTENSION_LAYERS["EW"])
+    assert list(ew_segments["street"]) == ["East SE", "North SE"]
+    assert ew_segments.geometry.iloc[0].geom_type == "LineString"
+    assert ew_segments["palette"].iloc[0] == "Turbo"
+    assert ew_segments["base_hex"].iloc[0].startswith("#")
+    assert ew_midpoints.geometry.iloc[0].geom_type == "Point"
+    assert ew_midpoints["point_px"].iloc[0] == pytest.approx(2.0)
+    assert ew_extensions.geometry.iloc[0].geom_type == "LineString"
+    assert ew_extensions["ext_hex"].iloc[0].startswith("#")
+    assert ew_extensions["stroke_px"].iloc[0] == pytest.approx(1.5)
 
 
 def test_analyze_street_centerlines_supports_shapefile_gis_output(tmp_path):
@@ -276,7 +285,7 @@ def test_analyze_street_centerlines_supports_shapefile_gis_output(tmp_path):
     )
     gdf.to_file(input_path, driver="GPKG")
 
-    geodetics.analyze_street_centerlines(
+    cl.analyze_street_centerlines(
         input_path=input_path,
         output_path=output_path,
         unit="m",
@@ -288,3 +297,41 @@ def test_analyze_street_centerlines_supports_shapefile_gis_output(tmp_path):
     bundle_gdf = gpd.read_file(gis_path)
     assert "street" in bundle_gdf.columns
     assert bundle_gdf.geometry.iloc[0].geom_type == "MultiLineString"
+
+
+def test_build_vector_layers_splits_ew_and_ns_and_adds_style_fields():
+    gdf = gpd.GeoDataFrame(
+        {
+            "ST_NAME": ["East", "North", "1st", "2nd", "Cross"],
+            "OBJECTID": [1, 2, 3, 4, 5],
+            "STREETTYPE": ["ST", "ST", "ST", "ST", "AVE"],
+            "QUADRANT": ["NW", "NW", "NW", "NW", "NW"],
+        },
+        geometry=[
+            LineString([(0, 0), (10, 0)]),
+            LineString([(0, 5), (10, 5)]),
+            LineString([(20, 0), (20, 10)]),
+            LineString([(24, 0), (24, 10)]),
+            LineString([(-10, 2), (30, 2)]),
+        ],
+        crs="EPSG:3857",
+    )
+
+    segments, spec = cl._prepare_cl_segments(gdf, "none")
+    rows = cl._build_cl_rows(segments, spec, "m")
+    layers = cl._build_cl_vector_layers(segments, rows)
+
+    ew_segments = layers[cl.CL_GPKG_SEGMENT_LAYERS["EW"]]
+    ns_segments = layers[cl.CL_GPKG_SEGMENT_LAYERS["NS"]]
+    ew_midpoints = layers[cl.CL_GPKG_MIDPOINT_LAYERS["EW"]]
+    ns_extensions = layers[cl.CL_GPKG_EXTENSION_LAYERS["NS"]]
+
+    assert list(ew_segments["street"]) == ["East NW", "North NW"]
+    assert list(ns_segments["street"]) == ["1st NW", "2nd NW"]
+    assert ew_segments["palette"].iloc[0] == "Turbo"
+    assert ns_segments["palette"].iloc[0] == "Viridis"
+    assert ew_segments["base_hex"].iloc[0].startswith("#")
+    assert ns_segments["base_hex"].iloc[0].startswith("#")
+    assert ew_midpoints.geometry.iloc[0].geom_type == "Point"
+    assert ns_extensions.geometry.iloc[0].geom_type == "LineString"
+    assert ns_extensions["ext_hex"].iloc[0].startswith("#")

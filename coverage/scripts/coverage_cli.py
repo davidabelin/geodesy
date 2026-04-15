@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 from coverage_core import (
@@ -14,10 +17,12 @@ from coverage_core import (
     write_rows,
     write_qgis_bundle,
 )
+from coverage_los_core import has_gdal_backend, run_los_cover
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RESULTS_DIR = REPO_ROOT / "coverage" / "results"
+QGIS_PYTHON = Path.home() / "AppData/Local/Programs/OSGeo4W/bin/python-qgis.bat"
 
 
 def _default_output_path(
@@ -147,7 +152,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     qgis_bundle = sub.add_parser(
         "qgis-bundle",
-        help="Write a QGIS-friendly visual bundle with GeoJSON layers and a PyQGIS loader script.",
+        help="Write the legacy radius-first QGIS visual bundle with GeoJSON layers and a PyQGIS loader script.",
     )
     _add_dataset_args(qgis_bundle)
     _add_coverage_args(qgis_bundle)
@@ -168,6 +173,36 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Bundle directory. Defaults under coverage/results/.",
     )
+
+    los_cover = sub.add_parser(
+        "los-cover",
+        help="Solve the direct LOS segment-cover problem and write reusable output artifacts.",
+    )
+    los_cover.add_argument(
+        "--input",
+        required=True,
+        help="Point dataset path. If relative, also tries repo root and repo data/.",
+    )
+    los_cover.add_argument("--dem", required=True, help="Local DEM raster path.")
+    los_cover.add_argument("--output-dir", required=True, help="Output directory for solver artifacts.")
+    los_cover.add_argument("--id-field", default=None, help="Override point ID field.")
+    los_cover.add_argument("--lat-field", default=None, help="Override CSV latitude field.")
+    los_cover.add_argument("--lon-field", default=None, help="Override CSV longitude field.")
+    los_cover.add_argument("--alt-field", default=None, help="Override altitude field.")
+    los_cover.add_argument(
+        "--max-segment-length",
+        required=True,
+        type=float,
+        help="Maximum surface distance in meters for generated free endpoints.",
+    )
+    los_cover.add_argument("--line-tolerance-m", type=float, default=5.0)
+    los_cover.add_argument("--anchor-height-m", type=float, default=2.0)
+    los_cover.add_argument("--point-height-m", type=float, default=2.0)
+    los_cover.add_argument("--endpoint-height-m", type=float, default=2.0)
+    los_cover.add_argument("--azimuth-step-deg", type=float, default=10.0)
+    los_cover.add_argument("--endpoint-step-m", type=float, default=25.0)
+    los_cover.add_argument("--sample-step-m", type=float, default=10.0)
+    los_cover.add_argument("--solver", choices=["greedy", "hybrid"], default="hybrid")
 
     return parser
 
@@ -316,7 +351,63 @@ def _qgis_bundle_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _reexec_los_cover_under_qgis(argv: list[str]) -> int:
+    if not QGIS_PYTHON.exists():
+        raise RuntimeError(
+            "GDAL-backed DEM access is unavailable in this interpreter and "
+            f"`{QGIS_PYTHON}` was not found."
+        )
+
+    env = dict(os.environ)
+    env["COVERAGE_LOS_REEXEC"] = "1"
+    result = subprocess.run(
+        [str(QGIS_PYTHON), str(Path(__file__).resolve()), *argv],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=env,
+    )
+    if result.stdout:
+        print(result.stdout, end="")
+    if result.stderr:
+        print(result.stderr, end="", file=sys.stderr)
+    return int(result.returncode)
+
+
+def _los_cover_command(args: argparse.Namespace, argv: list[str]) -> int:
+    if not has_gdal_backend() and os.environ.get("COVERAGE_LOS_REEXEC") != "1":
+        return _reexec_los_cover_under_qgis(argv)
+
+    manifest = run_los_cover(
+        input_path=args.input,
+        dem_path=args.dem,
+        output_dir=args.output_dir,
+        repo_root=REPO_ROOT,
+        id_field=args.id_field,
+        lat_field=args.lat_field,
+        lon_field=args.lon_field,
+        alt_field=args.alt_field,
+        max_segment_length_m=args.max_segment_length,
+        line_tolerance_m=args.line_tolerance_m,
+        anchor_height_m=args.anchor_height_m,
+        point_height_m=args.point_height_m,
+        endpoint_height_m=args.endpoint_height_m,
+        azimuth_step_deg=args.azimuth_step_deg,
+        endpoint_step_m=args.endpoint_step_m,
+        sample_step_m=args.sample_step_m,
+        solver=args.solver,
+    )
+    print(f"LOS cover output: {manifest['output_dir']}")
+    print(f"Selected segments: {manifest['selected_segment_count']}")
+    print(f"Covered points: {manifest['covered_point_count']} / {manifest['point_count']}")
+    print(f"Exact refinement: {manifest['selection']['exact_status']}")
+    print(f"Selected segments file: {manifest['files']['selected_segments']}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
     parser = build_parser()
     args = parser.parse_args(argv)
 
@@ -330,6 +421,8 @@ def main(argv: list[str] | None = None) -> int:
         return _max_cover_command(args)
     if args.cmd == "qgis-bundle":
         return _qgis_bundle_command(args)
+    if args.cmd == "los-cover":
+        return _los_cover_command(args, argv)
 
     parser.error(f"Unknown command: {args.cmd}")
     return 2

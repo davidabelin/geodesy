@@ -441,7 +441,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     los = sub.add_parser(
         "los-bundle",
-        help="Write DEM-sampled 3D line-of-sight layers and a QGIS loader script.",
+        help="Legacy radius-first LOS bundle for QGIS inspection.",
     )
     los.add_argument("--input", required=True)
     los.add_argument("--candidates", default=None)

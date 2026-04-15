@@ -23,6 +23,29 @@ def run_cli(*args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
+def run_los_cover(tmp_path: Path) -> Path:
+    output_dir = tmp_path / "los_cover"
+    result = run_cli(
+        "los-cover",
+        "--input",
+        "data\\refpnts.csv",
+        "--dem",
+        "data\\tif\\dc_dem.tif",
+        "--max-segment-length",
+        "100",
+        "--azimuth-step-deg",
+        "90",
+        "--endpoint-step-m",
+        "50",
+        "--sample-step-m",
+        "25",
+        "--output-dir",
+        str(output_dir),
+    )
+    assert result.returncode == 0, result.stderr
+    return output_dir
+
+
 def test_inspect_csv_writes_summary(tmp_path: Path) -> None:
     input_csv = tmp_path / "points.csv"
     input_csv.write_text(
@@ -248,3 +271,51 @@ def test_los_bundle_writes_qgis_ready_outputs(tmp_path: Path) -> None:
     assert (bundle_dir / "terrain_traces_3d.geojson").exists()
     assert (bundle_dir / "los_lines_3d.geojson").exists()
     assert (bundle_dir / "load_los_bundle_qgis.py").exists()
+
+
+@pytest.mark.skipif(not QGIS_PYTHON.exists(), reason="QGIS python runtime not installed")
+def test_los_cover_writes_solver_artifacts(tmp_path: Path) -> None:
+    output_dir = run_los_cover(tmp_path)
+
+    manifest = json.loads((output_dir / "manifest.json").read_text(encoding="utf-8"))
+    point_status_rows = list(
+        csv.DictReader((output_dir / "point_status.csv").open("r", encoding="utf-8", newline=""))
+    )
+    candidate_rows = list(
+        csv.DictReader((output_dir / "candidate_summary.csv").open("r", encoding="utf-8", newline=""))
+    )
+
+    assert manifest["point_count"] == 17
+    assert (output_dir / "selected_segments.geojson").exists()
+    assert (output_dir / "coverage_offsets.geojson").exists()
+    assert (output_dir / "README.md").exists()
+    assert len(point_status_rows) == 17
+    assert len(candidate_rows) >= manifest["selected_segment_count"]
+    assert {"covered", "reachable", "assigned_candidate_id"}.issubset(point_status_rows[0].keys())
+
+
+@pytest.mark.skipif(not QGIS_PYTHON.exists(), reason="QGIS python runtime not installed")
+def test_los_project_writes_geopackage_and_project(tmp_path: Path) -> None:
+    input_dir = run_los_cover(tmp_path)
+    output_dir = tmp_path / "qgis_project"
+    result = subprocess.run(
+        [
+            "cmd",
+            "/c",
+            str(CVR_BAT),
+            "los-project",
+            "--input-dir",
+            str(input_dir),
+            "--output-dir",
+            str(output_dir),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert (output_dir / "los_segment_cover.gpkg").exists()
+    assert (output_dir / "los_segment_cover.qgs").exists()
+    assert (output_dir / "README.md").exists()

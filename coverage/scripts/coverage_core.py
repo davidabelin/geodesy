@@ -65,6 +65,7 @@ class PointRecord:
     alt_m: float
     source_index: int
     properties: dict[str, Any]
+    has_altitude: bool = False
 
 
 @dataclass
@@ -114,6 +115,10 @@ def _to_float(value: Any, default: float = 0.0) -> float:
     if value in (None, ""):
         return default
     return float(value)
+
+
+def _has_value(value: Any) -> bool:
+    return value not in (None, "")
 
 
 def _normalize_id(value: Any, fallback_index: int) -> str:
@@ -180,10 +185,13 @@ def _load_csv_dataset(
             lat = _to_float(row.get(csv_lat_field))
             lon = _to_float(row.get(csv_lon_field))
             if csv_alt_field:
+                has_altitude = _has_value(row.get(csv_alt_field))
                 alt_m = _to_float(row.get(csv_alt_field), 0.0)
             elif alt_ft_field:
+                has_altitude = _has_value(row.get(alt_ft_field))
                 alt_m = _to_float(row.get(alt_ft_field), 0.0) / FEET_PER_METER
             else:
+                has_altitude = False
                 alt_m = 0.0
 
             points.append(
@@ -194,6 +202,7 @@ def _load_csv_dataset(
                     alt_m=alt_m,
                     source_index=index,
                     properties=dict(row),
+                    has_altitude=has_altitude,
                 )
             )
 
@@ -243,6 +252,7 @@ def _load_geojson_dataset(
         if len(coords) >= 3:
             alt_m = _to_float(coords[2], 0.0)
             effective_alt_field = "__geometry_z__"
+            has_altitude = _has_value(coords[2])
         else:
             geo_alt_field = geo_alt_field or _first_present(
                 props.keys(), ALT_M_FIELD_CANDIDATES
@@ -251,12 +261,15 @@ def _load_geojson_dataset(
                 props.keys(), ALT_FT_FIELD_CANDIDATES
             )
             if geo_alt_field:
+                has_altitude = _has_value(props.get(geo_alt_field))
                 alt_m = _to_float(props.get(geo_alt_field), 0.0)
                 effective_alt_field = geo_alt_field
             elif alt_ft_field:
+                has_altitude = _has_value(props.get(alt_ft_field))
                 alt_m = _to_float(props.get(alt_ft_field), 0.0) / FEET_PER_METER
                 effective_alt_field = alt_ft_field
             else:
+                has_altitude = False
                 alt_m = 0.0
                 effective_alt_field = "__default_zero__"
 
@@ -268,6 +281,7 @@ def _load_geojson_dataset(
                 alt_m=alt_m,
                 source_index=index,
                 properties=dict(props),
+                has_altitude=has_altitude,
             )
         )
 

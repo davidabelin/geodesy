@@ -4,9 +4,13 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CLI_PATH = REPO_ROOT / "coverage" / "scripts" / "coverage_cli.py"
+CVR_BAT = REPO_ROOT / "cvr.bat"
+QGIS_PYTHON = Path.home() / "AppData/Local/Programs/OSGeo4W/bin/python-qgis.bat"
 
 
 def run_cli(*args: str) -> subprocess.CompletedProcess[str]:
@@ -152,3 +156,95 @@ def test_greedy_cover_commands_select_expected_sites(tmp_path: Path) -> None:
     assert len(max_rows) == 1
     assert max_rows[0]["candidate_id"] == "S1"
     assert max_rows[0]["remaining_uncovered_count"] == "1"
+
+
+def test_qgis_bundle_writes_visual_layers_and_manifest(tmp_path: Path) -> None:
+    demand_csv = tmp_path / "demands.csv"
+    demand_csv.write_text(
+        "LOC,LAT,LON\nA,38.0,-77.0\nB,38.001,-77.0\nC,38.01,-77.0\n",
+        encoding="utf-8",
+    )
+    candidate_csv = tmp_path / "candidates.csv"
+    candidate_csv.write_text(
+        "LOC,LAT,LON\nS1,38.0,-77.0\nS2,38.01,-77.0\n",
+        encoding="utf-8",
+    )
+    bundle_dir = tmp_path / "bundle"
+
+    result = run_cli(
+        "qgis-bundle",
+        "--input",
+        str(demand_csv),
+        "--candidates",
+        str(candidate_csv),
+        "--radius",
+        "200",
+        "--unit",
+        "meters",
+        "--solver",
+        "max-cover",
+        "--budget",
+        "1",
+        "--output-dir",
+        str(bundle_dir),
+    )
+
+    assert result.returncode == 0, result.stderr
+
+    manifest = json.loads((bundle_dir / "bundle_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["covered_demand_count"] == 3
+    assert manifest["selected_covered_demand_count"] == 2
+    assert manifest["selected_candidate_count"] == 1
+
+    demands = json.loads((bundle_dir / "demands.geojson").read_text(encoding="utf-8"))
+    candidates = json.loads((bundle_dir / "candidates.geojson").read_text(encoding="utf-8"))
+    links = json.loads((bundle_dir / "coverage_links.geojson").read_text(encoding="utf-8"))
+    zones = json.loads((bundle_dir / "coverage_zones.geojson").read_text(encoding="utf-8"))
+    loader = (bundle_dir / "load_bundle_qgis.py").read_text(encoding="utf-8")
+
+    assert len(demands["features"]) == 3
+    assert len(candidates["features"]) == 2
+    assert len(links["features"]) == 3
+    assert len(zones["features"]) == 2
+    assert "coverage_zones" in loader
+    assert "style_demands" in loader
+
+
+@pytest.mark.skipif(not QGIS_PYTHON.exists(), reason="QGIS python runtime not installed")
+def test_los_bundle_writes_qgis_ready_outputs(tmp_path: Path) -> None:
+    bundle_dir = tmp_path / "los_bundle"
+    result = subprocess.run(
+        [
+            "cmd",
+            "/c",
+            str(CVR_BAT),
+            "los-bundle",
+            "--input",
+            "data\\refpnts.csv",
+            "--candidates",
+            "data\\map_refpnts.geojson",
+            "--dem",
+            "data\\tif\\dc_dem.tif",
+            "--radius",
+            "250",
+            "--unit",
+            "meters",
+            "--output-dir",
+            str(bundle_dir),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+
+    manifest = json.loads((bundle_dir / "bundle_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["los_pair_count"] >= 1
+    assert manifest["visible_los_count"] >= 1
+    assert (bundle_dir / "demands_3d.geojson").exists()
+    assert (bundle_dir / "candidates_3d.geojson").exists()
+    assert (bundle_dir / "terrain_traces_3d.geojson").exists()
+    assert (bundle_dir / "los_lines_3d.geojson").exists()
+    assert (bundle_dir / "load_los_bundle_qgis.py").exists()

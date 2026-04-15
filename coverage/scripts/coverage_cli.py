@@ -12,6 +12,7 @@ from coverage_core import (
     greedy_full_cover,
     load_dataset,
     write_rows,
+    write_qgis_bundle,
 )
 
 
@@ -144,6 +145,30 @@ def build_parser() -> argparse.ArgumentParser:
         help="Maximum number of candidate sites to pick.",
     )
 
+    qgis_bundle = sub.add_parser(
+        "qgis-bundle",
+        help="Write a QGIS-friendly visual bundle with GeoJSON layers and a PyQGIS loader script.",
+    )
+    _add_dataset_args(qgis_bundle)
+    _add_coverage_args(qgis_bundle)
+    qgis_bundle.add_argument(
+        "--solver",
+        choices=["none", "full-cover", "max-cover"],
+        default="full-cover",
+        help="Optional greedy solver used to flag selected candidates in the bundle.",
+    )
+    qgis_bundle.add_argument(
+        "--budget",
+        type=int,
+        default=None,
+        help="Candidate budget when --solver=max-cover.",
+    )
+    qgis_bundle.add_argument(
+        "--output-dir",
+        default=None,
+        help="Bundle directory. Defaults under coverage/results/.",
+    )
+
     return parser
 
 
@@ -262,6 +287,35 @@ def _max_cover_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _qgis_bundle_command(args: argparse.Namespace) -> int:
+    demand, candidates = _load_datasets(args)
+    radius_m = convert_distance_to_meters(args.radius, args.unit)
+    if args.output_dir:
+        bundle_dir = Path(args.output_dir)
+    else:
+        bundle_dir = (
+            RESULTS_DIR
+            / f"qgis_bundle__{demand.path.stem}__{candidates.path.stem}"
+        )
+
+    manifest = write_qgis_bundle(
+        bundle_dir,
+        demand_dataset=demand,
+        candidate_dataset=candidates,
+        radius_m=radius_m,
+        distance_mode=args.distance_mode,
+        exclude_self=args.exclude_self,
+        solver=args.solver,
+        budget=args.budget,
+    )
+    print(f"QGIS bundle output: {bundle_dir}")
+    print(f"Covered demand points: {manifest['covered_demand_count']}")
+    print(f"Demand points covered by selected candidates: {manifest['selected_covered_demand_count']}")
+    print(f"Selected candidates: {manifest['selected_candidate_count']}")
+    print(f"Loader script: {manifest['files']['loader_script']}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -274,6 +328,8 @@ def main(argv: list[str] | None = None) -> int:
         return _full_cover_command(args)
     if args.cmd == "max-cover":
         return _max_cover_command(args)
+    if args.cmd == "qgis-bundle":
+        return _qgis_bundle_command(args)
 
     parser.error(f"Unknown command: {args.cmd}")
     return 2

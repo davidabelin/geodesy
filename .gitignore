@@ -399,7 +399,7 @@ qgis/Hawkins/hawkins_topo_project_attachments.zip
 qgis/Hawkins/hawkins_topo_project.qgs
 qgis/Hawkins/pale_hawkins_topology.gpkg
 qgis/Hawkins/pale_hawkins_topology.gpkg.aux.xml
-qgis/Hawkins/3D map/*.aux.xml
+qgis/Hawkins/3D map/
 qgis/Hawkins/generated/
 find
 qgis/Ellicot/washington_plan.png
@@ -412,12 +412,6 @@ tmp_gtri.html
 *.qgs~
 *.qgs~
 commit_line.md
-qgis/Hawkins/3D map/*.png
-qgis/Hawkins/3D map/*.xml
-qgis/Hawkins/3D map/*.gpkg
-qgis/Hawkins/3D map/*.gpkg-shm
-qgis/Hawkins/3D map/*.gpkg-wal
-qgis/Hawkins/3D map/*.tif
 COMMIT LINE EDIT B4 EVERY COMMIT.md
 qgis/LEnfant/centerlenfant.png
 clenfout.png

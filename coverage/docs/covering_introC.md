@@ -1,114 +1,128 @@
 # Covering Preliminaries Part III
 
-## Direct LOS Segment Cover
+## Pairwise LOS Line Families
 
-This part defines the new problem behind the current coverage work:
+This part replaces the earlier one-free-endpoint segment model with the cleaner question we actually care about:
 
-> Given a set of geographic points, a DEM, and direct line-of-sight geometry in 3D, what is the smallest practical set of LOS segments needed to cover every reachable point?
+> Given a set of geographic points and a DEM, which direct point-to-point LOS segments exist, and which of those pairwise segments induce the smallest useful collection of shared 3D lines through the set?
 
-This is not the same as the earlier radius-first site-cover workflow.
-
-- Parts I and II established the covering vocabulary and the 3D geometry background.
-- Part III switches from `site cover` to `segment cover`.
-- The old `los-bundle` path is now legacy for this question because it picks sites before testing terrain visibility.
+This is still a covering problem, but the primitive objects are now finite segments between original input points.
 
 ## Problem Definition
 
-Each selected object is a finite direct 3D segment:
+V2 uses only original points as segment endpoints.
 
-- one endpoint is anchored at an input point
-- the other endpoint is a sampled visible terrain location
-- the segment is a straight chord in 3D space, not a geodesic path draped over the ellipsoid
+- Every unordered point pair is a candidate segment.
+- A pair qualifies only if the direct 3D chord between the two points is terrain-clear.
+- A third-or-later point belongs to that pair-induced line if its 3D point-to-segment distance is within the configured tolerance.
+- Singleton lines are invalid and are not generated.
 
-A point is counted as covered when both conditions hold:
+This gives two related result sets:
 
-1. the point is individually visible from the anchored endpoint
-2. the point lies within a configurable distance tolerance of the finite 3D segment
+- `2-point` LOS pairs
+  - these are baseline visibility facts
+- `3+ point` line families
+  - these are the meaningful compressed structures
 
-For V1, the tolerance is measured in meters as point-to-segment distance, not by angular deviation.
+Different LOS-valid pairs can induce the same point set. When that happens, V2 deduplicates them into one representative line family.
 
 ## Elevation Rules
 
 The workflow uses a DEM-backed elevation provider.
 
-- If the dataset explicitly supplies altitude, that value is treated as authoritative.
-- If a point has no assigned altitude, the DEM is the authority.
-- V1 assumes all altitudes are absolute meters and does not reconcile vertical datums.
+- If the dataset explicitly supplies altitude, that value is authoritative.
+- If a point has no assigned altitude, the DEM provides ground elevation.
+- V2 assumes all heights are absolute meters and does not reconcile vertical datums.
 
-Default offsets in V1:
+For the current implementation, all point endpoints use the same display offset:
 
-- anchor height: `+2 m`
-- covered-point height: `+2 m`
-- free-endpoint height: `+2 m`
+- point height: `+2 m` by default
 
-## Candidate Segments
+Legacy CLI options such as `--anchor-height-m` and `--endpoint-height-m` are still accepted for compatibility, but the pairwise model uses `--point-height-m` for both ends of each point-to-point segment.
 
-V1 uses a discretized one-free-endpoint model.
+## Candidate Generation
 
-- Every input point is a possible anchor.
-- Around each anchor, the solver samples terrain endpoints on radial spokes.
-- Default discretization:
-  - azimuth step: `10 deg`
-  - endpoint step: `25 m`
-  - LOS sample step: `10 m`
+The candidate-generation step is finite and terrain-aware:
 
-The endpoint must itself be visible from the anchor. That gives a family of terrain-clear candidate segments.
+1. enumerate all unordered point pairs
+2. discard pairs longer than `--max-segment-length` when that filter is set
+3. test each pair for direct LOS against the DEM
+4. for each LOS-valid pair, test every point for near-membership in that finite segment
+5. record the induced point set for that pair
+6. deduplicate identical point sets into one line family representative
 
-For practicality, the solver also keeps an anchor-only fallback candidate. Those candidates are dropped if the same anchor has any strictly better multi-point segment.
+So the main combinatorics are `O(n^2)` pair generation plus point-membership checks over the surviving pairs.
 
 ## Optimization Strategy
 
-The exact problem is combinatorial, so V1 uses a hybrid strategy:
+The solver now optimizes over deduped line families rather than over sampled terrain endpoints.
 
-1. generate terrain-clear candidate segments
-2. build a segment-to-point coverage relation
-3. run greedy set cover
-4. drop redundant selections
-5. try local improvements
-   - `2-for-1` collapses first
-   - then same-cardinality residual improvements
-6. optionally run reduced-pool exact refinement with `scipy.optimize.milp`
+The workflow is:
 
-The exact refinement pool is intentionally capped.
+1. generate all LOS-valid point pairs
+2. lift those pairs into deduped line families
+3. keep all `2+ point` families as candidates
+4. emphasize `3+ point` families as the meaningful structures
+5. solve a set-cover approximation over the deduped families
+6. improve the selection with local search
+7. optionally run reduced-pool MILP refinement with `scipy.optimize.milp`
 
-- Start with all currently selected segments.
-- Add the top `15` candidates per point, ranked by lower residual distance and then shorter segment length.
-- Skip exact refinement if the reduced pool grows past `500` candidates.
+The reduced exact pool uses:
+
+- all currently selected families
+- top `15` covering families per point
+- ranked by lower residual distance, then shorter segment length
+
+Exact refinement is skipped when that pool exceeds `500` candidates.
 
 ## Outputs
 
-The solver path is now split into two layers:
+`los-cover` now writes artifacts that separate pairwise facts from higher-level line families:
 
-- `los-cover`
-  - pure solver output
-  - writes JSON, CSV, and GeoJSON artifacts
-- `los-project`
-  - QGIS runtime export
-  - builds a `GeoPackage + QGIS project`
-
-Primary artifacts from `los-cover`:
-
-- `manifest.json`
+- `pair_segments.geojson`
+  - every LOS-valid point-to-point segment
+- `meaningful_lines.geojson`
+  - deduped `3+ point` line families
 - `selected_segments.geojson`
-- `point_status.csv`
+  - the family representatives chosen by the solver
+- `pair_summary.csv`
+  - one row per LOS-valid pair
 - `candidate_summary.csv`
+  - one row per deduped line family
+- `point_status.csv`
+  - per-point coverage and assignment
+- `coverage_offsets.geojson`
+  - point-to-selected-line residuals
+- `manifest.json`
 - `README.md`
 
-Primary artifacts from `los-project`:
+`los-project` then builds a stable QGIS package from those artifacts:
 
 - `los_segment_cover.gpkg`
 - `los_segment_cover.qgs`
 - `README.md`
 
-## Why QGIS First
+The project layers are:
 
-QGIS remains the first visualization target because it already fits the local data workflow and supports DEM-backed inspection. But the new output format is intentionally more stable than the earlier custom 3D loader approach.
+- `points_z`
+- `pair_segments_z`
+- `meaningful_lines_z`
+- `selected_lines_z`
+- `coverage_offsets_z`
 
-V1 prefers:
+## Why This Replaces The Old LOS Bundle Path
 
-- a conservative 2D project that opens reliably
-- optional manual 3D inspection inside QGIS
-- no injected 3D dock
-- no custom 3D renderer script
+The old `los-bundle` path remains available for the earlier radius-first workflow, but it is now legacy for this problem.
 
-That keeps the geometry and solver work reusable when the project later moves toward a Flask or browser-based viewer.
+It answers a different question:
+
+- select sites first
+- check LOS afterward
+
+The pairwise LOS line-family workflow answers the question we actually want:
+
+- enumerate LOS-valid pairs directly
+- identify shared multi-point lines
+- optimize over those shared structures
+
+That also makes the result easier to reason about in QGIS now, and easier to migrate later into a Flask or browser-based viewer.

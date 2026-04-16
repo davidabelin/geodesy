@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Iterable, Optional
 
@@ -30,7 +30,7 @@ except Exception:
     MILP_AVAILABLE = False
 
 
-LOS_SOLVER_VERSION = "los-segment-cover-v1"
+LOS_SOLVER_VERSION = "los-segment-cover-v2-pairwise"
 WGS84_3D = CRS.from_epsg(4979)
 ECEF_CRS = CRS.from_epsg(4978)
 GEODETIC_TO_ECEF = Transformer.from_crs(WGS84_3D, ECEF_CRS, always_xy=True)
@@ -80,6 +80,8 @@ class CandidateSegment:
     coverage_count: int
     residual_sum_m: float
     segment_length_m: float
+    endpoint_index: Optional[int] = None
+    endpoint_id: str = ""
     anchor_lon: float = 0.0
     anchor_lat: float = 0.0
     anchor_display_alt_m: float = 0.0
@@ -101,13 +103,17 @@ class CandidateSegment:
             return 0.0
         return self.residual_sum_m / self.coverage_count
 
+    @property
+    def is_meaningful(self) -> bool:
+        return self.coverage_count >= 3
+
 
 @dataclass(frozen=True)
 class CandidateBuildStats:
-    raw_candidate_count: int
-    deduped_candidate_count: int
+    raw_pair_count: int
+    deduped_family_count: int
+    meaningful_family_count: int
     reachable_mask: int
-    anchor_visible_masks: list[int]
 
 
 @dataclass(frozen=True)
@@ -330,27 +336,6 @@ def resolve_points(prepared_points: Iterable[PreparedPoint], *, offset_m: float)
     return resolved
 
 
-def _iter_azimuths(step_deg: float) -> Iterable[float]:
-    if step_deg <= 0:
-        raise ValueError("azimuth-step-deg must be positive")
-    steps = max(1, int(math.ceil(360.0 / step_deg)))
-    for index in range(steps):
-        azimuth = index * step_deg
-        if azimuth >= 360.0:
-            break
-        yield float(azimuth)
-
-
-def _iter_endpoint_distances(step_m: float, max_distance_m: float) -> Iterable[float]:
-    if step_m <= 0:
-        raise ValueError("endpoint-step-m must be positive")
-    if max_distance_m < 0:
-        raise ValueError("max-segment-length must be non-negative")
-    count = int(math.floor(max_distance_m / step_m))
-    for index in range(1, count + 1):
-        yield float(index * step_m)
-
-
 def _mask_from_indexes(indexes: Iterable[int]) -> int:
     mask = 0
     for index in indexes:
@@ -368,8 +353,8 @@ def _mask_to_point_ids(mask: int, points: list[PreparedPoint]) -> list[str]:
 
 def _candidate_sort_key(candidate: CandidateSegment) -> tuple[float, float, str]:
     return (
-        round(candidate.segment_length_m, 6),
         round(candidate.residual_sum_m, 6),
+        round(candidate.segment_length_m, 6),
         candidate.candidate_id,
     )
 
@@ -380,13 +365,13 @@ def _build_candidate(
     anchor_index: int,
     anchor: ResolvedPoint,
     cover_points: list[ResolvedPoint],
-    visible_point_mask: int,
+    endpoint_index: int,
+    endpoint: ResolvedPoint,
     endpoint_lon: float,
     endpoint_lat: float,
     endpoint_ground_alt_m: float,
     endpoint_display_alt_m: float,
     surface_distance_m: float,
-    azimuth_deg: Optional[float],
     generation_kind: str,
     min_clearance_m: Optional[float],
     line_tolerance_m: float,
@@ -396,7 +381,7 @@ def _build_candidate(
     projection_fractions: dict[int, float] = {}
     coverage_mask = 0
 
-    for point_index in _mask_indexes(visible_point_mask, len(cover_points)):
+    for point_index, point in enumerate(cover_points):
         point = cover_points[point_index]
         residual_m, fraction = point_to_segment_distance_m(point.ecef, anchor.ecef, end_xyz)
         if residual_m <= line_tolerance_m:
@@ -409,6 +394,8 @@ def _build_candidate(
         candidate_id=candidate_id,
         anchor_index=anchor_index,
         anchor_id=anchor.point_id,
+        endpoint_index=endpoint_index,
+        endpoint_id=endpoint.point_id,
         coverage_mask=coverage_mask,
         coverage_count=coverage_count,
         residual_sum_m=float(sum(point_distances_m.values())),
@@ -421,8 +408,8 @@ def _build_candidate(
         endpoint_ground_alt_m=endpoint_ground_alt_m,
         endpoint_display_alt_m=endpoint_display_alt_m,
         surface_distance_m=surface_distance_m,
-        azimuth_deg=azimuth_deg,
-        visible_point_mask=visible_point_mask,
+        azimuth_deg=None,
+        visible_point_mask=coverage_mask,
         point_distances_m=point_distances_m,
         projection_fractions=projection_fractions,
         generation_kind=generation_kind,
@@ -430,153 +417,96 @@ def _build_candidate(
     )
 
 
-def deduplicate_anchor_candidates(
+def deduplicate_family_candidates(
     candidates: list[CandidateSegment],
-    *,
-    anchor_index: int,
 ) -> list[CandidateSegment]:
-    anchor_mask = 1 << anchor_index
     best_by_mask: dict[int, CandidateSegment] = {}
-    anchor_only: Optional[CandidateSegment] = None
 
     for candidate in candidates:
-        if candidate.coverage_mask == 0:
-            continue
-        if candidate.coverage_mask == anchor_mask:
-            if anchor_only is None or _candidate_sort_key(candidate) < _candidate_sort_key(anchor_only):
-                anchor_only = candidate
+        if candidate.coverage_count < 2:
             continue
         current = best_by_mask.get(candidate.coverage_mask)
         if current is None or _candidate_sort_key(candidate) < _candidate_sort_key(current):
             best_by_mask[candidate.coverage_mask] = candidate
 
-    deduped = sorted(best_by_mask.values(), key=lambda item: item.candidate_id)
-    if anchor_only is not None and not deduped:
-        deduped.append(anchor_only)
-    return deduped
+    families = [
+        replace(candidate, generation_kind="pair-family")
+        for candidate in best_by_mask.values()
+    ]
+    return sorted(families, key=lambda item: item.candidate_id)
+
+
+def deduplicate_anchor_candidates(
+    candidates: list[CandidateSegment],
+    *,
+    anchor_index: int,
+) -> list[CandidateSegment]:
+    return deduplicate_family_candidates(
+        [candidate for candidate in candidates if candidate.anchor_index == anchor_index]
+    )
 
 
 def generate_candidates(
     prepared_points: list[PreparedPoint],
     provider: ElevationProvider,
     *,
-    anchor_height_m: float,
     point_height_m: float,
-    endpoint_height_m: float,
-    max_segment_length_m: float,
+    max_segment_length_m: Optional[float],
     line_tolerance_m: float,
-    azimuth_step_deg: float,
-    endpoint_step_m: float,
     sample_step_m: float,
-) -> tuple[list[CandidateSegment], CandidateBuildStats]:
-    anchor_points = resolve_points(prepared_points, offset_m=anchor_height_m)
-    cover_points = resolve_points(prepared_points, offset_m=point_height_m)
-
-    all_candidates: list[CandidateSegment] = []
-    raw_candidate_count = 0
+) -> tuple[list[CandidateSegment], list[CandidateSegment], CandidateBuildStats]:
+    pair_points = resolve_points(prepared_points, offset_m=point_height_m)
+    raw_pair_candidates: list[CandidateSegment] = []
     reachable_mask = 0
-    anchor_visible_masks: list[int] = []
 
-    for anchor_index, anchor in enumerate(anchor_points):
-        anchor_visible_indexes: list[int] = []
-        for point_index, point in enumerate(cover_points):
-            if point_index == anchor_index:
-                anchor_visible_indexes.append(point_index)
+    for anchor_index, anchor in enumerate(pair_points):
+        for endpoint_index in range(anchor_index + 1, len(pair_points)):
+            endpoint = pair_points[endpoint_index]
+            _, _, surface_distance_m = WGS84.inv(anchor.lon, anchor.lat, endpoint.lon, endpoint.lat)
+            if max_segment_length_m is not None and surface_distance_m > max_segment_length_m:
                 continue
 
             los_check = chord_los_clear(
                 anchor.ecef,
-                point.ecef,
+                endpoint.ecef,
                 provider,
                 sample_step_m=sample_step_m,
                 start_ground_m=prepared_points[anchor_index].ground_alt_m,
-                end_ground_m=prepared_points[point_index].ground_alt_m,
+                end_ground_m=prepared_points[endpoint_index].ground_alt_m,
             )
-            if los_check.visible:
-                anchor_visible_indexes.append(point_index)
 
-        visible_mask = _mask_from_indexes(anchor_visible_indexes)
-        anchor_visible_masks.append(visible_mask)
+            if not los_check.visible:
+                continue
 
-        anchor_candidates: list[CandidateSegment] = []
-        sequence = 1
-
-        self_candidate = _build_candidate(
-            candidate_id=f"{anchor.point_id}__self",
-            anchor_index=anchor_index,
-            anchor=anchor,
-            cover_points=cover_points,
-            visible_point_mask=visible_mask,
-            endpoint_lon=anchor.lon,
-            endpoint_lat=anchor.lat,
-            endpoint_ground_alt_m=prepared_points[anchor_index].ground_alt_m,
-            endpoint_display_alt_m=anchor.display_alt_m,
-            surface_distance_m=0.0,
-            azimuth_deg=None,
-            generation_kind="self",
-            min_clearance_m=anchor.display_alt_m - prepared_points[anchor_index].ground_alt_m,
-            line_tolerance_m=line_tolerance_m,
-        )
-        anchor_candidates.append(self_candidate)
-
-        for azimuth_deg in _iter_azimuths(azimuth_step_deg):
-            for surface_distance_m in _iter_endpoint_distances(endpoint_step_m, max_segment_length_m):
-                endpoint_lon, endpoint_lat, _ = WGS84.fwd(
-                    anchor.lon, anchor.lat, azimuth_deg, surface_distance_m
-                )
-                try:
-                    endpoint_ground_alt_m = provider.sample_ground_m(endpoint_lon, endpoint_lat)
-                except ValueError:
-                    continue
-
-                endpoint_display_alt_m = endpoint_ground_alt_m + endpoint_height_m
-                endpoint_xyz = geodetic_to_ecef(
-                    endpoint_lon,
-                    endpoint_lat,
-                    endpoint_display_alt_m,
-                )
-                los_check = chord_los_clear(
-                    anchor.ecef,
-                    endpoint_xyz,
-                    provider,
-                    sample_step_m=sample_step_m,
-                    start_ground_m=prepared_points[anchor_index].ground_alt_m,
-                    end_ground_m=endpoint_ground_alt_m,
-                )
-                if not los_check.visible:
-                    continue
-
-                candidate = _build_candidate(
-                    candidate_id=f"{anchor.point_id}__seg_{sequence:04d}",
-                    anchor_index=anchor_index,
-                    anchor=anchor,
-                    cover_points=cover_points,
-                    visible_point_mask=visible_mask,
-                    endpoint_lon=endpoint_lon,
-                    endpoint_lat=endpoint_lat,
-                    endpoint_ground_alt_m=endpoint_ground_alt_m,
-                    endpoint_display_alt_m=endpoint_display_alt_m,
-                    surface_distance_m=surface_distance_m,
-                    azimuth_deg=azimuth_deg,
-                    generation_kind="radial",
-                    min_clearance_m=los_check.min_clearance_m,
-                    line_tolerance_m=line_tolerance_m,
-                )
-                sequence += 1
-                if candidate.coverage_count > 0:
-                    anchor_candidates.append(candidate)
-
-        raw_candidate_count += len(anchor_candidates)
-        deduped = deduplicate_anchor_candidates(anchor_candidates, anchor_index=anchor_index)
-        for candidate in deduped:
+            candidate = _build_candidate(
+                candidate_id=f"{anchor.point_id}__{endpoint.point_id}",
+                anchor_index=anchor_index,
+                anchor=anchor,
+                cover_points=pair_points,
+                endpoint_index=endpoint_index,
+                endpoint=endpoint,
+                endpoint_lon=endpoint.lon,
+                endpoint_lat=endpoint.lat,
+                endpoint_ground_alt_m=prepared_points[endpoint_index].ground_alt_m,
+                endpoint_display_alt_m=endpoint.display_alt_m,
+                surface_distance_m=float(surface_distance_m),
+                generation_kind="pair",
+                min_clearance_m=los_check.min_clearance_m,
+                line_tolerance_m=line_tolerance_m,
+            )
+            if candidate.coverage_count < 2:
+                continue
+            raw_pair_candidates.append(candidate)
             reachable_mask |= candidate.coverage_mask
-        all_candidates.extend(deduped)
 
-    return all_candidates, CandidateBuildStats(
-        raw_candidate_count=raw_candidate_count,
-        deduped_candidate_count=len(all_candidates),
+    family_candidates = deduplicate_family_candidates(raw_pair_candidates)
+    meaningful_family_count = sum(1 for candidate in family_candidates if candidate.is_meaningful)
+
+    return raw_pair_candidates, family_candidates, CandidateBuildStats(
+        raw_pair_count=len(raw_pair_candidates),
+        deduped_family_count=len(family_candidates),
+        meaningful_family_count=meaningful_family_count,
         reachable_mask=reachable_mask,
-        anchor_visible_masks=anchor_visible_masks,
     )
 
 
@@ -888,6 +818,9 @@ def rank_selected_candidates(
                 "rank": rank,
                 "candidate_id": best_candidate.candidate_id,
                 "anchor_id": best_candidate.anchor_id,
+                "endpoint_id": best_candidate.endpoint_id,
+                "coverage_count": best_candidate.coverage_count,
+                "meaningful": 1 if best_candidate.is_meaningful else 0,
                 "newly_covered_count": newly_covered_mask.bit_count(),
                 "total_covered_count": target_mask.bit_count() - uncovered_mask.bit_count(),
                 "remaining_uncovered_count": uncovered_mask.bit_count(),
@@ -1004,9 +937,14 @@ def _rounded_xyz(lon: float, lat: float, z: float) -> list[float]:
     return [round(lon, 9), round(lat, 9), round(z, 3)]
 
 
+def _coverage_point_ids(candidate: CandidateSegment, points: list[PreparedPoint]) -> list[str]:
+    return _mask_to_point_ids(candidate.coverage_mask, points)
+
+
 def _candidate_summary_rows(
     candidates: list[CandidateSegment],
     *,
+    points: list[PreparedPoint],
     selected_ids: set[str],
     exact_pool_ids: set[str],
 ) -> list[dict[str, Any]]:
@@ -1016,14 +954,15 @@ def _candidate_summary_rows(
             {
                 "candidate_id": candidate.candidate_id,
                 "anchor_id": candidate.anchor_id,
+                "endpoint_id": candidate.endpoint_id,
                 "generation_kind": candidate.generation_kind,
-                "azimuth_deg": None if candidate.azimuth_deg is None else round(candidate.azimuth_deg, 6),
                 "surface_distance_m": round(candidate.surface_distance_m, 6),
                 "segment_length_m": round(candidate.segment_length_m, 6),
                 "coverage_count": candidate.coverage_count,
-                "visible_point_count": candidate.visible_point_mask.bit_count(),
+                "meaningful": 1 if candidate.is_meaningful else 0,
                 "residual_sum_m": round(candidate.residual_sum_m, 6),
                 "residual_mean_m": round(candidate.residual_mean_m, 6),
+                "covered_point_ids": "|".join(_coverage_point_ids(candidate, points)),
                 "selected": 1 if candidate.candidate_id in selected_ids else 0,
                 "in_exact_pool": 1 if candidate.candidate_id in exact_pool_ids else 0,
                 "min_clearance_m": (
@@ -1036,12 +975,18 @@ def _candidate_summary_rows(
     return rows
 
 
-def _selected_segment_features(
-    selected_candidates: list[CandidateSegment],
-    rank_by_candidate_id: dict[str, int],
+def _candidate_line_features(
+    candidates: list[CandidateSegment],
+    *,
+    points: list[PreparedPoint],
+    selected_ids: Optional[set[str]] = None,
+    rank_by_candidate_id: Optional[dict[str, int]] = None,
 ) -> list[dict[str, Any]]:
     features: list[dict[str, Any]] = []
-    for candidate in selected_candidates:
+    selected_ids = selected_ids or set()
+    rank_by_candidate_id = rank_by_candidate_id or {}
+
+    for candidate in candidates:
         features.append(
             _feature(
                 {
@@ -1062,12 +1007,17 @@ def _selected_segment_features(
                 {
                     "candidate_id": candidate.candidate_id,
                     "anchor_id": candidate.anchor_id,
+                    "endpoint_id": candidate.endpoint_id,
+                    "selected": 1 if candidate.candidate_id in selected_ids else 0,
                     "selected_rank": rank_by_candidate_id.get(candidate.candidate_id, 0),
                     "coverage_count": candidate.coverage_count,
+                    "meaningful": 1 if candidate.is_meaningful else 0,
                     "segment_length_m": round(candidate.segment_length_m, 6),
                     "surface_distance_m": round(candidate.surface_distance_m, 6),
                     "residual_sum_m": round(candidate.residual_sum_m, 6),
+                    "residual_mean_m": round(candidate.residual_mean_m, 6),
                     "generation_kind": candidate.generation_kind,
+                    "covered_point_ids": "|".join(_coverage_point_ids(candidate, points)),
                 },
             )
         )
@@ -1110,6 +1060,7 @@ def _build_point_status_rows(
             covered = True
             assigned_candidate_id = candidate.candidate_id
             assigned_anchor_id = candidate.anchor_id
+            assigned_endpoint_id = candidate.endpoint_id
             offset_features.append(
                 _feature(
                     {
@@ -1123,6 +1074,7 @@ def _build_point_status_rows(
                         "point_id": prepared.point_id,
                         "candidate_id": candidate.candidate_id,
                         "anchor_id": candidate.anchor_id,
+                        "endpoint_id": candidate.endpoint_id,
                         "residual_distance_m": round(residual_distance_m, 6),
                     },
                 )
@@ -1136,6 +1088,7 @@ def _build_point_status_rows(
             covered = False
             assigned_candidate_id = None
             assigned_anchor_id = None
+            assigned_endpoint_id = None
 
         rows.append(
             {
@@ -1144,6 +1097,7 @@ def _build_point_status_rows(
                 "covered": 1 if covered else 0,
                 "assigned_candidate_id": assigned_candidate_id,
                 "assigned_anchor_id": assigned_anchor_id,
+                "assigned_endpoint_id": assigned_endpoint_id,
                 "residual_distance_m": None if residual_distance_m is None else round(residual_distance_m, 6),
                 "point_lat": round(display_point.lat, 9),
                 "point_lon": round(display_point.lon, 9),
@@ -1171,7 +1125,7 @@ def run_los_cover(
     lat_field: Optional[str] = None,
     lon_field: Optional[str] = None,
     alt_field: Optional[str] = None,
-    max_segment_length_m: float,
+    max_segment_length_m: Optional[float],
     line_tolerance_m: float = 5.0,
     anchor_height_m: float = 2.0,
     point_height_m: float = 2.0,
@@ -1193,20 +1147,16 @@ def run_los_cover(
     provider = create_elevation_provider(resolved_dem_path, repo_root)
     prepared_points = prepare_points(dataset, provider)
     display_points = resolve_points(prepared_points, offset_m=point_height_m)
-    candidates, candidate_stats = generate_candidates(
+    raw_pair_candidates, family_candidates, candidate_stats = generate_candidates(
         prepared_points,
         provider,
-        anchor_height_m=anchor_height_m,
         point_height_m=point_height_m,
-        endpoint_height_m=endpoint_height_m,
         max_segment_length_m=max_segment_length_m,
         line_tolerance_m=line_tolerance_m,
-        azimuth_step_deg=azimuth_step_deg,
-        endpoint_step_m=endpoint_step_m,
         sample_step_m=sample_step_m,
     )
     selection = solve_candidate_cover(
-        candidates,
+        family_candidates,
         len(prepared_points),
         solver=solver,
         reachable_mask=candidate_stats.reachable_mask,
@@ -1227,56 +1177,95 @@ def run_los_cover(
         target_mask=selection.reachable_mask,
     )
     rank_by_candidate_id = {str(row["candidate_id"]): int(row["rank"]) for row in selected_rows}
-    selected_features = _selected_segment_features(selected_candidates, rank_by_candidate_id)
-    candidate_summary_rows = _candidate_summary_rows(
-        candidates,
+    pair_summary_rows = _candidate_summary_rows(
+        raw_pair_candidates,
         selected_ids=selected_ids,
         exact_pool_ids=selection.exact_pool_ids,
+        points=prepared_points,
+    )
+    candidate_summary_rows = _candidate_summary_rows(
+        family_candidates,
+        selected_ids=selected_ids,
+        exact_pool_ids=selection.exact_pool_ids,
+        points=prepared_points,
+    )
+    pair_features = _candidate_line_features(raw_pair_candidates, points=prepared_points, selected_ids=selected_ids)
+    meaningful_candidates = [candidate for candidate in family_candidates if candidate.is_meaningful]
+    meaningful_features = _candidate_line_features(
+        meaningful_candidates,
+        points=prepared_points,
+        selected_ids=selected_ids,
+        rank_by_candidate_id=rank_by_candidate_id,
+    )
+    selected_features = _candidate_line_features(
+        selected_candidates,
+        points=prepared_points,
+        selected_ids=selected_ids,
+        rank_by_candidate_id=rank_by_candidate_id,
     )
 
     output_root = Path(output_dir)
     output_root.mkdir(parents=True, exist_ok=True)
+    pair_segments_path = output_root / "pair_segments.geojson"
+    meaningful_lines_path = output_root / "meaningful_lines.geojson"
     selected_segments_path = output_root / "selected_segments.geojson"
     point_status_path = output_root / "point_status.csv"
+    pair_summary_path = output_root / "pair_summary.csv"
     candidate_summary_path = output_root / "candidate_summary.csv"
     selected_rows_path = output_root / "selected_rows.csv"
     coverage_offsets_path = output_root / "coverage_offsets.geojson"
     manifest_path = output_root / "manifest.json"
     readme_path = output_root / "README.md"
 
+    write_geojson(pair_segments_path, pair_features)
+    write_geojson(meaningful_lines_path, meaningful_features)
     write_geojson(selected_segments_path, selected_features)
     write_geojson(coverage_offsets_path, coverage_offset_features)
     write_rows(point_status_path, point_status_rows, "csv")
+    write_rows(pair_summary_path, pair_summary_rows, "csv")
     write_rows(candidate_summary_path, candidate_summary_rows, "csv")
     write_rows(selected_rows_path, selected_rows, "csv")
 
     reachable_ids = _mask_to_point_ids(selection.reachable_mask, prepared_points)
     uncovered_ids = [row["point_id"] for row in point_status_rows if not row["covered"]]
     covered_ids = [row["point_id"] for row in point_status_rows if row["covered"]]
+    meaningful_ids = [
+        candidate.candidate_id for candidate in selected_candidates if candidate.is_meaningful
+    ]
     manifest = {
         "solver_version": LOS_SOLVER_VERSION,
         "input_path": str(dataset.path),
         "dem_path": str(resolved_dem_path),
         "output_dir": str(output_root.resolve()),
         "point_count": len(prepared_points),
-        "candidate_count": len(candidates),
-        "raw_candidate_count": candidate_stats.raw_candidate_count,
+        "pair_segment_count": len(raw_pair_candidates),
+        "line_family_count": len(family_candidates),
+        "meaningful_line_count": len(meaningful_candidates),
         "reachable_point_count": len(reachable_ids),
         "covered_point_count": len(covered_ids),
         "selected_segment_count": len(selected_candidates),
+        "selected_meaningful_line_count": len(meaningful_ids),
         "uncovered_point_ids": uncovered_ids,
         "reachable_point_ids": reachable_ids,
         "selected_candidate_ids": [candidate.candidate_id for candidate in selected_candidates],
+        "selected_meaningful_line_ids": meaningful_ids,
         "config": {
             "line_tolerance_m": line_tolerance_m,
-            "anchor_height_m": anchor_height_m,
             "point_height_m": point_height_m,
-            "endpoint_height_m": endpoint_height_m,
             "max_segment_length_m": max_segment_length_m,
-            "azimuth_step_deg": azimuth_step_deg,
-            "endpoint_step_m": endpoint_step_m,
             "sample_step_m": sample_step_m,
             "solver": solver,
+            "legacy_unused_options": {
+                "anchor_height_m": anchor_height_m,
+                "endpoint_height_m": endpoint_height_m,
+                "azimuth_step_deg": azimuth_step_deg,
+                "endpoint_step_m": endpoint_step_m,
+            },
+        },
+        "candidate_stats": {
+            "raw_pair_count": candidate_stats.raw_pair_count,
+            "deduped_family_count": candidate_stats.deduped_family_count,
+            "meaningful_family_count": candidate_stats.meaningful_family_count,
         },
         "selection": {
             "stage": selection.stage,
@@ -1284,8 +1273,11 @@ def run_los_cover(
             "exact_pool_count": len(selection.exact_pool_ids),
         },
         "files": {
+            "pair_segments": str(pair_segments_path),
+            "meaningful_lines": str(meaningful_lines_path),
             "selected_segments": str(selected_segments_path),
             "point_status": str(point_status_path),
+            "pair_summary": str(pair_summary_path),
             "candidate_summary": str(candidate_summary_path),
             "selected_rows": str(selected_rows_path),
             "coverage_offsets": str(coverage_offsets_path),
@@ -1302,15 +1294,21 @@ def run_los_cover(
                 "",
                 f"- Input dataset: `{dataset.path}`",
                 f"- DEM: `{resolved_dem_path}`",
-                f"- Selected segments: `{len(selected_candidates)}`",
+                f"- LOS-valid point pairs: `{len(raw_pair_candidates)}`",
+                f"- Deduped line families: `{len(family_candidates)}`",
+                f"- Meaningful 3+ point lines: `{len(meaningful_candidates)}`",
+                f"- Selected lines: `{len(selected_candidates)}`",
                 f"- Reachable points: `{len(reachable_ids)}`",
                 f"- Covered points: `{len(covered_ids)}`",
                 "",
                 "Files:",
                 "- `manifest.json`: run summary and configuration",
-                "- `selected_segments.geojson`: selected LOS segments as `LineStringZ`",
+                "- `pair_segments.geojson`: all LOS-valid point-to-point pair segments",
+                "- `meaningful_lines.geojson`: deduped 3+ point line families",
+                "- `selected_segments.geojson`: selected line-family representatives as `LineStringZ`",
                 "- `point_status.csv`: per-point coverage and assignment",
-                "- `candidate_summary.csv`: candidate inventory and solver participation",
+                "- `pair_summary.csv`: every LOS-valid pair and the points near its segment",
+                "- `candidate_summary.csv`: deduped line-family inventory and solver participation",
                 "- `selected_rows.csv`: selected-segment ranking summary",
                 "- `coverage_offsets.geojson`: point-to-segment residual lines",
                 "",

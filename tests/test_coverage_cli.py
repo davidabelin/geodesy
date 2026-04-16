@@ -284,14 +284,25 @@ def test_los_cover_writes_solver_artifacts(tmp_path: Path) -> None:
     candidate_rows = list(
         csv.DictReader((output_dir / "candidate_summary.csv").open("r", encoding="utf-8", newline=""))
     )
+    pair_rows = list(
+        csv.DictReader((output_dir / "pair_summary.csv").open("r", encoding="utf-8", newline=""))
+    )
 
     assert manifest["point_count"] == 17
+    assert manifest["pair_segment_count"] >= 1
+    assert manifest["line_family_count"] >= 1
+    assert manifest["meaningful_line_count"] >= 0
+    assert manifest["selected_meaningful_line_count"] >= 0
+    assert (output_dir / "pair_segments.geojson").exists()
+    assert (output_dir / "meaningful_lines.geojson").exists()
     assert (output_dir / "selected_segments.geojson").exists()
     assert (output_dir / "coverage_offsets.geojson").exists()
     assert (output_dir / "README.md").exists()
     assert len(point_status_rows) == 17
     assert len(candidate_rows) >= manifest["selected_segment_count"]
+    assert len(pair_rows) >= len(candidate_rows)
     assert {"covered", "reachable", "assigned_candidate_id"}.issubset(point_status_rows[0].keys())
+    assert all(not candidate_id.endswith("__self") for candidate_id in manifest["selected_candidate_ids"])
 
 
 @pytest.mark.skipif(not QGIS_PYTHON.exists(), reason="QGIS python runtime not installed")
@@ -319,3 +330,7 @@ def test_los_project_writes_geopackage_and_project(tmp_path: Path) -> None:
     assert (output_dir / "los_segment_cover.gpkg").exists()
     assert (output_dir / "los_segment_cover.qgs").exists()
     assert (output_dir / "README.md").exists()
+    project_text = (output_dir / "los_segment_cover.qgs").read_text(encoding="utf-8")
+    assert "pair_segments_z" in project_text
+    assert "meaningful_lines_z" in project_text
+    assert "selected_lines_z" in project_text

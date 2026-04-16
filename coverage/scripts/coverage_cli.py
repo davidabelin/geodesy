@@ -193,7 +193,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--max-segment-length",
         required=True,
         type=float,
-        help="Maximum surface distance in meters for generated free endpoints.",
+        help="Maximum surface distance in meters for LOS-valid point-to-point candidate segments.",
     )
     los_cover.add_argument("--line-tolerance-m", type=float, default=5.0)
     los_cover.add_argument("--anchor-height-m", type=float, default=2.0)
@@ -399,7 +399,9 @@ def _los_cover_command(args: argparse.Namespace, argv: list[str]) -> int:
         solver=args.solver,
     )
     print(f"LOS cover output: {manifest['output_dir']}")
-    print(f"Selected segments: {manifest['selected_segment_count']}")
+    print(f"LOS-valid point pairs: {manifest['pair_segment_count']}")
+    print(f"Meaningful 3+ point lines: {manifest['meaningful_line_count']}")
+    print(f"Selected lines: {manifest['selected_segment_count']}")
     print(f"Covered points: {manifest['covered_point_count']} / {manifest['point_count']}")
     print(f"Exact refinement: {manifest['selection']['exact_status']}")
     print(f"Selected segments file: {manifest['files']['selected_segments']}")

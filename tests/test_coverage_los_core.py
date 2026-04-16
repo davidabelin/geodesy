@@ -14,7 +14,7 @@ from coverage_core import Dataset, PointRecord
 from coverage_los_core import (
     CandidateSegment,
     chord_waypoint,
-    deduplicate_anchor_candidates,
+    deduplicate_family_candidates,
     geodesic_linear_waypoint,
     point_to_segment_distance_m,
     prepare_points,
@@ -126,15 +126,17 @@ def test_prepare_points_uses_dem_when_altitude_missing() -> None:
     assert resolved[1].display_alt_m == 44.0
 
 
-def test_deduplicate_anchor_candidates_keeps_shortest_for_same_mask() -> None:
+def test_deduplicate_family_candidates_keeps_best_representative_for_same_mask() -> None:
     candidates = [
-        _candidate("short", 0b111, anchor_index=0, segment_length_m=10.0),
-        _candidate("long", 0b111, anchor_index=0, segment_length_m=20.0),
-        _candidate("self", 0b001, anchor_index=0, segment_length_m=0.0),
+        _candidate("short", 0b111, anchor_index=0, anchor_id="A", segment_length_m=10.0),
+        _candidate("long", 0b111, anchor_index=1, anchor_id="B", segment_length_m=20.0),
+        _candidate("pair_only", 0b011, anchor_index=0, anchor_id="A", segment_length_m=9.0),
+        _candidate("singleton", 0b001, anchor_index=0, anchor_id="A", segment_length_m=0.0),
     ]
 
-    deduped = deduplicate_anchor_candidates(candidates, anchor_index=0)
-    assert [candidate.candidate_id for candidate in deduped] == ["short"]
+    deduped = deduplicate_family_candidates(candidates)
+    assert [candidate.candidate_id for candidate in deduped] == ["pair_only", "short"]
+    assert all(candidate.generation_kind == "pair-family" for candidate in deduped)
 
 
 def test_solver_handles_single_segment_cover() -> None:

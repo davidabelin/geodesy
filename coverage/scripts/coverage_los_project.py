@@ -123,7 +123,9 @@ def write_geopackage(
     output_path: Path,
     *,
     point_rows: list[dict[str, Any]],
-    selected_segment_features: list[dict[str, Any]],
+    pair_segment_features: list[dict[str, Any]],
+    meaningful_line_features: list[dict[str, Any]],
+    selected_line_features: list[dict[str, Any]],
     coverage_offset_features: list[dict[str, Any]],
 ) -> Path:
     _delete_existing(output_path)
@@ -142,6 +144,7 @@ def write_geopackage(
             ("covered", "int"),
             ("assigned_candidate_id", "string"),
             ("assigned_anchor_id", "string"),
+            ("assigned_endpoint_id", "string"),
             ("residual_m", "float"),
             ("ground_m", "float"),
             ("absolute_m", "float"),
@@ -168,6 +171,7 @@ def write_geopackage(
                 "covered": _coerce_bool(row.get("covered")),
                 "assigned_candidate_id": row.get("assigned_candidate_id"),
                 "assigned_anchor_id": row.get("assigned_anchor_id"),
+                "assigned_endpoint_id": row.get("assigned_endpoint_id"),
                 "residual_m": _coerce_float(row.get("residual_distance_m")),
                 "ground_m": _coerce_float(row.get("ground_alt_m")),
                 "absolute_m": _coerce_float(row.get("absolute_alt_m")),
@@ -177,99 +181,51 @@ def write_geopackage(
         )
         points_layer.CreateFeature(feature)
 
-    segments_layer = _create_layer(
-        dataset,
-        "selected_segments_z",
-        ogr.wkbLineString25D,
-        [
-            ("candidate_id", "string"),
-            ("anchor_id", "string"),
-            ("selected_rank", "int"),
-            ("cover_count", "int"),
-            ("segment_m", "float"),
-            ("surface_m", "float"),
-            ("residual_m", "float"),
-            ("kind", "string"),
-        ],
-    )
-    anchors_seen: dict[str, dict[str, Any]] = {}
-    free_endpoint_rows: list[dict[str, Any]] = []
-    for feature_data in selected_segment_features:
-        props = feature_data["properties"]
-        coords = feature_data["geometry"]["coordinates"]
+    line_layer_fields = [
+        ("candidate_id", "string"),
+        ("anchor_id", "string"),
+        ("endpoint_id", "string"),
+        ("selected", "int"),
+        ("selected_rank", "int"),
+        ("cover_count", "int"),
+        ("meaningful", "int"),
+        ("segment_m", "float"),
+        ("surface_m", "float"),
+        ("residual_m", "float"),
+        ("residual_mean", "float"),
+        ("kind", "string"),
+        ("covered_ids", "string"),
+    ]
 
-        feature = ogr.Feature(segments_layer.GetLayerDefn())
-        feature.SetGeometry(_line_geometry(coords))
-        _set_fields(
-            feature,
-            {
-                "candidate_id": props.get("candidate_id"),
-                "anchor_id": props.get("anchor_id"),
-                "selected_rank": int(props.get("selected_rank", 0)),
-                "cover_count": int(props.get("coverage_count", 0)),
-                "segment_m": float(props.get("segment_length_m", 0.0)),
-                "surface_m": float(props.get("surface_distance_m", 0.0)),
-                "residual_m": float(props.get("residual_sum_m", 0.0)),
-                "kind": props.get("generation_kind"),
-            },
-        )
-        segments_layer.CreateFeature(feature)
+    def _write_line_layer(layer_name: str, features: list[dict[str, Any]]) -> None:
+        layer = _create_layer(dataset, layer_name, ogr.wkbLineString25D, line_layer_fields)
+        for feature_data in features:
+            props = feature_data["properties"]
+            feature = ogr.Feature(layer.GetLayerDefn())
+            feature.SetGeometry(_line_geometry(feature_data["geometry"]["coordinates"]))
+            _set_fields(
+                feature,
+                {
+                    "candidate_id": props.get("candidate_id"),
+                    "anchor_id": props.get("anchor_id"),
+                    "endpoint_id": props.get("endpoint_id"),
+                    "selected": int(props.get("selected", 0)),
+                    "selected_rank": int(props.get("selected_rank", 0)),
+                    "cover_count": int(props.get("coverage_count", 0)),
+                    "meaningful": int(props.get("meaningful", 0)),
+                    "segment_m": float(props.get("segment_length_m", 0.0)),
+                    "surface_m": float(props.get("surface_distance_m", 0.0)),
+                    "residual_m": float(props.get("residual_sum_m", 0.0)),
+                    "residual_mean": float(props.get("residual_mean_m", 0.0)),
+                    "kind": props.get("generation_kind"),
+                    "covered_ids": props.get("covered_point_ids"),
+                },
+            )
+            layer.CreateFeature(feature)
 
-        anchor_id = str(props.get("anchor_id"))
-        anchors_seen.setdefault(
-            anchor_id,
-            {
-                "anchor_id": anchor_id,
-                "coords": coords[0],
-                "selected_segment_count": 0,
-            },
-        )
-        anchors_seen[anchor_id]["selected_segment_count"] += 1
-        free_endpoint_rows.append(
-            {
-                "candidate_id": str(props.get("candidate_id")),
-                "anchor_id": anchor_id,
-                "coords": coords[-1],
-                "surface_m": float(props.get("surface_distance_m", 0.0)),
-            }
-        )
-
-    anchors_layer = _create_layer(
-        dataset,
-        "selected_anchors_z",
-        ogr.wkbPoint25D,
-        [("anchor_id", "string"), ("segment_count", "int")],
-    )
-    for anchor_data in anchors_seen.values():
-        feature = ogr.Feature(anchors_layer.GetLayerDefn())
-        feature.SetGeometry(_point_geometry(anchor_data["coords"]))
-        _set_fields(
-            feature,
-            {
-                "anchor_id": anchor_data["anchor_id"],
-                "segment_count": int(anchor_data["selected_segment_count"]),
-            },
-        )
-        anchors_layer.CreateFeature(feature)
-
-    endpoints_layer = _create_layer(
-        dataset,
-        "free_endpoints_z",
-        ogr.wkbPoint25D,
-        [("candidate_id", "string"), ("anchor_id", "string"), ("surface_m", "float")],
-    )
-    for endpoint_data in free_endpoint_rows:
-        feature = ogr.Feature(endpoints_layer.GetLayerDefn())
-        feature.SetGeometry(_point_geometry(endpoint_data["coords"]))
-        _set_fields(
-            feature,
-            {
-                "candidate_id": endpoint_data["candidate_id"],
-                "anchor_id": endpoint_data["anchor_id"],
-                "surface_m": float(endpoint_data["surface_m"]),
-            },
-        )
-        endpoints_layer.CreateFeature(feature)
+    _write_line_layer("pair_segments_z", pair_segment_features)
+    _write_line_layer("meaningful_lines_z", meaningful_line_features)
+    _write_line_layer("selected_lines_z", selected_line_features)
 
     offsets_layer = _create_layer(
         dataset,
@@ -279,6 +235,7 @@ def write_geopackage(
             ("point_id", "string"),
             ("candidate_id", "string"),
             ("anchor_id", "string"),
+            ("endpoint_id", "string"),
             ("residual_m", "float"),
         ],
     )
@@ -292,6 +249,7 @@ def write_geopackage(
                 "point_id": props.get("point_id"),
                 "candidate_id": props.get("candidate_id"),
                 "anchor_id": props.get("anchor_id"),
+                "endpoint_id": props.get("endpoint_id"),
                 "residual_m": float(props.get("residual_distance_m", 0.0)),
             },
         )
@@ -326,21 +284,17 @@ def _style_points(layer: QgsVectorLayer) -> None:
 
 
 def _style_segments(layer: QgsVectorLayer) -> None:
-    symbol = QgsLineSymbol.createSimple({"line_color": "255,183,3,220", "line_width": "0.9"})
+    symbol = QgsLineSymbol.createSimple({"line_color": "255,183,3,220", "line_width": "1.0"})
     layer.setRenderer(QgsSingleSymbolRenderer(symbol))
 
 
-def _style_anchors(layer: QgsVectorLayer) -> None:
-    symbol = QgsMarkerSymbol.createSimple(
-        {"name": "square", "color": "255,183,3,250", "outline_color": "48,48,48,220", "size": "4.0"}
-    )
+def _style_pair_segments(layer: QgsVectorLayer) -> None:
+    symbol = QgsLineSymbol.createSimple({"line_color": "150,150,150,150", "line_width": "0.35"})
     layer.setRenderer(QgsSingleSymbolRenderer(symbol))
 
 
-def _style_endpoints(layer: QgsVectorLayer) -> None:
-    symbol = QgsMarkerSymbol.createSimple(
-        {"name": "triangle", "color": "66,133,244,240", "outline_color": "32,32,32,200", "size": "3.6"}
-    )
+def _style_meaningful_lines(layer: QgsVectorLayer) -> None:
+    symbol = QgsLineSymbol.createSimple({"line_color": "230,126,34,220", "line_width": "0.8"})
     layer.setRenderer(QgsSingleSymbolRenderer(symbol))
 
 
@@ -374,17 +328,17 @@ def write_qgis_project(
 
         layers = {
             "points_z": _load_layer(f"{gpkg_path}|layername=points_z", "points_z"),
-            "selected_segments_z": _load_layer(
-                f"{gpkg_path}|layername=selected_segments_z",
-                "selected_segments_z",
+            "pair_segments_z": _load_layer(
+                f"{gpkg_path}|layername=pair_segments_z",
+                "pair_segments_z",
             ),
-            "selected_anchors_z": _load_layer(
-                f"{gpkg_path}|layername=selected_anchors_z",
-                "selected_anchors_z",
+            "meaningful_lines_z": _load_layer(
+                f"{gpkg_path}|layername=meaningful_lines_z",
+                "meaningful_lines_z",
             ),
-            "free_endpoints_z": _load_layer(
-                f"{gpkg_path}|layername=free_endpoints_z",
-                "free_endpoints_z",
+            "selected_lines_z": _load_layer(
+                f"{gpkg_path}|layername=selected_lines_z",
+                "selected_lines_z",
             ),
             "coverage_offsets_z": _load_layer(
                 f"{gpkg_path}|layername=coverage_offsets_z",
@@ -393,9 +347,9 @@ def write_qgis_project(
         }
 
         _style_points(layers["points_z"])
-        _style_segments(layers["selected_segments_z"])
-        _style_anchors(layers["selected_anchors_z"])
-        _style_endpoints(layers["free_endpoints_z"])
+        _style_pair_segments(layers["pair_segments_z"])
+        _style_meaningful_lines(layers["meaningful_lines_z"])
+        _style_segments(layers["selected_lines_z"])
         _style_offsets(layers["coverage_offsets_z"])
 
         root = project.layerTreeRoot()
@@ -404,9 +358,9 @@ def write_qgis_project(
 
         for name in [
             "coverage_offsets_z",
-            "free_endpoints_z",
-            "selected_anchors_z",
-            "selected_segments_z",
+            "pair_segments_z",
+            "meaningful_lines_z",
+            "selected_lines_z",
             "points_z",
         ]:
             layer = layers[name]
@@ -415,6 +369,7 @@ def write_qgis_project(
 
         root.findLayer(dem_layer.id()).setItemVisibilityChecked(False)
         root.findLayer(layers["coverage_offsets_z"].id()).setItemVisibilityChecked(False)
+        root.findLayer(layers["pair_segments_z"].id()).setItemVisibilityChecked(False)
         project.setCrs(layers["points_z"].crs())
         project.write(str(project_path))
         return project_path
@@ -444,9 +399,9 @@ def write_readme(path: Path, *, project_path: Path, gpkg_path: Path, dem_path: P
                 "",
                 "Layer notes:",
                 "- `points_z`: input points with covered/uncovered status",
-                "- `selected_segments_z`: chosen LOS segments",
-                "- `selected_anchors_z`: anchors used by the selected segments",
-                "- `free_endpoints_z`: sampled free endpoints for the selected segments",
+                "- `pair_segments_z`: all LOS-valid point-to-point segments",
+                "- `meaningful_lines_z`: deduped 3+ point line families",
+                "- `selected_lines_z`: line families chosen by the solver",
                 "- `coverage_offsets_z`: residual point-to-segment offsets",
             ]
         ),
@@ -460,11 +415,15 @@ def run_project_export(args: argparse.Namespace) -> int:
     output_dir = Path(args.output_dir).resolve() if args.output_dir else input_dir / "qgis_project"
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    pair_segments_path = Path(manifest["files"]["pair_segments"])
+    meaningful_lines_path = Path(manifest["files"]["meaningful_lines"])
     selected_segments_path = Path(manifest["files"]["selected_segments"])
     point_status_path = Path(manifest["files"]["point_status"])
     coverage_offsets_path = Path(manifest["files"]["coverage_offsets"])
     dem_path = Path(args.dem).resolve() if args.dem else Path(manifest["dem_path"])
 
+    pair_segments = _read_geojson_features(pair_segments_path)
+    meaningful_lines = _read_geojson_features(meaningful_lines_path)
     selected_segments = _read_geojson_features(selected_segments_path)
     coverage_offsets = _read_geojson_features(coverage_offsets_path)
     point_rows = _read_csv_rows(point_status_path)
@@ -476,7 +435,9 @@ def run_project_export(args: argparse.Namespace) -> int:
     write_geopackage(
         gpkg_path,
         point_rows=point_rows,
-        selected_segment_features=selected_segments,
+        pair_segment_features=pair_segments,
+        meaningful_line_features=meaningful_lines,
+        selected_line_features=selected_segments,
         coverage_offset_features=coverage_offsets,
     )
     write_qgis_project(project_path=project_path, gpkg_path=gpkg_path, dem_path=dem_path)

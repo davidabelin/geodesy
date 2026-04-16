@@ -1,0 +1,3 @@
+cvr.bat los-cover --input coverage\starterpnts.csv --dem data\tif\dc_dem.tif --max-segment-length 25000 --line-tolerance-m 15 --sample-step-m 10 --output-dir coverage\results\starter_los_pairwise_m25000_t15
+
+cvr.bat los-project --input-dir coverage\results\starter_los_pairwise_m25000_t15 --output-dir coverage\results\starter_los_pairwise_m25000_t15_qgis

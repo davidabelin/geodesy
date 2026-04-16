@@ -17,7 +17,7 @@ from coverage_core import (
     write_rows,
     write_qgis_bundle,
 )
-from coverage_los_core import has_gdal_backend, run_los_cover
+from coverage_los_core import has_gdal_backend, length_to_meters, run_los_cover
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -193,15 +193,35 @@ def build_parser() -> argparse.ArgumentParser:
         "--max-segment-length",
         required=True,
         type=float,
-        help="Maximum surface distance in meters for LOS-valid point-to-point candidate segments.",
+        help="Maximum surface distance for LOS-valid point-to-point candidate segments, in --unit.",
     )
-    los_cover.add_argument("--line-tolerance-m", type=float, default=5.0)
+    los_cover.add_argument(
+        "--unit",
+        choices=["meters", "m", "feet", "ft"],
+        default="meters",
+        help="Unit for --max-segment-length and unit-aware LOS args. Defaults to meters.",
+    )
+    los_cover.add_argument(
+        "--output-crs",
+        default="WGS84",
+        help="Output horizontal CRS: WGS84/EPSG:4326 or NAD83/EPSG:4269. Defaults to WGS84.",
+    )
+    los_cover.add_argument(
+        "--dem-unit",
+        choices=["meters", "m", "feet", "ft"],
+        default="meters",
+        help="Vertical unit of DEM cell values before internal conversion. Defaults to meters.",
+    )
+    los_cover.add_argument("--line-tolerance", type=float, default=None, help="Line-membership tolerance in --unit.")
+    los_cover.add_argument("--line-tolerance-m", type=float, default=None, help="Line-membership tolerance in meters.")
     los_cover.add_argument("--anchor-height-m", type=float, default=2.0)
-    los_cover.add_argument("--point-height-m", type=float, default=2.0)
+    los_cover.add_argument("--point-height", type=float, default=None, help="Point height offset in --unit.")
+    los_cover.add_argument("--point-height-m", type=float, default=None, help="Point height offset in meters.")
     los_cover.add_argument("--endpoint-height-m", type=float, default=2.0)
     los_cover.add_argument("--azimuth-step-deg", type=float, default=10.0)
     los_cover.add_argument("--endpoint-step-m", type=float, default=25.0)
-    los_cover.add_argument("--sample-step-m", type=float, default=10.0)
+    los_cover.add_argument("--sample-step", type=float, default=None, help="LOS terrain sampling step in --unit.")
+    los_cover.add_argument("--sample-step-m", type=float, default=None, help="LOS terrain sampling step in meters.")
     los_cover.add_argument("--solver", choices=["greedy", "hybrid"], default="hybrid")
 
     return parser
@@ -379,6 +399,24 @@ def _los_cover_command(args: argparse.Namespace, argv: list[str]) -> int:
     if not has_gdal_backend() and os.environ.get("COVERAGE_LOS_REEXEC") != "1":
         return _reexec_los_cover_under_qgis(argv)
 
+    line_tolerance_m = _resolve_unit_length(
+        unit_value=args.line_tolerance,
+        meter_value=args.line_tolerance_m,
+        default_m=5.0,
+        unit=args.unit,
+    )
+    point_height_m = _resolve_unit_length(
+        unit_value=args.point_height,
+        meter_value=args.point_height_m,
+        default_m=2.0,
+        unit=args.unit,
+    )
+    sample_step_m = _resolve_unit_length(
+        unit_value=args.sample_step,
+        meter_value=args.sample_step_m,
+        default_m=10.0,
+        unit=args.unit,
+    )
     manifest = run_los_cover(
         input_path=args.input,
         dem_path=args.dem,
@@ -388,17 +426,22 @@ def _los_cover_command(args: argparse.Namespace, argv: list[str]) -> int:
         lat_field=args.lat_field,
         lon_field=args.lon_field,
         alt_field=args.alt_field,
-        max_segment_length_m=args.max_segment_length,
-        line_tolerance_m=args.line_tolerance_m,
+        max_segment_length_m=length_to_meters(args.max_segment_length, args.unit),
+        line_tolerance_m=line_tolerance_m,
         anchor_height_m=args.anchor_height_m,
-        point_height_m=args.point_height_m,
+        point_height_m=point_height_m,
         endpoint_height_m=args.endpoint_height_m,
         azimuth_step_deg=args.azimuth_step_deg,
         endpoint_step_m=args.endpoint_step_m,
-        sample_step_m=args.sample_step_m,
+        sample_step_m=sample_step_m,
         solver=args.solver,
+        output_crs=args.output_crs,
+        output_unit=args.unit,
+        dem_unit=args.dem_unit,
     )
     print(f"LOS cover output: {manifest['output_dir']}")
+    print(f"Output CRS: {manifest['output_crs']}")
+    print(f"Output unit: {manifest['output_unit']}")
     print(f"LOS-valid point pairs: {manifest['pair_segment_count']}")
     print(f"Meaningful 3+ point lines: {manifest['meaningful_line_count']}")
     print(f"Selected lines: {manifest['selected_segment_count']}")
@@ -406,6 +449,20 @@ def _los_cover_command(args: argparse.Namespace, argv: list[str]) -> int:
     print(f"Exact refinement: {manifest['selection']['exact_status']}")
     print(f"Selected segments file: {manifest['files']['selected_segments']}")
     return 0
+
+
+def _resolve_unit_length(
+    *,
+    unit_value: float | None,
+    meter_value: float | None,
+    default_m: float,
+    unit: str,
+) -> float:
+    if meter_value is not None:
+        return float(meter_value)
+    if unit_value is not None:
+        return length_to_meters(unit_value, unit)
+    return float(default_m)
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -306,6 +306,47 @@ def test_los_cover_writes_solver_artifacts(tmp_path: Path) -> None:
 
 
 @pytest.mark.skipif(not QGIS_PYTHON.exists(), reason="QGIS python runtime not installed")
+def test_los_cover_supports_nad83_and_feet_output(tmp_path: Path) -> None:
+    output_dir = tmp_path / "los_cover_nad83_ft"
+    result = run_cli(
+        "los-cover",
+        "--input",
+        "data\\refpnts.csv",
+        "--dem",
+        "data\\tif\\dc_dem.tif",
+        "--max-segment-length",
+        "300",
+        "--unit",
+        "feet",
+        "--line-tolerance",
+        "15",
+        "--point-height",
+        "6",
+        "--sample-step",
+        "75",
+        "--output-crs",
+        "NAD83",
+        "--output-dir",
+        str(output_dir),
+    )
+
+    assert result.returncode == 0, result.stderr
+    manifest = json.loads((output_dir / "manifest.json").read_text(encoding="utf-8"))
+    candidate_rows = list(
+        csv.DictReader((output_dir / "candidate_summary.csv").open("r", encoding="utf-8", newline=""))
+    )
+    pair_geojson = json.loads((output_dir / "pair_segments.geojson").read_text(encoding="utf-8"))
+
+    assert manifest["output_crs"] == "EPSG:4269"
+    assert manifest["output_unit"] == "feet"
+    assert manifest["config"]["max_segment_length_ft"] == 300.0
+    assert manifest["config"]["line_tolerance_ft"] == 15.0
+    assert pair_geojson["crs"]["properties"]["name"] == "EPSG:4269"
+    assert "surface_distance_ft" in candidate_rows[0]
+    assert "surface_distance_m" in candidate_rows[0]
+
+
+@pytest.mark.skipif(not QGIS_PYTHON.exists(), reason="QGIS python runtime not installed")
 def test_los_project_writes_geopackage_and_project(tmp_path: Path) -> None:
     input_dir = run_los_cover(tmp_path)
     output_dir = tmp_path / "qgis_project"

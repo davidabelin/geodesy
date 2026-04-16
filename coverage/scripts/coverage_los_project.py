@@ -90,9 +90,11 @@ def _create_layer(
     name: str,
     geometry_type: int,
     fields: list[tuple[str, str]],
+    *,
+    epsg: int,
 ):
     spatial_ref = osr.SpatialReference()
-    spatial_ref.ImportFromEPSG(4326)
+    spatial_ref.ImportFromEPSG(int(epsg))
     layer = dataset.CreateLayer(name, srs=spatial_ref, geom_type=geometry_type)
     for field_name, field_kind in fields:
         layer.CreateField(ogr.FieldDefn(field_name, OGR_FIELD_TYPES[field_kind]))
@@ -127,6 +129,7 @@ def write_geopackage(
     meaningful_line_features: list[dict[str, Any]],
     selected_line_features: list[dict[str, Any]],
     coverage_offset_features: list[dict[str, Any]],
+    output_epsg: int = 4326,
 ) -> Path:
     _delete_existing(output_path)
     driver = ogr.GetDriverByName("GPKG")
@@ -146,11 +149,16 @@ def write_geopackage(
             ("assigned_anchor_id", "string"),
             ("assigned_endpoint_id", "string"),
             ("residual_m", "float"),
+            ("residual_ft", "float"),
             ("ground_m", "float"),
+            ("ground_ft", "float"),
             ("absolute_m", "float"),
+            ("absolute_ft", "float"),
             ("display_m", "float"),
+            ("display_ft", "float"),
             ("alt_source", "string"),
         ],
+        epsg=output_epsg,
     )
     for row in point_rows:
         feature = ogr.Feature(points_layer.GetLayerDefn())
@@ -173,9 +181,13 @@ def write_geopackage(
                 "assigned_anchor_id": row.get("assigned_anchor_id"),
                 "assigned_endpoint_id": row.get("assigned_endpoint_id"),
                 "residual_m": _coerce_float(row.get("residual_distance_m")),
+                "residual_ft": _coerce_float(row.get("residual_distance_ft")),
                 "ground_m": _coerce_float(row.get("ground_alt_m")),
+                "ground_ft": _coerce_float(row.get("ground_alt_ft")),
                 "absolute_m": _coerce_float(row.get("absolute_alt_m")),
+                "absolute_ft": _coerce_float(row.get("absolute_alt_ft")),
                 "display_m": _coerce_float(row.get("display_alt_m")),
+                "display_ft": _coerce_float(row.get("display_alt_ft")),
                 "alt_source": row.get("altitude_source"),
             },
         )
@@ -190,15 +202,25 @@ def write_geopackage(
         ("cover_count", "int"),
         ("meaningful", "int"),
         ("segment_m", "float"),
+        ("segment_ft", "float"),
         ("surface_m", "float"),
+        ("surface_ft", "float"),
         ("residual_m", "float"),
+        ("residual_ft", "float"),
         ("residual_mean", "float"),
+        ("residual_mean_ft", "float"),
         ("kind", "string"),
         ("covered_ids", "string"),
     ]
 
     def _write_line_layer(layer_name: str, features: list[dict[str, Any]]) -> None:
-        layer = _create_layer(dataset, layer_name, ogr.wkbLineString25D, line_layer_fields)
+        layer = _create_layer(
+            dataset,
+            layer_name,
+            ogr.wkbLineString25D,
+            line_layer_fields,
+            epsg=output_epsg,
+        )
         for feature_data in features:
             props = feature_data["properties"]
             feature = ogr.Feature(layer.GetLayerDefn())
@@ -214,9 +236,13 @@ def write_geopackage(
                     "cover_count": int(props.get("coverage_count", 0)),
                     "meaningful": int(props.get("meaningful", 0)),
                     "segment_m": float(props.get("segment_length_m", 0.0)),
+                    "segment_ft": _coerce_float(props.get("segment_length_ft")),
                     "surface_m": float(props.get("surface_distance_m", 0.0)),
+                    "surface_ft": _coerce_float(props.get("surface_distance_ft")),
                     "residual_m": float(props.get("residual_sum_m", 0.0)),
+                    "residual_ft": _coerce_float(props.get("residual_sum_ft")),
                     "residual_mean": float(props.get("residual_mean_m", 0.0)),
+                    "residual_mean_ft": _coerce_float(props.get("residual_mean_ft")),
                     "kind": props.get("generation_kind"),
                     "covered_ids": props.get("covered_point_ids"),
                 },
@@ -237,7 +263,9 @@ def write_geopackage(
             ("anchor_id", "string"),
             ("endpoint_id", "string"),
             ("residual_m", "float"),
+            ("residual_ft", "float"),
         ],
+        epsg=output_epsg,
     )
     for feature_data in coverage_offset_features:
         props = feature_data["properties"]
@@ -251,6 +279,7 @@ def write_geopackage(
                 "anchor_id": props.get("anchor_id"),
                 "endpoint_id": props.get("endpoint_id"),
                 "residual_m": float(props.get("residual_distance_m", 0.0)),
+                "residual_ft": _coerce_float(props.get("residual_distance_ft")),
             },
         )
         offsets_layer.CreateFeature(feature)
@@ -377,7 +406,16 @@ def write_qgis_project(
         shutdown_qgis_app(app, created)
 
 
-def write_readme(path: Path, *, project_path: Path, gpkg_path: Path, dem_path: Path) -> None:
+def write_readme(
+    path: Path,
+    *,
+    project_path: Path,
+    gpkg_path: Path,
+    dem_path: Path,
+    output_crs: str,
+    output_unit: str,
+    geometry_z_unit: str,
+) -> None:
     path.write_text(
         "\n".join(
             [
@@ -386,6 +424,9 @@ def write_readme(path: Path, *, project_path: Path, gpkg_path: Path, dem_path: P
                 f"- GeoPackage: `{gpkg_path}`",
                 f"- Project: `{project_path}`",
                 f"- DEM: `{dem_path}`",
+                f"- Layer CRS: `{output_crs}`",
+                f"- Report unit: `{output_unit}`",
+                f"- Geometry Z unit: `{geometry_z_unit}`",
                 "",
                 "Safe 3D recipe:",
                 "1. Open the generated `.qgs` project in QGIS 4.0.0.",
@@ -421,6 +462,10 @@ def run_project_export(args: argparse.Namespace) -> int:
     point_status_path = Path(manifest["files"]["point_status"])
     coverage_offsets_path = Path(manifest["files"]["coverage_offsets"])
     dem_path = Path(args.dem).resolve() if args.dem else Path(manifest["dem_path"])
+    output_epsg = int(manifest.get("output_epsg", 4326))
+    output_crs = str(manifest.get("output_crs", f"EPSG:{output_epsg}"))
+    output_unit = str(manifest.get("output_unit", "meters"))
+    geometry_z_unit = str(manifest.get("geometry_z_unit", "meters"))
 
     pair_segments = _read_geojson_features(pair_segments_path)
     meaningful_lines = _read_geojson_features(meaningful_lines_path)
@@ -439,9 +484,18 @@ def run_project_export(args: argparse.Namespace) -> int:
         meaningful_line_features=meaningful_lines,
         selected_line_features=selected_segments,
         coverage_offset_features=coverage_offsets,
+        output_epsg=output_epsg,
     )
     write_qgis_project(project_path=project_path, gpkg_path=gpkg_path, dem_path=dem_path)
-    write_readme(readme_path, project_path=project_path, gpkg_path=gpkg_path, dem_path=dem_path)
+    write_readme(
+        readme_path,
+        project_path=project_path,
+        gpkg_path=gpkg_path,
+        dem_path=dem_path,
+        output_crs=output_crs,
+        output_unit=output_unit,
+        geometry_z_unit=geometry_z_unit,
+    )
 
     print(f"QGIS project output: {output_dir}")
     print(f"GeoPackage: {gpkg_path}")

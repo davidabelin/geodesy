@@ -13,9 +13,12 @@ if str(SCRIPT_DIR) not in sys.path:
 from coverage_core import Dataset, PointRecord
 from coverage_los_core import (
     CandidateSegment,
+    build_output_settings,
     chord_waypoint,
     deduplicate_family_candidates,
     geodesic_linear_waypoint,
+    length_to_meters,
+    normalize_output_crs,
     point_to_segment_distance_m,
     prepare_points,
     resolve_points,
@@ -29,6 +32,19 @@ class FlatElevationProvider:
 
     def sample_ground_m(self, lon: float, lat: float) -> float:
         return self.elevation_m
+
+
+def test_output_crs_and_unit_helpers_accept_nad83_and_feet() -> None:
+    crs, authid, epsg = normalize_output_crs("NAD83")
+    settings = build_output_settings("NAD83", "feet")
+
+    assert crs.to_epsg() == 4269
+    assert authid == "EPSG:4269"
+    assert epsg == 4269
+    assert settings.crs_authid == "EPSG:4269"
+    assert settings.unit == "feet"
+    assert settings.unit_suffix == "ft"
+    assert round(length_to_meters(3.280839895013123, "feet"), 6) == 1.0
 
 
 def _candidate(

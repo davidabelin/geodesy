@@ -11,6 +11,7 @@ from pyproj import CRS, Transformer
 
 from coverage_core import (
     Dataset,
+    FEET_PER_METER,
     WGS84,
     ensure_parent_dir,
     load_dataset,
@@ -32,9 +33,76 @@ except Exception:
 
 LOS_SOLVER_VERSION = "los-segment-cover-v2-pairwise"
 WGS84_3D = CRS.from_epsg(4979)
+WGS84_2D = CRS.from_epsg(4326)
 ECEF_CRS = CRS.from_epsg(4978)
 GEODETIC_TO_ECEF = Transformer.from_crs(WGS84_3D, ECEF_CRS, always_xy=True)
 ECEF_TO_GEODETIC = Transformer.from_crs(ECEF_CRS, WGS84_3D, always_xy=True)
+
+
+@dataclass(frozen=True)
+class OutputSettings:
+    crs: CRS
+    crs_authid: str
+    epsg: int
+    unit: str
+    unit_suffix: str
+    unit_factor: float
+    transformer: Transformer
+
+
+def normalize_length_unit(unit: str) -> tuple[str, str, float]:
+    normalized = unit.strip().lower()
+    if normalized in {"meters", "meter", "metres", "metre", "m"}:
+        return "meters", "m", 1.0
+    if normalized in {"feet", "foot", "ft"}:
+        return "feet", "ft", FEET_PER_METER
+    raise ValueError(f"Unsupported length unit: {unit}")
+
+
+def length_to_meters(value: float, unit: str) -> float:
+    normalized, _suffix, _factor = normalize_length_unit(unit)
+    if normalized == "meters":
+        return float(value)
+    return float(value) / FEET_PER_METER
+
+
+def normalize_output_crs(output_crs: str) -> tuple[CRS, str, int]:
+    normalized = output_crs.strip().upper()
+    aliases = {
+        "WGS84": "EPSG:4326",
+        "WGS 84": "EPSG:4326",
+        "EPSG:4326": "EPSG:4326",
+        "4326": "EPSG:4326",
+        "NAD83": "EPSG:4269",
+        "NAD 83": "EPSG:4269",
+        "EPSG:4269": "EPSG:4269",
+        "4269": "EPSG:4269",
+    }
+    crs = CRS.from_user_input(aliases.get(normalized, output_crs))
+    if not crs.is_geographic:
+        raise ValueError(
+            "los-cover currently supports only geographic output CRS values "
+            "such as WGS84/EPSG:4326 or NAD83/EPSG:4269."
+        )
+    epsg = crs.to_epsg()
+    if epsg is None:
+        raise ValueError(f"Output CRS must resolve to an EPSG code: {output_crs}")
+    return crs, f"EPSG:{epsg}", int(epsg)
+
+
+def build_output_settings(output_crs: str, output_unit: str) -> OutputSettings:
+    unit, suffix, factor = normalize_length_unit(output_unit)
+    crs, authid, epsg = normalize_output_crs(output_crs)
+    transformer = Transformer.from_crs(WGS84_2D, crs, always_xy=True)
+    return OutputSettings(
+        crs=crs,
+        crs_authid=authid,
+        epsg=epsg,
+        unit=unit,
+        unit_suffix=suffix,
+        unit_factor=factor,
+        transformer=transformer,
+    )
 
 
 @dataclass(frozen=True)
@@ -128,6 +196,18 @@ class SelectionSummary:
 class ElevationProvider:
     def sample_ground_m(self, lon: float, lat: float) -> float:  # pragma: no cover - interface
         raise NotImplementedError
+
+
+class UnitScaledElevationProvider(ElevationProvider):
+    def __init__(self, provider: ElevationProvider, *, source_unit: str):
+        self.provider = provider
+        self.source_unit, _suffix, _factor = normalize_length_unit(source_unit)
+
+    def sample_ground_m(self, lon: float, lat: float) -> float:
+        value = self.provider.sample_ground_m(lon, lat)
+        if self.source_unit == "feet":
+            return value / FEET_PER_METER
+        return value
 
 
 class GDALDemSampler(ElevationProvider):
@@ -924,17 +1004,45 @@ def _feature(geometry: dict[str, Any], properties: dict[str, Any]) -> dict[str, 
     return {"type": "Feature", "geometry": geometry, "properties": properties}
 
 
-def _feature_collection(features: list[dict[str, Any]]) -> dict[str, Any]:
-    return {"type": "FeatureCollection", "features": features}
+def _feature_collection(features: list[dict[str, Any]], settings: OutputSettings) -> dict[str, Any]:
+    return {
+        "type": "FeatureCollection",
+        "crs": {
+            "type": "name",
+            "properties": {"name": settings.crs_authid},
+        },
+        "features": features,
+    }
 
 
-def write_geojson(path: Path, features: list[dict[str, Any]]) -> None:
+def write_geojson(path: Path, features: list[dict[str, Any]], settings: OutputSettings) -> None:
     ensure_parent_dir(path)
-    path.write_text(json.dumps(_feature_collection(features), indent=2), encoding="utf-8")
+    path.write_text(json.dumps(_feature_collection(features, settings), indent=2), encoding="utf-8")
 
 
-def _rounded_xyz(lon: float, lat: float, z: float) -> list[float]:
-    return [round(lon, 9), round(lat, 9), round(z, 3)]
+def _output_xy(lon: float, lat: float, settings: OutputSettings) -> tuple[float, float]:
+    x, y = settings.transformer.transform(lon, lat)
+    return float(x), float(y)
+
+
+def _rounded_xyz(lon: float, lat: float, z_m: float, settings: OutputSettings) -> list[float]:
+    x, y = _output_xy(lon, lat, settings)
+    return [round(x, 9), round(y, 9), round(z_m, 3)]
+
+
+def _rounded_length(value_m: Optional[float], settings: OutputSettings) -> Optional[float]:
+    if value_m is None:
+        return None
+    return round(float(value_m) * settings.unit_factor, 6)
+
+
+def _length_fields(base_name: str, value_m: Optional[float], settings: OutputSettings) -> dict[str, Any]:
+    fields: dict[str, Any] = {
+        f"{base_name}_{settings.unit_suffix}": _rounded_length(value_m, settings)
+    }
+    if settings.unit_suffix != "m":
+        fields[f"{base_name}_m"] = None if value_m is None else round(float(value_m), 6)
+    return fields
 
 
 def _coverage_point_ids(candidate: CandidateSegment, points: list[PreparedPoint]) -> list[str]:
@@ -947,31 +1055,35 @@ def _candidate_summary_rows(
     points: list[PreparedPoint],
     selected_ids: set[str],
     exact_pool_ids: set[str],
+    settings: OutputSettings,
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for candidate in candidates:
-        rows.append(
+        row: dict[str, Any] = {
+            "candidate_id": candidate.candidate_id,
+            "anchor_id": candidate.anchor_id,
+            "endpoint_id": candidate.endpoint_id,
+            "generation_kind": candidate.generation_kind,
+        }
+        row.update(_length_fields("surface_distance", candidate.surface_distance_m, settings))
+        row.update(_length_fields("segment_length", candidate.segment_length_m, settings))
+        row.update(
             {
-                "candidate_id": candidate.candidate_id,
-                "anchor_id": candidate.anchor_id,
-                "endpoint_id": candidate.endpoint_id,
-                "generation_kind": candidate.generation_kind,
-                "surface_distance_m": round(candidate.surface_distance_m, 6),
-                "segment_length_m": round(candidate.segment_length_m, 6),
                 "coverage_count": candidate.coverage_count,
                 "meaningful": 1 if candidate.is_meaningful else 0,
-                "residual_sum_m": round(candidate.residual_sum_m, 6),
-                "residual_mean_m": round(candidate.residual_mean_m, 6),
+            }
+        )
+        row.update(_length_fields("residual_sum", candidate.residual_sum_m, settings))
+        row.update(_length_fields("residual_mean", candidate.residual_mean_m, settings))
+        row.update(
+            {
                 "covered_point_ids": "|".join(_coverage_point_ids(candidate, points)),
                 "selected": 1 if candidate.candidate_id in selected_ids else 0,
                 "in_exact_pool": 1 if candidate.candidate_id in exact_pool_ids else 0,
-                "min_clearance_m": (
-                    None
-                    if candidate.min_clearance_m is None
-                    else round(candidate.min_clearance_m, 6)
-                ),
             }
         )
+        row.update(_length_fields("min_clearance", candidate.min_clearance_m, settings))
+        rows.append(row)
     return rows
 
 
@@ -979,6 +1091,7 @@ def _candidate_line_features(
     candidates: list[CandidateSegment],
     *,
     points: list[PreparedPoint],
+    settings: OutputSettings,
     selected_ids: Optional[set[str]] = None,
     rank_by_candidate_id: Optional[dict[str, int]] = None,
 ) -> list[dict[str, Any]]:
@@ -996,32 +1109,52 @@ def _candidate_line_features(
                             candidate.anchor_lon,
                             candidate.anchor_lat,
                             candidate.anchor_display_alt_m,
+                            settings,
                         ),
                         _rounded_xyz(
                             candidate.endpoint_lon,
                             candidate.endpoint_lat,
                             candidate.endpoint_display_alt_m,
+                            settings,
                         ),
                     ],
                 },
-                {
-                    "candidate_id": candidate.candidate_id,
-                    "anchor_id": candidate.anchor_id,
-                    "endpoint_id": candidate.endpoint_id,
-                    "selected": 1 if candidate.candidate_id in selected_ids else 0,
-                    "selected_rank": rank_by_candidate_id.get(candidate.candidate_id, 0),
-                    "coverage_count": candidate.coverage_count,
-                    "meaningful": 1 if candidate.is_meaningful else 0,
-                    "segment_length_m": round(candidate.segment_length_m, 6),
-                    "surface_distance_m": round(candidate.surface_distance_m, 6),
-                    "residual_sum_m": round(candidate.residual_sum_m, 6),
-                    "residual_mean_m": round(candidate.residual_mean_m, 6),
-                    "generation_kind": candidate.generation_kind,
-                    "covered_point_ids": "|".join(_coverage_point_ids(candidate, points)),
-                },
+                _line_properties(
+                    candidate,
+                    points=points,
+                    settings=settings,
+                    selected=1 if candidate.candidate_id in selected_ids else 0,
+                    selected_rank=rank_by_candidate_id.get(candidate.candidate_id, 0),
+                ),
             )
         )
     return features
+
+
+def _line_properties(
+    candidate: CandidateSegment,
+    *,
+    points: list[PreparedPoint],
+    settings: OutputSettings,
+    selected: int,
+    selected_rank: int,
+) -> dict[str, Any]:
+    props: dict[str, Any] = {
+                    "candidate_id": candidate.candidate_id,
+                    "anchor_id": candidate.anchor_id,
+                    "endpoint_id": candidate.endpoint_id,
+                    "selected": selected,
+                    "selected_rank": selected_rank,
+                    "coverage_count": candidate.coverage_count,
+                    "meaningful": 1 if candidate.is_meaningful else 0,
+                    "generation_kind": candidate.generation_kind,
+                    "covered_point_ids": "|".join(_coverage_point_ids(candidate, points)),
+    }
+    props.update(_length_fields("segment_length", candidate.segment_length_m, settings))
+    props.update(_length_fields("surface_distance", candidate.surface_distance_m, settings))
+    props.update(_length_fields("residual_sum", candidate.residual_sum_m, settings))
+    props.update(_length_fields("residual_mean", candidate.residual_mean_m, settings))
+    return props
 
 
 def _build_point_status_rows(
@@ -1031,6 +1164,7 @@ def _build_point_status_rows(
     *,
     point_count: int,
     reachable_mask: int,
+    settings: OutputSettings,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     rows: list[dict[str, Any]] = []
     offset_features: list[dict[str, Any]] = []
@@ -1066,17 +1200,21 @@ def _build_point_status_rows(
                     {
                         "type": "LineString",
                         "coordinates": [
-                            _rounded_xyz(display_point.lon, display_point.lat, display_point.display_alt_m),
-                            _rounded_xyz(projected_lon, projected_lat, projected_alt_m),
+                            _rounded_xyz(
+                                display_point.lon,
+                                display_point.lat,
+                                display_point.display_alt_m,
+                                settings,
+                            ),
+                            _rounded_xyz(projected_lon, projected_lat, projected_alt_m, settings),
                         ],
                     },
-                    {
-                        "point_id": prepared.point_id,
-                        "candidate_id": candidate.candidate_id,
-                        "anchor_id": candidate.anchor_id,
-                        "endpoint_id": candidate.endpoint_id,
-                        "residual_distance_m": round(residual_distance_m, 6),
-                    },
+                    _offset_properties(
+                        prepared,
+                        candidate=candidate,
+                        residual_distance_m=residual_distance_m,
+                        settings=settings,
+                    ),
                 )
             )
         else:
@@ -1090,29 +1228,60 @@ def _build_point_status_rows(
             assigned_anchor_id = None
             assigned_endpoint_id = None
 
-        rows.append(
-            {
+        point_x, point_y = _output_xy(display_point.lon, display_point.lat, settings)
+        if projected_lon is None or projected_lat is None:
+            projected_x = None
+            projected_y = None
+        else:
+            projected_x, projected_y = _output_xy(projected_lon, projected_lat, settings)
+
+        row: dict[str, Any] = {
                 "point_id": prepared.point_id,
                 "reachable": 1 if reachable else 0,
                 "covered": 1 if covered else 0,
                 "assigned_candidate_id": assigned_candidate_id,
                 "assigned_anchor_id": assigned_anchor_id,
                 "assigned_endpoint_id": assigned_endpoint_id,
-                "residual_distance_m": None if residual_distance_m is None else round(residual_distance_m, 6),
-                "point_lat": round(display_point.lat, 9),
-                "point_lon": round(display_point.lon, 9),
-                "ground_alt_m": round(prepared.ground_alt_m, 6),
-                "absolute_alt_m": round(prepared.absolute_alt_m, 6),
-                "display_alt_m": round(display_point.display_alt_m, 6),
-                "altitude_source": prepared.altitude_source,
-                "has_altitude": 1 if prepared.has_altitude else 0,
-                "projected_lon": None if projected_lon is None else round(projected_lon, 9),
-                "projected_lat": None if projected_lat is None else round(projected_lat, 9),
-                "projected_alt_m": None if projected_alt_m is None else round(projected_alt_m, 6),
+            }
+        row.update(_length_fields("residual_distance", residual_distance_m, settings))
+        row.update(
+            {
+                "point_lat": round(point_y, 9),
+                "point_lon": round(point_x, 9),
             }
         )
+        row.update(_length_fields("ground_alt", prepared.ground_alt_m, settings))
+        row.update(_length_fields("absolute_alt", prepared.absolute_alt_m, settings))
+        row.update(_length_fields("display_alt", display_point.display_alt_m, settings))
+        row.update(
+            {
+                "altitude_source": prepared.altitude_source,
+                "has_altitude": 1 if prepared.has_altitude else 0,
+                "projected_lon": None if projected_x is None else round(projected_x, 9),
+                "projected_lat": None if projected_y is None else round(projected_y, 9),
+            }
+        )
+        row.update(_length_fields("projected_alt", projected_alt_m, settings))
+        rows.append(row)
 
     return rows, offset_features
+
+
+def _offset_properties(
+    point: PreparedPoint,
+    *,
+    candidate: CandidateSegment,
+    residual_distance_m: float,
+    settings: OutputSettings,
+) -> dict[str, Any]:
+    props: dict[str, Any] = {
+        "point_id": point.point_id,
+        "candidate_id": candidate.candidate_id,
+        "anchor_id": candidate.anchor_id,
+        "endpoint_id": candidate.endpoint_id,
+    }
+    props.update(_length_fields("residual_distance", residual_distance_m, settings))
+    return props
 
 
 def run_los_cover(
@@ -1134,7 +1303,11 @@ def run_los_cover(
     endpoint_step_m: float = 25.0,
     sample_step_m: float = 10.0,
     solver: str = "hybrid",
+    output_crs: str = "WGS84",
+    output_unit: str = "meters",
+    dem_unit: str = "meters",
 ) -> dict[str, Any]:
+    output_settings = build_output_settings(output_crs, output_unit)
     dataset = load_dataset(
         input_path,
         repo_root,
@@ -1144,7 +1317,8 @@ def run_los_cover(
         alt_field=alt_field,
     )
     resolved_dem_path = resolve_input_path(str(dem_path), repo_root)
-    provider = create_elevation_provider(resolved_dem_path, repo_root)
+    provider: ElevationProvider = create_elevation_provider(resolved_dem_path, repo_root)
+    provider = UnitScaledElevationProvider(provider, source_unit=dem_unit)
     prepared_points = prepare_points(dataset, provider)
     display_points = resolve_points(prepared_points, offset_m=point_height_m)
     raw_pair_candidates, family_candidates, candidate_stats = generate_candidates(
@@ -1170,6 +1344,7 @@ def run_los_cover(
         selected_candidates,
         point_count=len(prepared_points),
         reachable_mask=selection.reachable_mask,
+        settings=output_settings,
     )
     selected_rows = rank_selected_candidates(
         selected_candidates,
@@ -1182,24 +1357,33 @@ def run_los_cover(
         selected_ids=selected_ids,
         exact_pool_ids=selection.exact_pool_ids,
         points=prepared_points,
+        settings=output_settings,
     )
     candidate_summary_rows = _candidate_summary_rows(
         family_candidates,
         selected_ids=selected_ids,
         exact_pool_ids=selection.exact_pool_ids,
         points=prepared_points,
+        settings=output_settings,
     )
-    pair_features = _candidate_line_features(raw_pair_candidates, points=prepared_points, selected_ids=selected_ids)
+    pair_features = _candidate_line_features(
+        raw_pair_candidates,
+        points=prepared_points,
+        settings=output_settings,
+        selected_ids=selected_ids,
+    )
     meaningful_candidates = [candidate for candidate in family_candidates if candidate.is_meaningful]
     meaningful_features = _candidate_line_features(
         meaningful_candidates,
         points=prepared_points,
+        settings=output_settings,
         selected_ids=selected_ids,
         rank_by_candidate_id=rank_by_candidate_id,
     )
     selected_features = _candidate_line_features(
         selected_candidates,
         points=prepared_points,
+        settings=output_settings,
         selected_ids=selected_ids,
         rank_by_candidate_id=rank_by_candidate_id,
     )
@@ -1217,10 +1401,10 @@ def run_los_cover(
     manifest_path = output_root / "manifest.json"
     readme_path = output_root / "README.md"
 
-    write_geojson(pair_segments_path, pair_features)
-    write_geojson(meaningful_lines_path, meaningful_features)
-    write_geojson(selected_segments_path, selected_features)
-    write_geojson(coverage_offsets_path, coverage_offset_features)
+    write_geojson(pair_segments_path, pair_features, output_settings)
+    write_geojson(meaningful_lines_path, meaningful_features, output_settings)
+    write_geojson(selected_segments_path, selected_features, output_settings)
+    write_geojson(coverage_offsets_path, coverage_offset_features, output_settings)
     write_rows(point_status_path, point_status_rows, "csv")
     write_rows(pair_summary_path, pair_summary_rows, "csv")
     write_rows(candidate_summary_path, candidate_summary_rows, "csv")
@@ -1237,6 +1421,12 @@ def run_los_cover(
         "input_path": str(dataset.path),
         "dem_path": str(resolved_dem_path),
         "output_dir": str(output_root.resolve()),
+        "output_crs": output_settings.crs_authid,
+        "output_epsg": output_settings.epsg,
+        "output_unit": output_settings.unit,
+        "output_unit_suffix": output_settings.unit_suffix,
+        "geometry_z_unit": "meters",
+        "dem_unit": normalize_length_unit(dem_unit)[0],
         "point_count": len(prepared_points),
         "pair_segment_count": len(raw_pair_candidates),
         "line_family_count": len(family_candidates),
@@ -1251,10 +1441,17 @@ def run_los_cover(
         "selected_meaningful_line_ids": meaningful_ids,
         "config": {
             "line_tolerance_m": line_tolerance_m,
+            **_length_fields("line_tolerance", line_tolerance_m, output_settings),
             "point_height_m": point_height_m,
+            **_length_fields("point_height", point_height_m, output_settings),
             "max_segment_length_m": max_segment_length_m,
+            **_length_fields("max_segment_length", max_segment_length_m, output_settings),
             "sample_step_m": sample_step_m,
+            **_length_fields("sample_step", sample_step_m, output_settings),
             "solver": solver,
+            "output_crs": output_settings.crs_authid,
+            "output_unit": output_settings.unit,
+            "dem_unit": normalize_length_unit(dem_unit)[0],
             "legacy_unused_options": {
                 "anchor_height_m": anchor_height_m,
                 "endpoint_height_m": endpoint_height_m,
@@ -1294,6 +1491,9 @@ def run_los_cover(
                 "",
                 f"- Input dataset: `{dataset.path}`",
                 f"- DEM: `{resolved_dem_path}`",
+                f"- Output CRS: `{output_settings.crs_authid}`",
+                f"- Report unit: `{output_settings.unit}`",
+                f"- DEM elevation unit interpreted as: `{normalize_length_unit(dem_unit)[0]}`",
                 f"- LOS-valid point pairs: `{len(raw_pair_candidates)}`",
                 f"- Deduped line families: `{len(family_candidates)}`",
                 f"- Meaningful 3+ point lines: `{len(meaningful_candidates)}`",

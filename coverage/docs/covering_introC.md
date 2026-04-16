@@ -40,6 +40,39 @@ For the current implementation, all point endpoints use the same display offset:
 
 Legacy CLI options such as `--anchor-height-m` and `--endpoint-height-m` are still accepted for compatibility, but the pairwise model uses `--point-height-m` for both ends of each point-to-point segment.
 
+## CRS and Units
+
+Defaults remain WGS84 and meters.
+
+`los-cover` can also write result geometry in NAD83:
+
+- `--output-crs WGS84`
+- `--output-crs EPSG:4326`
+- `--output-crs NAD83`
+- `--output-crs EPSG:4269`
+
+The solver still performs its internal chord and LOS calculations in ECEF meters. The output CRS controls the horizontal coordinates written to GeoJSON, CSV coordinate columns, GeoPackage layers, and the generated QGIS project.
+
+`los-cover` can report lengths in feet:
+
+- `--unit meters`
+- `--unit feet`
+
+When `--unit feet` is used, unit-aware arguments such as `--max-segment-length`, `--line-tolerance`, `--point-height`, and `--sample-step` are interpreted as feet. The old meter-explicit arguments still work:
+
+- `--line-tolerance-m`
+- `--point-height-m`
+- `--sample-step-m`
+
+Feet-mode CSV and GeoJSON properties include `*_ft` fields while retaining `*_m` fields for auditability.
+
+DEM elevation values are assumed to be meters unless overridden:
+
+- `--dem-unit meters`
+- `--dem-unit feet`
+
+This matters because DEM rasters often declare horizontal CRS but not vertical unit metadata. Geometry Z values remain written in meters so the QGIS 3D workflow stays consistent with the solver's internal elevation model.
+
 ## Candidate Generation
 
 The candidate-generation step is finite and terrain-aware:

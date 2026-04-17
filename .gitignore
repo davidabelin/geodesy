@@ -227,7 +227,6 @@ data/RiverPnts_critlines.kml
 data/SelectPnts.kml
 qgis/*.*
 geodesy/*.*
-geodesy\\HERE HERE HERE Roadway_SubBlock.geojson
 qgis/DC_City_Substreet_attachments.zip
 qgis/DC_City_Substreet.qgs
 qgis/DC_City_Substreet.qgs~
@@ -408,11 +407,10 @@ qgis/LEnfant/lenfant_ellicott_difference.jp2
 tmp_gtri.html
 *.zip
 *.qgs~
-*.qgs~
-*.qgs~
-*.qgs~
 commit_line.md
 COMMIT LINE EDIT B4 EVERY COMMIT.md
 qgis/LEnfant/centerlenfant.png
 clenfout.png
 roadways/centerlines/clenfout.gpkg
+coverage/scratch.txt
+coverage/los_cover_lines.qml

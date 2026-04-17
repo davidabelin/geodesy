@@ -103,8 +103,12 @@ def _normalize_ellipsoid(ellipsoid: Union[str, bool, None]) -> str:
         return DEFAULT_ELLIPSOID
     if isinstance(ellipsoid, str):
         key = ellipsoid.strip().replace("-", "").replace("_", "").upper()
-        if key in ("WGS84", "NAD83"):
+        # Accept PROJ ellipsoid names directly
+        if key in ("WGS84", "GRS80"):
             return key
+        # Map user-friendly datum name to PROJ ellipsoid
+        if key == "NAD83":
+            return "GRS80"
         if key in ("SPHERE", "SPHERICAL"):
             return ELLIPSOID_SPHERE
     raise ValueError(f"Unsupported ellipsoid: {ellipsoid} (use WGS84, NAD83, or sphere)")

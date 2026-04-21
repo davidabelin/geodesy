@@ -5,7 +5,7 @@ import math
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 from pyproj import CRS, Geod
 
@@ -48,6 +48,7 @@ CL_TYPE_FIELDS = ("STREETTYPE", "USPS_ABBRE", "ST_TYPE", "TYPE")
 CL_QUADRANT_FIELDS = ("QUADRANT", "QUAD", "QUADRANT_NM")
 CL_CARDINAL_TOLERANCE_DEG = 5.0
 CL_GEOMETRY_CONNECT_TOLERANCE = 1e-9
+CL_SEGMENT_GAP_DISCONTINUITY_M = 10.0
 CL_OUTPUT_FIELDS = [
     'street',
     'str_id',
@@ -528,6 +529,7 @@ def _point_coord_distance(a: Tuple[float, float], b: Tuple[float, float]) -> flo
 
 
 def _join_linestrings_if_connected(left: Any, right: Any) -> Optional[Any]:
+    """Join two LineStrings only when their nearest endpoints already touch."""
     left_coords = list(left.coords)
     right_coords = list(right.coords)
     if len(left_coords) < 2 or len(right_coords) < 2:
@@ -548,6 +550,7 @@ def _join_linestrings_if_connected(left: Any, right: Any) -> Optional[Any]:
 
 
 def _combine_cl_segment_geometries(left_geometry: Any, right_geometry: Any) -> Any:
+    """Combine merged segment geometry without inventing lines across real gaps."""
     left_parts = _iter_linestring_parts(left_geometry)
     right_parts = _iter_linestring_parts(right_geometry)
     if not left_parts:
@@ -566,22 +569,74 @@ def _combine_cl_segment_geometries(left_geometry: Any, right_geometry: Any) -> A
     return MultiLineString([list(part.coords) for part in parts])
 
 
+def _geometry_endpoint_coords(geometry: Any) -> List[Tuple[float, float]]:
+    """Return all usable start/end coordinates for line parts in a geometry."""
+    endpoints: List[Tuple[float, float]] = []
+    for part in _iter_linestring_parts(geometry):
+        coords = list(part.coords)
+        if len(coords) >= 2:
+            endpoints.append((float(coords[0][0]), float(coords[0][1])))
+            endpoints.append((float(coords[-1][0]), float(coords[-1][1])))
+    return endpoints
+
+
+def _endpoint_gap_meters(left_geometry: Any, right_geometry: Any, spec: ClMeasureSpec) -> Optional[float]:
+    """Measure the nearest endpoint-to-endpoint gap between two line geometries."""
+    left_endpoints = _geometry_endpoint_coords(left_geometry)
+    right_endpoints = _geometry_endpoint_coords(right_geometry)
+    if not left_endpoints or not right_endpoints:
+        return None
+
+    return min(
+        _point_distance_meters(left_x, left_y, right_x, right_y, spec)
+        for left_x, left_y in left_endpoints
+        for right_x, right_y in right_endpoints
+    )
+
+
 def _merge_cl_segment_pair(
     left: Dict[str, Any],
     right: Dict[str, Any],
     spec: ClMeasureSpec,
 ) -> Dict[str, Any]:
+    """Merge two ordered same-street records into one prime-segment record."""
     left_length = float(left['length_m'])
     right_length = float(right['length_m'])
     base = dict(left)
     combined_geometry = _combine_cl_segment_geometries(left['geometry'], right['geometry'])
     base['length_m'] = left_length + right_length
+    base['bearing'] = _merge_cl_segment_bearings(
+        float(left['bearing']),
+        float(right['bearing']),
+        str(left['street_class']),
+    )
     base['geometry'] = combined_geometry
     base['midpoint'] = _segment_midpoint(combined_geometry, spec)
     return base
 
 
+def _axis_deviation_degrees(bearing: float, street_class: str) -> float:
+    """Map a bearing onto its signed street-axis deviation."""
+    orientation = float(bearing) % 180.0
+    if street_class == 'EW':
+        return orientation - 90.0
+    if orientation > 90.0:
+        orientation -= 180.0
+    return orientation
+
+
+def _merge_cl_segment_bearings(left_bearing: float, right_bearing: float, street_class: str) -> float:
+    """Pairwise-average bearings along a street axis, ignoring digitization direction."""
+    left_deviation = _axis_deviation_degrees(left_bearing, street_class)
+    right_deviation = _axis_deviation_degrees(right_bearing, street_class)
+    merged_deviation = (left_deviation + right_deviation) / 2.0
+    if street_class == 'EW':
+        return round((90.0 + merged_deviation) % 360.0, 3)
+    return round(merged_deviation % 360.0, 3)
+
+
 def _cl_segment_sort_key(record: Dict[str, Any]) -> Tuple[float, float, int, int]:
+    """Order same-street segments along their dominant cardinal axis."""
     midpoint = record['midpoint']
     if record['street_class'] == 'NS':
         primary = float(midpoint.y)
@@ -598,15 +653,70 @@ def _cl_segment_sort_key(record: Dict[str, Any]) -> Tuple[float, float, int, int
     return primary, secondary, source_index, part_order
 
 
-def _neighbor_index_for_short_segment(records: List[Dict[str, Any]], index: int) -> Optional[int]:
-    neighbors = []
-    if index > 0:
-        neighbors.append(index - 1)
-    if index < len(records) - 1:
-        neighbors.append(index + 1)
-    if not neighbors:
-        return None
-    return min(neighbors, key=lambda candidate: (float(records[candidate]['length_m']), candidate))
+def _merge_ordered_segment_records(
+    records: List[Dict[str, Any]],
+    min_segment_length_m: float,
+    merge_pair: Callable[[Dict[str, Any], Dict[str, Any]], Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    """Apply the prohibited-run length rule to one gap-free ordered component."""
+    records = [dict(record) for record in records]
+    if len(records) <= 1:
+        return records
+
+    merged_records: List[Dict[str, Any]] = []
+    index = 0
+    while index < len(records):
+        record = records[index]
+        if float(record['length_m']) > min_segment_length_m:
+            merged_records.append(record)
+            index += 1
+            continue
+
+        prohibited_run = record
+        prohibited_records = [record]
+        index += 1
+        while index < len(records) and float(records[index]['length_m']) <= min_segment_length_m:
+            prohibited_run = merge_pair(prohibited_run, records[index])
+            prohibited_records.append(records[index])
+            index += 1
+
+        has_left_prime = bool(merged_records)
+        has_right_segment = index < len(records)
+        run_can_stand = float(prohibited_run['length_m']) > min_segment_length_m
+        if run_can_stand and (has_right_segment or not has_left_prime):
+            merged_records.append(prohibited_run)
+            continue
+
+        if has_left_prime:
+            for prohibited_record in prohibited_records:
+                merged_records[-1] = merge_pair(merged_records[-1], prohibited_record)
+            continue
+
+        if has_right_segment:
+            merged_records.append(merge_pair(prohibited_run, records[index]))
+            index += 1
+            continue
+
+        merged_records.append(prohibited_run)
+
+    return merged_records
+
+
+def _split_cl_segment_records_at_gaps(
+    records: List[Dict[str, Any]],
+    spec: ClMeasureSpec,
+) -> List[List[Dict[str, Any]]]:
+    """Split ordered same-street records wherever endpoint gaps exceed 10 meters."""
+    if not records:
+        return []
+
+    components: List[List[Dict[str, Any]]] = [[records[0]]]
+    for record in records[1:]:
+        gap_m = _endpoint_gap_meters(components[-1][-1]['geometry'], record['geometry'], spec)
+        if gap_m is not None and gap_m > CL_SEGMENT_GAP_DISCONTINUITY_M:
+            components.append([])
+        components[-1].append(record)
+    return components
 
 
 def _merge_short_cl_segment_records(
@@ -614,33 +724,27 @@ def _merge_short_cl_segment_records(
     spec: ClMeasureSpec,
     min_segment_length_m: float,
 ) -> List[Dict[str, Any]]:
+    """Merge one same-street group after splitting it into no-gap components."""
     records = sorted((dict(record) for record in records), key=_cl_segment_sort_key)
-    while len(records) > 1:
-        short_indexes = [
-            index
-            for index, record in enumerate(records)
-            if float(record['length_m']) < min_segment_length_m
-        ]
-        if not short_indexes:
-            break
-        short_index = min(short_indexes, key=lambda index: (float(records[index]['length_m']), index))
-        neighbor_index = _neighbor_index_for_short_segment(records, short_index)
-        if neighbor_index is None:
-            break
-
-        left_index = min(short_index, neighbor_index)
-        right_index = max(short_index, neighbor_index)
-        merged = _merge_cl_segment_pair(records[left_index], records[right_index], spec)
-        records = records[:left_index] + [merged] + records[right_index + 1:]
-    return records
+    merged_records: List[Dict[str, Any]] = []
+    for component in _split_cl_segment_records_at_gaps(records, spec):
+        merged_records.extend(
+            _merge_ordered_segment_records(
+                component,
+                min_segment_length_m,
+                lambda left, right: _merge_cl_segment_pair(left, right, spec),
+            )
+        )
+    return merged_records
 
 
 def _merge_short_cl_segments(segments: Any, spec: ClMeasureSpec, min_segment_length_m: Optional[float]) -> Any:
+    """Apply short-segment merging independently by street label and street class."""
     if min_segment_length_m is None or min_segment_length_m <= 0 or segments.empty:
         return segments
 
     records: List[Dict[str, Any]] = []
-    for _, group in segments.groupby('street_label', sort=False):
+    for _, group in segments.groupby(['street_label', 'street_class'], sort=False):
         group_records = group.to_dict('records')
         records.extend(_merge_short_cl_segment_records(group_records, spec, float(min_segment_length_m)))
     merged = gpd.GeoDataFrame(records, geometry='geometry', crs=segments.crs)
@@ -1593,7 +1697,10 @@ def main(argv: Optional[List[str]] = None) -> None:
         '--min-segment-length',
         type=float,
         default=None,
-        help='Merge same-street segments shorter than this length into their smaller neighboring segment. Uses --units.',
+        help=(
+            'Apply prohibited-run merging for same-street segments at or below this '
+            'length; leading short runs may merge forward. Uses --units.'
+        ),
     )
     _run_cl(parser.parse_args(argv))
 

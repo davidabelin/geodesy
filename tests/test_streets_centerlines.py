@@ -1,5 +1,6 @@
 import csv
 import sys
+from pathlib import Path
 
 import geopandas as gpd
 import pytest
@@ -14,6 +15,54 @@ def _row_by_street_id(rows, street, str_id):
         if row["street"] == street and int(row["str_id"]) == int(str_id):
             return row
     raise AssertionError(f"street/str_id not found: {street} / {str_id}")
+
+
+def test_merge_rule_matches_scratch_prime_csv():
+    scratch_dir = Path(__file__).resolve().parents[1] / "roadways" / "centerlines" / "scratch"
+    input_path = scratch_dir / "street lengths.csv"
+    expected_path = scratch_dir / "street lengths prime.csv"
+    groups = {}
+
+    with input_path.open(newline="", encoding="utf-8") as handle:
+        for row in csv.DictReader(handle):
+            groups.setdefault(row["Street"], []).append(
+                {
+                    "street": row["Street"],
+                    "length_m": float(row["len"]),
+                    "bearing": float(row["ori"]),
+                }
+            )
+
+    def merge_pair(left, right):
+        merged = dict(left)
+        merged["length_m"] = float(left["length_m"]) + float(right["length_m"])
+        merged["bearing"] = (float(left["bearing"]) + float(right["bearing"])) / 2.0
+        return merged
+
+    actual = []
+    for street, records in groups.items():
+        for segment_number, record in enumerate(
+            cl._merge_ordered_segment_records(records, 2.0, merge_pair),
+            start=1,
+        ):
+            actual.append(
+                {
+                    "Street": street,
+                    "SegPrime": segment_number,
+                    "LenPrime": record["length_m"],
+                    "OriPrime": record["bearing"],
+                }
+            )
+
+    with expected_path.open(newline="", encoding="utf-8") as handle:
+        expected = list(csv.DictReader(handle))
+
+    assert len(actual) == len(expected)
+    for actual_row, expected_row in zip(actual, expected):
+        assert actual_row["Street"] == expected_row["Street"]
+        assert actual_row["SegPrime"] == int(expected_row["SegPrime"])
+        assert actual_row["LenPrime"] == pytest.approx(float(expected_row["LenPrime"]))
+        assert actual_row["OriPrime"] == pytest.approx(float(expected_row["OriPrime"]))
 
 
 def test_cli_defaults_for_centerlines_script(monkeypatch):
@@ -91,7 +140,7 @@ def test_prepare_segments_explodes_multipart_and_marks_parts():
     assert segments["length_m"].tolist() == [10.0, 10.0]
 
 
-def test_prepare_segments_merges_short_segment_with_smaller_neighbor_and_renumbers():
+def test_prepare_segments_merges_prohibited_segment_into_left_prime_and_renumbers():
     gdf = gpd.GeoDataFrame(
         {
             "ST_NAME": ["Main", "Main", "Main"],
@@ -107,16 +156,16 @@ def test_prepare_segments_merges_short_segment_with_smaller_neighbor_and_renumbe
         crs="EPSG:3857",
     )
 
-    segments, _ = cl._prepare_cl_segments(gdf, "none", min_segment_length_m=5.0)
+    segments, _ = cl._prepare_cl_segments(gdf, "none", min_segment_length_m=2.0)
 
-    assert segments["source_segment_id"].tolist() == [100, 200]
+    assert segments["source_segment_id"].tolist() == [100, 300]
     assert segments["segment_number"].tolist() == [1, 2]
     assert segments["identifier"].tolist() == ["Main NW | 01", "Main NW | 02"]
-    assert segments["length_m"].tolist() == [10.0, 6.0]
-    assert segments.geometry.iloc[1].length == pytest.approx(6.0)
+    assert segments["length_m"].tolist() == [12.0, 4.0]
+    assert segments.geometry.iloc[0].length == pytest.approx(12.0)
 
 
-def test_prepare_segments_merges_short_segment_across_gap():
+def test_prepare_segments_merges_short_segment_across_small_gap():
     gdf = gpd.GeoDataFrame(
         {
             "ST_NAME": ["Main", "Main", "Main"],
@@ -126,20 +175,45 @@ def test_prepare_segments_merges_short_segment_across_gap():
         },
         geometry=[
             LineString([(0, 0), (10, 0)]),
-            LineString([(10, 0), (12, 0)]),
-            LineString([(14, 0), (18, 0)]),
+            LineString([(12, 0), (14, 0)]),
+            LineString([(16, 0), (20, 0)]),
         ],
         crs="EPSG:3857",
     )
 
-    segments, _ = cl._prepare_cl_segments(gdf, "none", min_segment_length_m=5.0)
+    segments, _ = cl._prepare_cl_segments(gdf, "none", min_segment_length_m=2.0)
+
+    assert segments["source_segment_id"].tolist() == [100, 300]
+    assert segments["segment_number"].tolist() == [1, 2]
+    assert segments["length_m"].tolist() == [12.0, 4.0]
+    assert segments.geometry.iloc[0].length == pytest.approx(12.0)
+    assert segments.geometry.iloc[0].geom_type == "MultiLineString"
+    assert segments.geometry.iloc[1].length == pytest.approx(4.0)
+
+
+def test_prepare_segments_restarts_length_merge_at_large_gap():
+    gdf = gpd.GeoDataFrame(
+        {
+            "ST_NAME": ["Main", "Main", "Main"],
+            "OBJECTID": [100, 200, 300],
+            "STREETTYPE": ["ST", "ST", "ST"],
+            "QUADRANT": ["NW", "NW", "NW"],
+        },
+        geometry=[
+            LineString([(0, 0), (10, 0)]),
+            LineString([(25, 0), (27, 0)]),
+            LineString([(27, 0), (31, 0)]),
+        ],
+        crs="EPSG:3857",
+    )
+
+    segments, _ = cl._prepare_cl_segments(gdf, "none", min_segment_length_m=2.0)
 
     assert segments["source_segment_id"].tolist() == [100, 200]
     assert segments["segment_number"].tolist() == [1, 2]
     assert segments["length_m"].tolist() == [10.0, 6.0]
     assert segments.geometry.iloc[0].length == pytest.approx(10.0)
     assert segments.geometry.iloc[1].length == pytest.approx(6.0)
-    assert segments.geometry.iloc[1].geom_type == "MultiLineString"
 
 
 def test_prepare_segments_merges_short_segment_by_physical_neighbor_not_file_order():
@@ -158,12 +232,12 @@ def test_prepare_segments_merges_short_segment_by_physical_neighbor_not_file_ord
         crs="EPSG:3857",
     )
 
-    segments, _ = cl._prepare_cl_segments(gdf, "none", min_segment_length_m=5.0)
+    segments, _ = cl._prepare_cl_segments(gdf, "none", min_segment_length_m=2.0)
 
-    assert segments["source_segment_id"].tolist() == [100, 200]
+    assert segments["source_segment_id"].tolist() == [100, 300]
     assert segments["segment_number"].tolist() == [1, 2]
-    assert segments["length_m"].tolist() == [10.0, 10.0]
-    assert segments.geometry.iloc[1].length == pytest.approx(10.0)
+    assert segments["length_m"].tolist() == [12.0, 8.0]
+    assert segments.geometry.iloc[0].length == pytest.approx(12.0)
 
 
 def test_prepare_segments_repeatedly_merges_until_minimum_is_reached_when_possible():
@@ -183,12 +257,57 @@ def test_prepare_segments_repeatedly_merges_until_minimum_is_reached_when_possib
         crs="EPSG:3857",
     )
 
-    segments, _ = cl._prepare_cl_segments(gdf, "none", min_segment_length_m=5.0)
+    segments, _ = cl._prepare_cl_segments(gdf, "none", min_segment_length_m=2.0)
 
     assert segments["source_segment_id"].tolist() == [100]
     assert segments["segment_number"].tolist() == [1]
     assert segments["length_m"].tolist() == [8.0]
     assert segments.geometry.iloc[0].length == pytest.approx(8.0)
+
+
+def test_prepare_segments_merges_leading_prohibited_run_before_next_long_segment():
+    gdf = gpd.GeoDataFrame(
+        {
+            "ST_NAME": ["Main", "Main", "Main"],
+            "OBJECTID": [100, 200, 300],
+            "STREETTYPE": ["ST", "ST", "ST"],
+            "QUADRANT": ["NW", "NW", "NW"],
+        },
+        geometry=[
+            LineString([(0, 0), (2, 0)]),
+            LineString([(2, 0), (4, 0)]),
+            LineString([(4, 0), (9, 0)]),
+        ],
+        crs="EPSG:3857",
+    )
+
+    segments, _ = cl._prepare_cl_segments(gdf, "none", min_segment_length_m=2.0)
+
+    assert segments["source_segment_id"].tolist() == [100, 300]
+    assert segments["segment_number"].tolist() == [1, 2]
+    assert segments["length_m"].tolist() == [4.0, 5.0]
+    assert segments.geometry.iloc[0].length == pytest.approx(4.0)
+
+
+def test_prepare_segments_averages_undirected_bearings_when_merging():
+    gdf = gpd.GeoDataFrame(
+        {
+            "ST_NAME": ["Main", "Main"],
+            "OBJECTID": [100, 200],
+            "STREETTYPE": ["ST", "ST"],
+            "QUADRANT": ["NW", "NW"],
+        },
+        geometry=[
+            LineString([(0, 0), (10, 0)]),
+            LineString([(12, 0), (10, 0)]),
+        ],
+        crs="EPSG:3857",
+    )
+
+    segments, _ = cl._prepare_cl_segments(gdf, "none", min_segment_length_m=2.0)
+
+    assert segments["length_m"].tolist() == [12.0]
+    assert segments["bearing"].tolist() == [90.0]
 
 
 def test_identifier_numbering_uses_per_street_sequence_and_expands_when_needed():

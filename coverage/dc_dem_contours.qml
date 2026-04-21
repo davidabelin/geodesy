@@ -25,7 +25,7 @@
     <provider>
       <resampling enabled="false" maxOversampling="2" zoomedInResamplingMethod="nearestNeighbour" zoomedOutResamplingMethod="nearestNeighbour"/>
     </provider>
-    <rasterrenderer alphaBand="-1" band="1" contour-index-interval="10" contour-interval="2.5" downscale="2" nodataColor="" opacity="1" type="contour">
+    <rasterrenderer alphaBand="-1" band="1" contour-index-interval="10" contour-interval="2.5" downscale="3" nodataColor="" opacity="1" type="contour">
       <rasterTransparency/>
       <minMaxOrigin>
         <limits>None</limits>
@@ -56,7 +56,7 @@
               <Option name="dash_pattern_offset_unit" type="QString" value="MM"/>
               <Option name="draw_inside_polygon" type="QString" value="0"/>
               <Option name="joinstyle" type="QString" value="bevel"/>
-              <Option name="line_color" type="QString" value="0,0,28,230,rgb:0,0,0.1098039,0.9000076"/>
+              <Option name="line_color" type="QString" value="0,37,9,230,rgb:0,0.1461967,0.0348821,0.9000076"/>
               <Option name="line_style" type="QString" value="solid"/>
               <Option name="line_width" type="QString" value="0"/>
               <Option name="line_width_unit" type="QString" value="MM"/>
@@ -103,7 +103,7 @@
               <Option name="dash_pattern_offset_unit" type="QString" value="MM"/>
               <Option name="draw_inside_polygon" type="QString" value="0"/>
               <Option name="joinstyle" type="QString" value="round"/>
-              <Option name="line_color" type="QString" value="0,0,28,255,rgb:0,0,0.1098039,1"/>
+              <Option name="line_color" type="QString" value="1,39,0,255,rgb:0.0020752,0.1520409,0,1"/>
               <Option name="line_style" type="QString" value="dot"/>
               <Option name="line_width" type="QString" value="0"/>
               <Option name="line_width_unit" type="QString" value="MM"/>

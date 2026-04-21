@@ -6,10 +6,6 @@ set "start_dir=C:\Users\David\Documents\Local_Python\geodesy"
 REM Navigate to the start directory
 cd /d "%start_dir%"
 
-REM Activate the virtual environment
-echo Activating geodenv...
-call "%start_dir%\geodenv\Scripts\activate.bat"
-
 REM Install packages from requirements.txt if it exists
 if exist "%start_dir%\requirements.txt" (
     echo Loading required python modules listed in requirements.txt...
@@ -21,9 +17,18 @@ if exist "%start_dir%\requirements.txt" (
     )
 )
 
+REM Activate the virtual environment
+echo Activating geodenv...
+call "%start_dir%\geodenv\Scripts\activate.bat"
+
+REM Activate the OSGeo4W environment
+REM echo Activating OSGeo4w environment...
+REM call "%start_dir%\geodenv\Scripts\activate.bat"
+
 echo Activated geodenv.
 
 REM Set credential variables
+echo Setting credential variables...
 if exist "%start_dir%\geodenv\dotenv.txt" (
     echo Setting credential specific to the geodenv virtual environment.
     for /f "tokens=1,2 delims==" %%a in (%start_dir%\geodenv\dotenv.txt) do (

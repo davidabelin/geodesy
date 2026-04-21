@@ -47,6 +47,7 @@ CL_ROADTYPE_FIELDS = ("ROADTYPE",)
 CL_TYPE_FIELDS = ("STREETTYPE", "USPS_ABBRE", "ST_TYPE", "TYPE")
 CL_QUADRANT_FIELDS = ("QUADRANT", "QUAD", "QUADRANT_NM")
 CL_CARDINAL_TOLERANCE_DEG = 5.0
+CL_GEOMETRY_CONNECT_TOLERANCE = 1e-9
 CL_OUTPUT_FIELDS = [
     'street',
     'str_id',
@@ -489,27 +490,161 @@ def _interpolate_segment_point(
 
 
 def _segment_midpoint(line: Any, spec: ClMeasureSpec) -> Any:
-    coords = list(line.coords)
-    if not coords:
+    parts = _iter_linestring_parts(line)
+    if not parts:
         return Point(0.0, 0.0)
-    if len(coords) == 1:
-        return Point(coords[0])
-    segment_lengths = [
-        _point_distance_meters(x1, y1, x2, y2, spec)
-        for (x1, y1), (x2, y2) in zip(coords, coords[1:])
-    ]
-    total_length = sum(segment_lengths)
+
+    first_coords = list(parts[0].coords)
+    if not first_coords:
+        return Point(0.0, 0.0)
+
+    spans = []
+    total_length = 0.0
+    for part in parts:
+        coords = list(part.coords)
+        for (x1, y1), (x2, y2) in zip(coords, coords[1:]):
+            seg_len_m = _point_distance_meters(x1, y1, x2, y2, spec)
+            spans.append((x1, y1, x2, y2, seg_len_m))
+            total_length += seg_len_m
+
     if total_length <= 0:
-        return Point(coords[0])
+        return Point(first_coords[0])
+
     target = total_length / 2.0
     travelled = 0.0
-    for ((x1, y1), (x2, y2)), seg_len_m in zip(zip(coords, coords[1:]), segment_lengths):
+    for x1, y1, x2, y2, seg_len_m in spans:
         if seg_len_m <= 0:
             continue
         if travelled + seg_len_m >= target:
             return _interpolate_segment_point(x1, y1, x2, y2, spec, target - travelled)
         travelled += seg_len_m
-    return Point(coords[-1])
+
+    last_coords = list(parts[-1].coords)
+    return Point(last_coords[-1])
+
+
+def _point_coord_distance(a: Tuple[float, float], b: Tuple[float, float]) -> float:
+    return math.hypot(a[0] - b[0], a[1] - b[1])
+
+
+def _join_linestrings_if_connected(left: Any, right: Any) -> Optional[Any]:
+    left_coords = list(left.coords)
+    right_coords = list(right.coords)
+    if len(left_coords) < 2 or len(right_coords) < 2:
+        return None
+
+    reversed_left = list(reversed(left_coords))
+    reversed_right = list(reversed(right_coords))
+    candidates = [
+        (_point_coord_distance(left_coords[-1], right_coords[0]), left_coords, right_coords),
+        (_point_coord_distance(left_coords[0], right_coords[0]), reversed_left, right_coords),
+        (_point_coord_distance(left_coords[-1], right_coords[-1]), left_coords, reversed_right),
+        (_point_coord_distance(left_coords[0], right_coords[-1]), reversed_left, reversed_right),
+    ]
+    gap, first, second = min(candidates, key=lambda item: item[0])
+    if gap > CL_GEOMETRY_CONNECT_TOLERANCE:
+        return None
+    return LineString(first + second[1:])
+
+
+def _combine_cl_segment_geometries(left_geometry: Any, right_geometry: Any) -> Any:
+    left_parts = _iter_linestring_parts(left_geometry)
+    right_parts = _iter_linestring_parts(right_geometry)
+    if not left_parts:
+        return right_geometry
+    if not right_parts:
+        return left_geometry
+
+    joined = _join_linestrings_if_connected(left_parts[-1], right_parts[0])
+    if joined is None:
+        parts = left_parts + right_parts
+    else:
+        parts = left_parts[:-1] + [joined] + right_parts[1:]
+
+    if len(parts) == 1:
+        return parts[0]
+    return MultiLineString([list(part.coords) for part in parts])
+
+
+def _merge_cl_segment_pair(
+    left: Dict[str, Any],
+    right: Dict[str, Any],
+    spec: ClMeasureSpec,
+) -> Dict[str, Any]:
+    left_length = float(left['length_m'])
+    right_length = float(right['length_m'])
+    base = dict(left)
+    combined_geometry = _combine_cl_segment_geometries(left['geometry'], right['geometry'])
+    base['length_m'] = left_length + right_length
+    base['geometry'] = combined_geometry
+    base['midpoint'] = _segment_midpoint(combined_geometry, spec)
+    return base
+
+
+def _cl_segment_sort_key(record: Dict[str, Any]) -> Tuple[float, float, int, int]:
+    midpoint = record['midpoint']
+    if record['street_class'] == 'NS':
+        primary = float(midpoint.y)
+        secondary = float(midpoint.x)
+    else:
+        primary = float(midpoint.x)
+        secondary = float(midpoint.y)
+    source_index = int(record.get('source_index', 0))
+    part_idx = record.get('part_idx')
+    if part_idx is None or (isinstance(part_idx, float) and math.isnan(part_idx)):
+        part_order = -1
+    else:
+        part_order = int(part_idx)
+    return primary, secondary, source_index, part_order
+
+
+def _neighbor_index_for_short_segment(records: List[Dict[str, Any]], index: int) -> Optional[int]:
+    neighbors = []
+    if index > 0:
+        neighbors.append(index - 1)
+    if index < len(records) - 1:
+        neighbors.append(index + 1)
+    if not neighbors:
+        return None
+    return min(neighbors, key=lambda candidate: (float(records[candidate]['length_m']), candidate))
+
+
+def _merge_short_cl_segment_records(
+    records: List[Dict[str, Any]],
+    spec: ClMeasureSpec,
+    min_segment_length_m: float,
+) -> List[Dict[str, Any]]:
+    records = sorted((dict(record) for record in records), key=_cl_segment_sort_key)
+    while len(records) > 1:
+        short_indexes = [
+            index
+            for index, record in enumerate(records)
+            if float(record['length_m']) < min_segment_length_m
+        ]
+        if not short_indexes:
+            break
+        short_index = min(short_indexes, key=lambda index: (float(records[index]['length_m']), index))
+        neighbor_index = _neighbor_index_for_short_segment(records, short_index)
+        if neighbor_index is None:
+            break
+
+        left_index = min(short_index, neighbor_index)
+        right_index = max(short_index, neighbor_index)
+        merged = _merge_cl_segment_pair(records[left_index], records[right_index], spec)
+        records = records[:left_index] + [merged] + records[right_index + 1:]
+    return records
+
+
+def _merge_short_cl_segments(segments: Any, spec: ClMeasureSpec, min_segment_length_m: Optional[float]) -> Any:
+    if min_segment_length_m is None or min_segment_length_m <= 0 or segments.empty:
+        return segments
+
+    records: List[Dict[str, Any]] = []
+    for _, group in segments.groupby('street_label', sort=False):
+        group_records = group.to_dict('records')
+        records.extend(_merge_short_cl_segment_records(group_records, spec, float(min_segment_length_m)))
+    merged = gpd.GeoDataFrame(records, geometry='geometry', crs=segments.crs)
+    return _assign_cl_segment_identifiers(merged)
 
 
 def _angular_distance_deg(a: float, b: float) -> float:
@@ -532,6 +667,37 @@ def _build_cl_display_name(street_name: str, quadrant: str) -> str:
 
 def _build_cl_segment_identifier(street_label: str, ordinal: int, width: int) -> str:
     return f"{street_label} | {ordinal:0{width}d}"
+
+
+def _assign_cl_segment_identifiers(segments: Any) -> Any:
+    if segments.empty:
+        return segments
+
+    segments = segments.copy()
+    counts = segments['street_label'].value_counts()
+    sequence_widths = {
+        street_label: max(2, len(str(int(count))))
+        for street_label, count in counts.items()
+    }
+    segments['segment_number'] = segments.groupby('street_label', sort=False).cumcount() + 1
+    segments['identifier'] = segments.apply(
+        lambda row: _build_cl_segment_identifier(
+            row['street_label'],
+            int(row['segment_number']),
+            sequence_widths[row['street_label']],
+        ),
+        axis=1,
+    )
+    return segments
+
+
+def _optional_length_to_meters(value: Optional[float], unit: str) -> Optional[float]:
+    if value is None:
+        return None
+    numeric = float(value)
+    if numeric <= 0:
+        return None
+    return _to_miles(numeric, unit) * METERS_PER_MILE
 
 
 def _default_cl_summary_output_path(output_path: Union[str, Path]) -> Path:
@@ -866,7 +1032,11 @@ def _first_hit_for_ray(
     return best_hit
 
 
-def _prepare_cl_segments(gdf: Any, ellipsoid: str) -> Tuple[Any, ClMeasureSpec]:
+def _prepare_cl_segments(
+    gdf: Any,
+    ellipsoid: str,
+    min_segment_length_m: Optional[float] = None,
+) -> Tuple[Any, ClMeasureSpec]:
     _require_cl_dependencies()
     if gdf is None or gdf.empty:
         raise ValueError('Input street dataset is empty.')
@@ -958,20 +1128,8 @@ def _prepare_cl_segments(gdf: Any, ellipsoid: str) -> Tuple[Any, ClMeasureSpec]:
     if segments.empty:
         return segments, spec
 
-    counts = segments['street_label'].value_counts()
-    sequence_widths = {
-        street_label: max(2, len(str(int(count))))
-        for street_label, count in counts.items()
-    }
-    segments['segment_number'] = segments.groupby('street_label', sort=False).cumcount() + 1
-    segments['identifier'] = segments.apply(
-        lambda row: _build_cl_segment_identifier(
-            row['street_label'],
-            int(row['segment_number']),
-            sequence_widths[row['street_label']],
-        ),
-        axis=1,
-    )
+    segments = _assign_cl_segment_identifiers(segments)
+    segments = _merge_short_cl_segments(segments, spec, min_segment_length_m)
     return segments.copy(), spec
 
 
@@ -1240,8 +1398,9 @@ def _build_cl_bundle_geometry(
     segment_geometry: Any,
     extension_geometries: Iterable[Any],
 ) -> Any:
-    parts = [segment_geometry]
-    parts.extend(geom for geom in extension_geometries if geom is not None)
+    parts = []
+    for geometry in (segment_geometry, *[geom for geom in extension_geometries if geom is not None]):
+        parts.extend(_iter_linestring_parts(geometry))
     return MultiLineString([list(part.coords) for part in parts])
 
 
@@ -1349,12 +1508,14 @@ def analyze_street_centerlines(
     output_path: Union[str, Path] = CL_DEFAULT_OUTPUT,
     unit: str = 'feet',
     ellipsoid: str = 'wgs84',
+    min_segment_length: Optional[float] = None,
     summary_output_path: Optional[Union[str, Path]] = None,
     chart_output_path: Optional[Union[str, Path]] = None,
     gis_output_path: Optional[Union[str, Path]] = None,
 ) -> int:
     dataset = _load_cl_dataset(input_path)
-    segments, spec = _prepare_cl_segments(dataset, ellipsoid)
+    min_segment_length_m = _optional_length_to_meters(min_segment_length, unit)
+    segments, spec = _prepare_cl_segments(dataset, ellipsoid, min_segment_length_m)
     rows = _build_cl_rows(segments, spec, unit)
     _write_cl_csv(rows, output_path)
     summary_output = Path(summary_output_path) if summary_output_path else _default_cl_summary_output_path(output_path)
@@ -1378,6 +1539,7 @@ def _run_cl(args: argparse.Namespace) -> None:
         output_path=args.output,
         unit=args.units,
         ellipsoid=args.ell,
+        min_segment_length=args.min_segment_length,
         summary_output_path=summary_output,
         chart_output_path=chart_output,
         gis_output_path=gis_output,
@@ -1426,6 +1588,12 @@ def main(argv: Optional[List[str]] = None) -> None:
         type=_parse_cl_ellipsoid_arg,
         default='wgs84',
         help='Fallback ellipsoid when the input has no CRS: wgs84, nad83, pseudomerc, or none.',
+    )
+    parser.add_argument(
+        '--min-segment-length',
+        type=float,
+        default=None,
+        help='Merge same-street segments shorter than this length into their smaller neighboring segment. Uses --units.',
     )
     _run_cl(parser.parse_args(argv))
 

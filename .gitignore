@@ -414,3 +414,8 @@ clenfout.png
 roadways/centerlines/clenfout.gpkg
 coverage/scratch.txt
 coverage/los_cover_lines.qml
+roadways/centerlines/results/cl_stats_by_street.png
+roadways/centerlines/results/cl_stats.gpkg
+roadways/centerlines/results/clenfant_by_street.png
+roadways/centerlines/results/clenfant.gpkg
+roadways/centerlines/results/clenfout.gpkg

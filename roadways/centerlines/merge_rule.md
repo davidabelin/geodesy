@@ -17,7 +17,7 @@ A: TBD
 ## Working version
 
 - Walk each street from first segment to last.
-- Before length merging, split the street at any endpoint-to-endpoint discontinuity greater than 10 meters. Each gap-free component is processed independently.
+- Before length merging, split the street at any endpoint-to-endpoint discontinuity greater than 100 meters. Each gap-free component is processed independently.
 - Any segment longer than 2 may stand as a prime segment.
 - Consecutive segments of length 2 or less form a prohibited run.
 - A prohibited run whose combined length is greater than 2 may stand as its own prime segment unless it is trailing at the end of the street.
@@ -26,3 +26,4 @@ A: TBD
 - A trailing prohibited run is always absorbed into the prime segment immediately to its left.
 - When two pieces merge, add their lengths and replace the orientation with the pairwise average of the current prime orientation and the absorbed segment's orientation. For runs that merge left, apply the pieces one at a time from left to right.
 - If the whole street is prohibited segments, group the full street as one prime segment.
+- Segments shorter than min length are merged when possible within their gap-free component. If the entire component is still shorter than min length, it remains short.

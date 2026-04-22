@@ -204,8 +204,8 @@ def test_prepare_segments_restarts_length_merge_at_large_gap():
         },
         geometry=[
             LineString([(0, 0), (10, 0)]),
-            LineString([(130, 0), (132, 0)]),
-            LineString([(132, 0), (136, 0)]),
+            LineString([(25, 0), (27, 0)]),
+            LineString([(27, 0), (31, 0)]),
         ],
         crs="EPSG:3857",
     )

@@ -48,7 +48,7 @@ CL_TYPE_FIELDS = ("STREETTYPE", "USPS_ABBRE", "ST_TYPE", "TYPE")
 CL_QUADRANT_FIELDS = ("QUADRANT", "QUAD", "QUADRANT_NM")
 CL_CARDINAL_TOLERANCE_DEG = 5.0
 CL_GEOMETRY_CONNECT_TOLERANCE = 1e-9
-CL_SEGMENT_GAP_DISCONTINUITY_M = 100.0
+CL_SEGMENT_GAP_DISCONTINUITY_M = 10.0
 CL_OUTPUT_FIELDS = [
     'street',
     'str_id',
@@ -706,7 +706,7 @@ def _split_cl_segment_records_at_gaps(
     records: List[Dict[str, Any]],
     spec: ClMeasureSpec,
 ) -> List[List[Dict[str, Any]]]:
-    """Split ordered same-street records wherever endpoint gaps exceed 100 meters."""
+    """Split ordered same-street records wherever endpoint gaps exceed 10 meters."""
     if not records:
         return []
 

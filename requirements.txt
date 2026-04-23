@@ -12,6 +12,7 @@ pyproj
 geopandas
 pandas
 pyogrio
+rasterio
 shapely
 matplotlib>=3.10.8
 scipy>=1.17.0

@@ -341,6 +341,7 @@ qgis/Shaded Relief/shaded_relief.kmz
 highpoints/*.geojson
 highpoints/*.zip
 highpoints/*.csv
+!highpoints/crnrpoints.csv
 highpoints/*.kml
 data/PenLines.kml
 data/PenPnts.kml
@@ -420,3 +421,4 @@ roadways/centerlines/results/cl_stats.gpkg
 roadways/centerlines/results/clenfant_by_street.png
 roadways/centerlines/results/clenfant.gpkg
 roadways/centerlines/results/clenfout.gpkg
+highpoints/out/*

@@ -9,6 +9,8 @@ from typing import Any, Iterable, Optional
 
 from pyproj import Geod
 
+from coverage_solver import CoverCandidate, solve_networkx_full_cover
+
 
 WGS84 = Geod(ellps="WGS84")
 METERS_PER_MILE = 1609.344
@@ -491,6 +493,53 @@ def greedy_full_cover(
     return rows, uncovered_ids
 
 
+def networkx_full_cover(
+    demand_points: list[PointRecord],
+    candidate_points: list[PointRecord],
+    *,
+    radius_m: float,
+    distance_mode: str,
+    exclude_self: bool = False,
+) -> tuple[list[dict[str, Any]], list[str]]:
+    candidate_covers, _ = build_coverage_lookup(
+        demand_points,
+        candidate_points,
+        radius_m=radius_m,
+        distance_mode=distance_mode,
+        exclude_self=exclude_self,
+    )
+    universe_ids = [point.point_id for point in demand_points]
+    cover_candidates = [
+        CoverCandidate(
+            candidate_id=candidate_points[index].point_id,
+            covered_ids=frozenset(
+                demand_points[demand_index].point_id
+                for demand_index in sorted(covered_indexes)
+            ),
+            weight=_networkx_candidate_weight(index, covered_indexes),
+            sort_key=(-len(covered_indexes), index, candidate_points[index].point_id),
+            metadata={"candidate_index": index},
+        )
+        for index, covered_indexes in enumerate(candidate_covers)
+        if covered_indexes
+    ]
+
+    solution = solve_networkx_full_cover(universe_ids, cover_candidates)
+    selected_indexes = {
+        int(candidate.metadata["candidate_index"])
+        for candidate in cover_candidates
+        if candidate.candidate_id in solution.selected_ids
+    }
+    rows, uncovered_indexes = _rank_selected_candidate_indexes(
+        demand_points,
+        candidate_points,
+        candidate_covers,
+        selected_indexes,
+    )
+    uncovered_ids = [demand_points[index].point_id for index in sorted(uncovered_indexes)]
+    return rows, uncovered_ids
+
+
 def greedy_budgeted_max_cover(
     demand_points: list[PointRecord],
     candidate_points: list[PointRecord],
@@ -546,6 +595,59 @@ def greedy_budgeted_max_cover(
 
     uncovered_ids = [demand_points[index].point_id for index in sorted(uncovered)]
     return rows, uncovered_ids
+
+
+def _rank_selected_candidate_indexes(
+    demand_points: list[PointRecord],
+    candidate_points: list[PointRecord],
+    candidate_covers: list[set[int]],
+    selected_indexes: set[int],
+) -> tuple[list[dict[str, Any]], set[int]]:
+    uncovered = set(range(len(demand_points)))
+    remaining = set(selected_indexes)
+    rows: list[dict[str, Any]] = []
+    rank = 1
+
+    while remaining:
+        best_index = None
+        best_new_cover: set[int] = set()
+        for candidate_index in sorted(remaining):
+            new_cover = candidate_covers[candidate_index] & uncovered
+            if (
+                best_index is None
+                or len(new_cover) > len(best_new_cover)
+                or (len(new_cover) == len(best_new_cover) and candidate_index < best_index)
+            ):
+                best_index = candidate_index
+                best_new_cover = new_cover
+
+        if best_index is None:
+            break
+
+        uncovered -= best_new_cover
+        remaining.remove(best_index)
+        candidate = candidate_points[best_index]
+        rows.append(
+            {
+                "rank": rank,
+                "candidate_id": candidate.point_id,
+                "newly_covered_count": len(best_new_cover),
+                "total_covered_count": len(demand_points) - len(uncovered),
+                "remaining_uncovered_count": len(uncovered),
+                "covered_demand_ids": "|".join(
+                    demand_points[index].point_id for index in sorted(best_new_cover)
+                ),
+            }
+        )
+        rank += 1
+
+    return rows, uncovered
+
+
+def _networkx_candidate_weight(candidate_index: int, covered_indexes: set[int]) -> float:
+    coverage_bonus = 1e-6 * len(covered_indexes)
+    index_tiebreaker = candidate_index * 1e-12
+    return 1.0 - coverage_bonus + index_tiebreaker
 
 
 def write_rows(path: Path, rows: list[dict[str, Any]], output_format: str) -> None:
@@ -894,6 +996,14 @@ def write_qgis_bundle(
             radius_m=radius_m,
             distance_mode=distance_mode,
             budget=budget,
+            exclude_self=exclude_self,
+        )
+    elif solver == "networkx-full-cover":
+        solver_rows, uncovered_ids = networkx_full_cover(
+            demand_dataset.points,
+            candidate_dataset.points,
+            radius_m=radius_m,
+            distance_mode=distance_mode,
             exclude_self=exclude_self,
         )
     elif solver != "none":

@@ -166,6 +166,18 @@ def test_solver_handles_single_segment_cover() -> None:
     assert [candidate.candidate_id for candidate in result.selected_candidates] == ["all"]
 
 
+def test_networkx_solver_handles_single_segment_cover() -> None:
+    candidates = [
+        _candidate("all", 0b111),
+        _candidate("left", 0b011),
+        _candidate("right", 0b110),
+    ]
+
+    result = solve_candidate_cover(candidates, 3, solver="networkx", reachable_mask=0b111)
+    assert [candidate.candidate_id for candidate in result.selected_candidates] == ["all"]
+    assert result.stage == "networkx"
+
+
 def test_solver_handles_two_segment_cover() -> None:
     candidates = [
         _candidate("a", 0b0011, anchor_id="A"),
@@ -174,6 +186,18 @@ def test_solver_handles_two_segment_cover() -> None:
     ]
 
     result = solve_candidate_cover(candidates, 4, solver="hybrid", reachable_mask=0b1111)
+    selected_ids = {candidate.candidate_id for candidate in result.selected_candidates}
+    assert selected_ids == {"a", "b"}
+
+
+def test_networkx_solver_handles_two_segment_cover() -> None:
+    candidates = [
+        _candidate("a", 0b0011, anchor_id="A"),
+        _candidate("b", 0b1100, anchor_id="B"),
+        _candidate("c", 0b0101, anchor_id="C"),
+    ]
+
+    result = solve_candidate_cover(candidates, 4, solver="networkx", reachable_mask=0b1111)
     selected_ids = {candidate.candidate_id for candidate in result.selected_candidates}
     assert selected_ids == {"a", "b"}
 

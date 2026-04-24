@@ -18,6 +18,7 @@ from coverage_core import (
     resolve_input_path,
     write_rows,
 )
+from coverage_solver import CoverCandidate, solve_networkx_full_cover
 
 
 try:
@@ -861,6 +862,48 @@ def run_exact_refinement(
     return [candidates[index] for index in selected_indexes]
 
 
+def networkx_select_candidates(
+    candidates: list[CandidateSegment],
+    *,
+    point_count: int,
+    target_mask: int,
+) -> list[CandidateSegment]:
+    target_indexes = _mask_indexes(target_mask, point_count)
+    candidate_by_id = {candidate.candidate_id: candidate for candidate in candidates}
+    cover_candidates = [
+        CoverCandidate(
+            candidate_id=candidate.candidate_id,
+            covered_ids=frozenset(
+                str(index)
+                for index in _mask_indexes(candidate.coverage_mask & target_mask, point_count)
+            ),
+            weight=_networkx_candidate_weight(candidate),
+            sort_key=(
+                -candidate.coverage_count,
+                round(candidate.residual_sum_m, 6),
+                round(candidate.segment_length_m, 6),
+                candidate.candidate_id,
+            ),
+        )
+        for candidate in candidates
+        if candidate.coverage_mask & target_mask
+    ]
+    solution = solve_networkx_full_cover(
+        (str(index) for index in target_indexes),
+        cover_candidates,
+    )
+    selected = [
+        candidate_by_id[candidate_id]
+        for candidate_id in solution.selected_ids
+        if candidate_id in candidate_by_id
+    ]
+    return drop_redundant_candidates(
+        selected,
+        point_count=point_count,
+        target_mask=target_mask,
+    )
+
+
 def rank_selected_candidates(
     selected_candidates: list[CandidateSegment],
     *,
@@ -928,6 +971,14 @@ def solve_candidate_cover(
         for candidate in candidates:
             target_mask |= candidate.coverage_mask
 
+    if solver == "networkx":
+        selected = networkx_select_candidates(
+            candidates,
+            point_count=point_count,
+            target_mask=target_mask,
+        )
+        return SelectionSummary(selected, target_mask, set(), "not-requested", "networkx")
+
     selected = greedy_select_candidates(candidates, point_count=point_count, target_mask=target_mask)
     selected = drop_redundant_candidates(selected, point_count=point_count, target_mask=target_mask)
     stage = "greedy"
@@ -986,6 +1037,13 @@ def solve_candidate_cover(
         )
 
     return SelectionSummary(selected, target_mask, exact_pool_ids, "no-better-solution", stage)
+
+
+def _networkx_candidate_weight(candidate: CandidateSegment) -> float:
+    coverage_bonus = 1e-6 * candidate.coverage_count
+    residual_tiebreaker = min(candidate.residual_sum_m, 1_000_000.0) * 1e-12
+    length_tiebreaker = min(candidate.segment_length_m, 1_000_000.0) * 1e-12
+    return 1.0 - coverage_bonus + residual_tiebreaker + length_tiebreaker
 
 
 def _projected_point_from_candidate(

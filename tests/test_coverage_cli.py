@@ -180,6 +180,30 @@ def test_greedy_cover_commands_select_expected_sites(tmp_path: Path) -> None:
     assert max_rows[0]["candidate_id"] == "S1"
     assert max_rows[0]["remaining_uncovered_count"] == "1"
 
+    networkx_output = tmp_path / "networkx.csv"
+    networkx_result = run_cli(
+        "full-cover",
+        "--input",
+        str(demand_csv),
+        "--candidates",
+        str(candidate_csv),
+        "--radius",
+        "200",
+        "--unit",
+        "meters",
+        "--solver",
+        "networkx",
+        "--output",
+        str(networkx_output),
+    )
+
+    assert networkx_result.returncode == 0, networkx_result.stderr
+    with networkx_output.open("r", encoding="utf-8", newline="") as fh:
+        networkx_rows = list(csv.DictReader(fh))
+
+    assert {row["candidate_id"] for row in networkx_rows} == {"S1", "S2"}
+    assert networkx_rows[-1]["remaining_uncovered_count"] == "0"
+
 
 def test_qgis_bundle_writes_visual_layers_and_manifest(tmp_path: Path) -> None:
     demand_csv = tmp_path / "demands.csv"
@@ -231,6 +255,40 @@ def test_qgis_bundle_writes_visual_layers_and_manifest(tmp_path: Path) -> None:
     assert len(zones["features"]) == 2
     assert "coverage_zones" in loader
     assert "style_demands" in loader
+
+    networkx_bundle_dir = tmp_path / "bundle_networkx"
+    networkx_result = run_cli(
+        "qgis-bundle",
+        "--input",
+        str(demand_csv),
+        "--candidates",
+        str(candidate_csv),
+        "--radius",
+        "200",
+        "--unit",
+        "meters",
+        "--solver",
+        "networkx-full-cover",
+        "--output-dir",
+        str(networkx_bundle_dir),
+    )
+
+    assert networkx_result.returncode == 0, networkx_result.stderr
+    networkx_manifest = json.loads(
+        (networkx_bundle_dir / "bundle_manifest.json").read_text(encoding="utf-8")
+    )
+    networkx_rows = list(
+        csv.DictReader(
+            (networkx_bundle_dir / "solver_rows.csv").open(
+                "r",
+                encoding="utf-8",
+                newline="",
+            )
+        )
+    )
+    assert networkx_manifest["solver"] == "networkx-full-cover"
+    assert networkx_manifest["selected_candidate_count"] == 2
+    assert {"rank", "candidate_id", "covered_demand_ids"}.issubset(networkx_rows[0].keys())
 
 
 @pytest.mark.skipif(not QGIS_PYTHON.exists(), reason="QGIS python runtime not installed")

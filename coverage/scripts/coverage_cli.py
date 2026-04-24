@@ -14,6 +14,7 @@ from coverage_core import (
     greedy_budgeted_max_cover,
     greedy_full_cover,
     load_dataset,
+    networkx_full_cover,
     write_rows,
     write_qgis_bundle,
 )
@@ -130,11 +131,17 @@ def build_parser() -> argparse.ArgumentParser:
 
     full_cover = sub.add_parser(
         "full-cover",
-        help="Greedy full-cover approximation: choose sites until all reachable demand is covered.",
+        help="Full-cover approximation: choose sites until all reachable demand is covered.",
     )
     _add_dataset_args(full_cover)
     _add_coverage_args(full_cover)
     _add_output_args(full_cover)
+    full_cover.add_argument(
+        "--solver",
+        choices=["greedy", "networkx"],
+        default="greedy",
+        help="Full-cover solver. Defaults to greedy.",
+    )
 
     max_cover = sub.add_parser(
         "max-cover",
@@ -158,9 +165,9 @@ def build_parser() -> argparse.ArgumentParser:
     _add_coverage_args(qgis_bundle)
     qgis_bundle.add_argument(
         "--solver",
-        choices=["none", "full-cover", "max-cover"],
+        choices=["none", "full-cover", "networkx-full-cover", "max-cover"],
         default="full-cover",
-        help="Optional greedy solver used to flag selected candidates in the bundle.",
+        help="Optional solver used to flag selected candidates in the bundle.",
     )
     qgis_bundle.add_argument(
         "--budget",
@@ -222,7 +229,7 @@ def build_parser() -> argparse.ArgumentParser:
     los_cover.add_argument("--endpoint-step-m", type=float, default=25.0)
     los_cover.add_argument("--sample-step", type=float, default=None, help="LOS terrain sampling step in --unit.")
     los_cover.add_argument("--sample-step-m", type=float, default=None, help="LOS terrain sampling step in meters.")
-    los_cover.add_argument("--solver", choices=["greedy", "hybrid"], default="hybrid")
+    los_cover.add_argument("--solver", choices=["greedy", "hybrid", "networkx"], default="hybrid")
 
     return parser
 
@@ -296,13 +303,24 @@ def _matrix_command(args: argparse.Namespace) -> int:
 def _full_cover_command(args: argparse.Namespace) -> int:
     demand, candidates = _load_datasets(args)
     radius_m = convert_distance_to_meters(args.radius, args.unit)
-    rows, uncovered_ids = greedy_full_cover(
-        demand.points,
-        candidates.points,
-        radius_m=radius_m,
-        distance_mode=args.distance_mode,
-        exclude_self=args.exclude_self,
-    )
+    if args.solver == "greedy":
+        rows, uncovered_ids = greedy_full_cover(
+            demand.points,
+            candidates.points,
+            radius_m=radius_m,
+            distance_mode=args.distance_mode,
+            exclude_self=args.exclude_self,
+        )
+    elif args.solver == "networkx":
+        rows, uncovered_ids = networkx_full_cover(
+            demand.points,
+            candidates.points,
+            radius_m=radius_m,
+            distance_mode=args.distance_mode,
+            exclude_self=args.exclude_self,
+        )
+    else:
+        raise ValueError(f"Unsupported full-cover solver: {args.solver}")
     output_path = Path(args.output) if args.output else _default_output_path(
         "full_cover", demand, candidates, args.format
     )

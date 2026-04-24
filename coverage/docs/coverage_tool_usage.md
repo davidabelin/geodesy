@@ -427,7 +427,7 @@ Output columns include:
 - `candidate_lat`
 - `candidate_lon`
 
-## Greedy Full Cover
+## Full Cover
 
 The `full-cover` command chooses candidate points until no more reachable demand points remain uncovered.
 
@@ -454,6 +454,7 @@ Options:
 --unit meters|m|km|miles|mi|feet|ft
 --distance-mode surface|ecef-3d
 --exclude-self
+--solver greedy|networkx
 --output OUTPUT
 --format csv|json
 ```
@@ -466,6 +467,8 @@ Argument details:
 - `--unit`: unit for `--radius`.
 - `--distance-mode`: same meaning as in `matrix`.
 - `--exclude-self`: useful when demand and candidate files are the same and a point should not cover itself.
+- `--solver greedy`: default greedy set-cover approximation.
+- `--solver networkx`: optional NetworkX weighted dominating-set approximation over the same coverage relationships.
 - `--output`: explicit output file path.
 - `--format`: `csv` or `json` table output.
 
@@ -532,7 +535,7 @@ Options:
 --unit meters|m|km|miles|mi|feet|ft
 --distance-mode surface|ecef-3d
 --exclude-self
---solver none|full-cover|max-cover
+--solver none|full-cover|networkx-full-cover|max-cover
 --budget BUDGET
 --output-dir OUTPUT_DIR
 ```
@@ -541,6 +544,7 @@ Argument details:
 
 - `--solver none`: do not select candidates; only write coverage relationships.
 - `--solver full-cover`: select enough candidates to cover all reachable demand under the radius rule.
+- `--solver networkx-full-cover`: use NetworkX's weighted dominating-set approximation for full-cover selection.
 - `--solver max-cover`: select up to `--budget` candidates.
 - `--budget`: required when `--solver max-cover`.
 - `--output-dir`: folder for GeoJSON files, manifest, solver table, and QGIS loader script.
@@ -639,7 +643,7 @@ Options:
 --point-height-m POINT_HEIGHT_M
 --sample-step SAMPLE_STEP
 --sample-step-m SAMPLE_STEP_M
---solver greedy|hybrid
+--solver greedy|hybrid|networkx
 ```
 
 Argument details:
@@ -660,6 +664,7 @@ Argument details:
 - `--sample-step-m`: same concept as `--sample-step`, but always meters and overrides the unit-aware value.
 - `--solver greedy`: greedy set-cover selection.
 - `--solver hybrid`: greedy selection plus local improvements and reduced-pool exact refinement when available.
+- `--solver networkx`: optional NetworkX weighted dominating-set approximation over the generated LOS line families.
 
 Accepted but legacy/unused for the pairwise model:
 
@@ -744,6 +749,12 @@ The `meaningful_lines.geojson` output contains only deduped line families with t
 - Starts with greedy/local improvement.
 - Attempts reduced-pool exact refinement with `scipy.optimize.milp` when available and practical.
 - Skips exact refinement when the reduced pool is too large.
+
+`--solver networkx`:
+
+- Converts each LOS line family into a geometry-neutral covered-point set.
+- Uses NetworkX's weighted dominating-set approximation as a set-cover proxy.
+- Does not run the local-search or exact-refinement stages. Keep `hybrid` as the recommended default when you want the strongest current LOS result.
 
 The CLI prints the exact refinement status after each run.
 

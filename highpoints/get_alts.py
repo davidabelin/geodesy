@@ -7,16 +7,16 @@ import geojson
 
 # --- Configuration ---
 # Absolute path to your input CSV file with point data
-CSV_FILE_PATH = r"data\map_refpnts.csv"
+CSV_FILE_PATH = r"C:\Users\David\Documents\Local_Python\geodesy\coverage\starterpnts.csv"  # r"data\map_refpnts.csv"
 # Absolute path to your Digital Elevation Model (DEM) GeoTIFF file
-DEM_FILE_PATH = r"data\dc_dem.tif"
+DEM_FILE_PATH = r"C:\Users\David\Documents\Local_Python\geodesy\data\tif\dc_dem.tif"
 # Absolute path for the output GeoJSON file
-GEOJSON_OUTPUT_PATH = r"data\map_refpnts.geojson"
+GEOJSON_OUTPUT_PATH = r"C:\Users\David\Documents\Local_Python\geodesy\coverage\results\scratch.geojson" 
 
 # EPSG code for the coordinate system of your input LAT/LON points
 # NAD83 geographic coordinates (latitude/longitude)
 #INPUT_POINTS_EPSG = 4269 # For NAD83
-# If your points were WGS84, you would use:
+# For WGS84, use:
 INPUT_POINTS_EPSG = 4326 # For WGS84
 
 # Conversion factor

@@ -56,6 +56,7 @@ def _candidate(
     residual_sum_m: float = 0.0,
     segment_length_m: float = 10.0,
     point_distances_m: dict[int, float] | None = None,
+    endpoint_index: int | None = 1,
 ) -> CandidateSegment:
     point_distances_m = point_distances_m or {
         index: float(index + 1)
@@ -66,6 +67,7 @@ def _candidate(
         candidate_id=candidate_id,
         anchor_index=anchor_index,
         anchor_id=anchor_id,
+        endpoint_index=endpoint_index,
         coverage_mask=coverage_mask,
         coverage_count=coverage_mask.bit_count(),
         residual_sum_m=residual_sum_m or sum(point_distances_m.values()),
@@ -151,8 +153,18 @@ def test_deduplicate_family_candidates_keeps_best_representative_for_same_mask()
     ]
 
     deduped = deduplicate_family_candidates(candidates)
-    assert [candidate.candidate_id for candidate in deduped] == ["pair_only", "short"]
+    assert [candidate.candidate_id for candidate in deduped] == ["long", "pair_only"]
     assert all(candidate.generation_kind == "pair-family" for candidate in deduped)
+
+
+def test_deduplicate_family_candidates_prefers_lower_residual_before_longer_span() -> None:
+    candidates = [
+        _candidate("longer", 0b111, residual_sum_m=3.0, segment_length_m=30.0),
+        _candidate("cleaner", 0b111, residual_sum_m=2.0, segment_length_m=10.0),
+    ]
+
+    deduped = deduplicate_family_candidates(candidates)
+    assert [candidate.candidate_id for candidate in deduped] == ["cleaner"]
 
 
 def test_solver_handles_single_segment_cover() -> None:

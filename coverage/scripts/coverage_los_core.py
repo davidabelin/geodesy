@@ -432,12 +432,33 @@ def _mask_to_point_ids(mask: int, points: list[PreparedPoint]) -> list[str]:
     return [points[index].point_id for index in _mask_indexes(mask, len(points))]
 
 
-def _candidate_sort_key(candidate: CandidateSegment) -> tuple[float, float, str]:
+def _candidate_sort_key(candidate: CandidateSegment) -> tuple[float, float, float, str]:
     return (
         round(candidate.residual_sum_m, 6),
-        round(candidate.segment_length_m, 6),
+        -round(_covered_endpoint_separation_m(candidate), 6),
+        -round(candidate.segment_length_m, 6),
         candidate.candidate_id,
     )
+
+
+def _covered_endpoint_separation_m(candidate: CandidateSegment) -> float:
+    """Return how far apart the representative endpoints are within the family.
+
+    The current LOS model creates candidates only from original point pairs, and
+    those endpoints are always members of the candidate's covered set. For line
+    families with the same covered mask, preferring the largest endpoint
+    separation keeps the visible representative closer to the family's full
+    extent. This helper keeps that intent separate from generic segment length
+    in case future candidate types need a richer covered-point span metric.
+    """
+
+    if candidate.endpoint_index is None:
+        return 0.0
+    anchor_bit = 1 << candidate.anchor_index
+    endpoint_bit = 1 << candidate.endpoint_index
+    if candidate.coverage_mask & anchor_bit and candidate.coverage_mask & endpoint_bit:
+        return candidate.segment_length_m
+    return 0.0
 
 
 def _build_candidate(

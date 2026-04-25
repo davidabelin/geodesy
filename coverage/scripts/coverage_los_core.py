@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import sys
 import threading
 import traceback
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from contextlib import contextmanager
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Iterable, Optional
@@ -25,20 +27,21 @@ from coverage_core import (
 from coverage_solver import CoverCandidate, solve_networkx_full_cover
 
 
-try:
-    from scipy.optimize import Bounds, LinearConstraint, milp
-
-    MILP_AVAILABLE = True
-except Exception:
-    Bounds = None
-    LinearConstraint = None
-    milp = None
-    MILP_AVAILABLE = False
+_MILP_IMPORT_ATTEMPTED = False
+_MILP_SOLVER: tuple[Any, Any, Any] | None = None
 
 
 _PROCESS_PAIR_POINTS: list["ResolvedPoint"] | None = None
 _PROCESS_PREPARED_POINTS: list["PreparedPoint"] | None = None
 _PROCESS_PROVIDER: "ElevationProvider" | None = None
+_PROCESS_DEM_PATH: Path | None = None
+_PROCESS_REPO_ROOT: Path | None = None
+_PROCESS_DEM_UNIT = "meters"
+_PROCESS_GDAL_CACHE_MB: int | None = None
+
+PROCESS_GDAL_CACHE_TOTAL_MB = 512
+PROCESS_GDAL_CACHE_MIN_MB = 8
+PROCESS_GDAL_CACHE_MAX_MB = 64
 
 
 def _print_process_worker_exception(exc_type, exc_value, exc_traceback) -> None:
@@ -49,6 +52,72 @@ def _print_process_worker_exception(exc_type, exc_value, exc_traceback) -> None:
         exc_traceback,
         file=sys.__stderr__,
     )
+
+
+def _process_gdal_cache_mb(worker_count: int) -> int:
+    """Choose a small per-worker GDAL cache for parallel DEM sampling.
+
+    GDAL/Rasterio maintain a block cache per process. With `--workers max`, the
+    default cache can multiply into avoidable memory pressure, so the process
+    path uses a bounded cache budget split across active workers.
+    """
+    per_worker = PROCESS_GDAL_CACHE_TOTAL_MB // max(1, worker_count)
+    return max(
+        PROCESS_GDAL_CACHE_MIN_MB,
+        min(PROCESS_GDAL_CACHE_MAX_MB, per_worker),
+    )
+
+
+@contextmanager
+def _stable_windows_platform_imports():
+    """Avoid Windows WMI lookups during heavy third-party imports.
+
+    Python 3.14's `platform` module may use WMI for `platform.system()` and
+    `platform.machine()` on Windows. In this workflow those calls are only used
+    by imported libraries for broad platform checks, and WMI can hang after a
+    stressed process-pool run. The patch is scoped to imports only.
+    """
+    if os.name != "nt":
+        yield
+        return
+
+    import platform
+
+    original_system = platform.system
+    original_machine = platform.machine
+    platform.system = lambda: "Windows"
+    platform.machine = lambda: os.environ.get("PROCESSOR_ARCHITECTURE") or "AMD64"
+    try:
+        yield
+    finally:
+        platform.system = original_system
+        platform.machine = original_machine
+
+
+def _load_milp_solver() -> tuple[Any, Any, Any] | None:
+    """Load SciPy's MILP solver only when exact refinement needs it.
+
+    Importing SciPy is expensive and, on some Windows installs, can call WMI via
+    `platform.machine()` while NumPy testing helpers are imported. The temporary
+    Windows patch avoids that import-time WMI lookup without changing runtime
+    platform behavior after SciPy has loaded.
+    """
+    global _MILP_IMPORT_ATTEMPTED
+    global _MILP_SOLVER
+
+    if _MILP_IMPORT_ATTEMPTED:
+        return _MILP_SOLVER
+
+    _MILP_IMPORT_ATTEMPTED = True
+    with _stable_windows_platform_imports():
+        try:
+            from scipy.optimize import Bounds, LinearConstraint, milp
+        except Exception:
+            _MILP_SOLVER = None
+        else:
+            _MILP_SOLVER = (Bounds, LinearConstraint, milp)
+
+    return _MILP_SOLVER
 
 LOS_SOLVER_VERSION = "los-segment-cover-v2-pairwise"
 WGS84_3D = CRS.from_epsg(4979)
@@ -232,16 +301,19 @@ class UnitScaledElevationProvider(ElevationProvider):
 class GDALDemSampler(ElevationProvider):
     """DEM sampler backed by OSGeo/GDAL for QGIS-runtime execution."""
 
-    def __init__(self, dem_path: Path):
+    def __init__(self, dem_path: Path, *, gdal_cache_mb: int | None = None):
         try:
-            from osgeo import gdal
-            from pyproj import CRS as LocalCRS, Transformer as LocalTransformer
+            with _stable_windows_platform_imports():
+                from osgeo import gdal
+                from pyproj import CRS as LocalCRS, Transformer as LocalTransformer
         except Exception as exc:  # pragma: no cover - exercised via factory
             raise RuntimeError(
                 "GDAL-backed DEM sampling is unavailable in this Python runtime."
             ) from exc
 
         gdal.UseExceptions()
+        if gdal_cache_mb is not None:
+            gdal.SetCacheMax(int(gdal_cache_mb) * 1024 * 1024)
         self.path = dem_path.resolve()
         self.dataset = gdal.Open(str(self.path))
         if self.dataset is None:
@@ -281,17 +353,30 @@ class GDALDemSampler(ElevationProvider):
 class RasterioDemSampler(ElevationProvider):
     """DEM sampler used by normal Python runs without importing OSGeo bindings."""
 
-    def __init__(self, dem_path: Path):
+    def __init__(self, dem_path: Path, *, gdal_cache_mb: int | None = None):
         try:
-            import rasterio
-            from pyproj import CRS as LocalCRS, Transformer as LocalTransformer
+            with _stable_windows_platform_imports():
+                import rasterio
+                from pyproj import CRS as LocalCRS, Transformer as LocalTransformer
         except Exception as exc:  # pragma: no cover - exercised via factory
             raise RuntimeError(
                 "Rasterio-backed DEM sampling is unavailable in this Python runtime."
             ) from exc
 
         self.path = dem_path.resolve()
-        self.dataset = rasterio.open(self.path)
+        self._rasterio_env = (
+            rasterio.Env(GDAL_CACHEMAX=int(gdal_cache_mb))
+            if gdal_cache_mb is not None
+            else None
+        )
+        if self._rasterio_env is not None:
+            self._rasterio_env.__enter__()
+        try:
+            self.dataset = rasterio.open(self.path)
+        except Exception:
+            if self._rasterio_env is not None:
+                self._rasterio_env.__exit__(*sys.exc_info())
+            raise
         self._sample_lock = threading.Lock()
         self.nodata = self.dataset.nodata
         raster_crs = self.dataset.crs
@@ -312,21 +397,26 @@ class RasterioDemSampler(ElevationProvider):
             if col < 0 or row < 0 or col >= self.dataset.width or row >= self.dataset.height:
                 raise ValueError(f"Point outside DEM extent: lon={lon}, lat={lat}")
 
-            array = self.dataset.read(1, window=((row, row + 1), (col, col + 1)), masked=True)
-            value = array[0][0]
-            if np.ma.is_masked(value):
-                raise ValueError(f"DEM nodata at lon={lon}, lat={lat}")
-            numeric_value = float(value)
+            array = self.dataset.read(1, window=((row, row + 1), (col, col + 1)), masked=False)
+            numeric_value = float(array[0][0])
             if self.nodata is not None and numeric_value == self.nodata:
                 raise ValueError(f"DEM nodata at lon={lon}, lat={lat}")
             if math.isnan(numeric_value):
                 raise ValueError(f"DEM nodata at lon={lon}, lat={lat}")
             return numeric_value
 
+    def close(self) -> None:
+        """Release raster handles explicitly when a sampler is discarded."""
+        self.dataset.close()
+        if self._rasterio_env is not None:
+            self._rasterio_env.__exit__(None, None, None)
+            self._rasterio_env = None
+
 
 def has_rasterio_backend() -> bool:
     try:
-        import rasterio as _rasterio  # noqa: F401
+        with _stable_windows_platform_imports():
+            import rasterio as _rasterio  # noqa: F401
     except Exception:
         return False
     return True
@@ -334,7 +424,8 @@ def has_rasterio_backend() -> bool:
 
 def has_gdal_backend() -> bool:
     try:
-        from osgeo import gdal as _gdal  # noqa: F401
+        with _stable_windows_platform_imports():
+            from osgeo import gdal as _gdal  # noqa: F401
     except Exception:
         return False
     return True
@@ -344,12 +435,17 @@ def has_dem_backend() -> bool:
     return has_rasterio_backend() or has_gdal_backend()
 
 
-def create_elevation_provider(dem_path: str | Path, repo_root: Path) -> ElevationProvider:
+def create_elevation_provider(
+    dem_path: str | Path,
+    repo_root: Path,
+    *,
+    gdal_cache_mb: int | None = None,
+) -> ElevationProvider:
     path = resolve_input_path(str(dem_path), repo_root)
     if has_rasterio_backend():
-        return RasterioDemSampler(path)
+        return RasterioDemSampler(path, gdal_cache_mb=gdal_cache_mb)
     if has_gdal_backend():
-        return GDALDemSampler(path)
+        return GDALDemSampler(path, gdal_cache_mb=gdal_cache_mb)
     if not has_dem_backend():
         raise RuntimeError(
             "No local DEM sampler is available in this Python runtime. "
@@ -701,17 +797,51 @@ def _init_process_candidate_worker(
     dem_path: str,
     repo_root: str,
     dem_unit: str,
+    gdal_cache_mb: int,
 ) -> None:
-    """Initialize per-process state for parallel LOS candidate generation."""
+    """Initialize per-process state for parallel LOS candidate generation.
+
+    The DEM itself is opened lazily by the first task in each process. Keeping
+    provider creation out of the process-pool initializer avoids repeated
+    initializer tracebacks when one worker cannot open the raster.
+    """
     global _PROCESS_PAIR_POINTS
     global _PROCESS_PREPARED_POINTS
     global _PROCESS_PROVIDER
+    global _PROCESS_DEM_PATH
+    global _PROCESS_REPO_ROOT
+    global _PROCESS_DEM_UNIT
+    global _PROCESS_GDAL_CACHE_MB
 
     sys.excepthook = _print_process_worker_exception
     _PROCESS_PREPARED_POINTS = prepared_points
     _PROCESS_PAIR_POINTS = pair_points
-    provider = create_elevation_provider(Path(dem_path), Path(repo_root))
-    _PROCESS_PROVIDER = UnitScaledElevationProvider(provider, source_unit=dem_unit)
+    _PROCESS_PROVIDER = None
+    _PROCESS_DEM_PATH = Path(dem_path)
+    _PROCESS_REPO_ROOT = Path(repo_root)
+    _PROCESS_DEM_UNIT = dem_unit
+    _PROCESS_GDAL_CACHE_MB = gdal_cache_mb
+
+
+def _process_elevation_provider() -> ElevationProvider:
+    """Return the lazily opened DEM provider for the current worker process."""
+    global _PROCESS_PROVIDER
+
+    if _PROCESS_PROVIDER is not None:
+        return _PROCESS_PROVIDER
+    if _PROCESS_DEM_PATH is None or _PROCESS_REPO_ROOT is None:
+        raise RuntimeError("LOS worker process was not initialized with a DEM path.")
+
+    provider = create_elevation_provider(
+        _PROCESS_DEM_PATH,
+        _PROCESS_REPO_ROOT,
+        gdal_cache_mb=_PROCESS_GDAL_CACHE_MB,
+    )
+    _PROCESS_PROVIDER = UnitScaledElevationProvider(
+        provider,
+        source_unit=_PROCESS_DEM_UNIT,
+    )
+    return _PROCESS_PROVIDER
 
 
 def _build_anchor_pair_candidates_in_process(
@@ -722,7 +852,6 @@ def _build_anchor_pair_candidates_in_process(
     if (
         _PROCESS_PAIR_POINTS is None
         or _PROCESS_PREPARED_POINTS is None
-        or _PROCESS_PROVIDER is None
     ):
         raise RuntimeError("LOS worker process was not initialized.")
 
@@ -730,7 +859,7 @@ def _build_anchor_pair_candidates_in_process(
         anchor_index=anchor_index,
         pair_points=_PROCESS_PAIR_POINTS,
         prepared_points=_PROCESS_PREPARED_POINTS,
-        provider=_PROCESS_PROVIDER,
+        provider=_process_elevation_provider(),
         max_segment_length_m=max_segment_length_m,
         line_tolerance_m=line_tolerance_m,
         sample_step_m=sample_step_m,
@@ -777,12 +906,14 @@ def generate_candidates(
     if worker_count == 1:
         anchor_results = [build_for_anchor(anchor_index) for anchor_index in anchor_indexes]
     elif worker_dem_path is not None and repo_root is not None:
+        active_worker_count = max(1, min(worker_count, len(anchor_indexes)))
+        gdal_cache_mb = _process_gdal_cache_mb(active_worker_count)
         process_args = [
             (anchor_index, max_segment_length_m, line_tolerance_m, sample_step_m)
             for anchor_index in anchor_indexes
         ]
         with ProcessPoolExecutor(
-            max_workers=worker_count,
+            max_workers=active_worker_count,
             initializer=_init_process_candidate_worker,
             initargs=(
                 prepared_points,
@@ -790,9 +921,20 @@ def generate_candidates(
                 str(worker_dem_path),
                 str(repo_root),
                 dem_unit,
+                gdal_cache_mb,
             ),
         ) as executor:
-            anchor_results = list(executor.map(_build_anchor_pair_candidates_in_process, process_args))
+            try:
+                anchor_results = list(
+                    executor.map(_build_anchor_pair_candidates_in_process, process_args)
+                )
+            except Exception as exc:
+                raise RuntimeError(
+                    "Parallel LOS candidate generation failed. Try a smaller "
+                    "`--workers` value such as 2 or 4, or a larger "
+                    "`--sample-step-m` for the first pass. "
+                    f"Original error: {type(exc).__name__}: {exc}"
+                ) from None
     else:
         with ThreadPoolExecutor(max_workers=worker_count) as executor:
             anchor_results = list(executor.map(build_for_anchor, anchor_indexes))
@@ -1041,11 +1183,13 @@ def run_exact_refinement(
     point_count: int,
     target_mask: int,
 ) -> Optional[list[CandidateSegment]]:
-    if not MILP_AVAILABLE or milp is None or Bounds is None or LinearConstraint is None:
+    solver = _load_milp_solver()
+    if solver is None:
         return None
     if not candidates:
         return []
 
+    Bounds, LinearConstraint, milp = solver
     point_indexes = _mask_indexes(target_mask, point_count)
     if not point_indexes:
         return []
@@ -1238,7 +1382,11 @@ def solve_candidate_cover(
         target_mask=target_mask,
     )
     if exact_candidate_selection is None:
-        exact_status = "skipped-no-scipy" if not MILP_AVAILABLE else "skipped-no-improvement"
+        exact_status = (
+            "skipped-no-scipy"
+            if _load_milp_solver() is None
+            else "skipped-no-improvement"
+        )
         return SelectionSummary(selected, target_mask, exact_pool_ids, exact_status, stage)
 
     exact_candidate_selection = drop_redundant_candidates(

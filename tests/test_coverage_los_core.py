@@ -28,6 +28,7 @@ from coverage_los_core import (
     prepare_points,
     resolve_points,
     solve_candidate_cover,
+    _stable_windows_platform_imports,
 )
 
 
@@ -150,8 +151,9 @@ def test_prepare_points_uses_dem_when_altitude_missing() -> None:
 
 
 def test_create_elevation_provider_uses_rasterio_when_available(tmp_path: Path) -> None:
-    rasterio = pytest.importorskip("rasterio")
-    from rasterio.transform import from_origin
+    with _stable_windows_platform_imports():
+        rasterio = pytest.importorskip("rasterio")
+        from rasterio.transform import from_origin
     import numpy as np
 
     dem_path = tmp_path / "dem.tif"

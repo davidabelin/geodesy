@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import sys
 from contextlib import contextmanager
 from pathlib import Path
@@ -17,18 +18,40 @@ if str(QGIS_HELPER_DIR) not in sys.path:
 
 from qgis_runtime import init_qgis_app, shutdown_qgis_app
 
-from osgeo import gdal, ogr, osr
-from qgis.PyQt.QtCore import qInstallMessageHandler
-from qgis.core import (
-    QgsCategorizedSymbolRenderer,
-    QgsLineSymbol,
-    QgsMarkerSymbol,
-    QgsProject,
-    QgsRasterLayer,
-    QgsRendererCategory,
-    QgsSingleSymbolRenderer,
-    QgsVectorLayer,
-)
+
+@contextmanager
+def _stable_windows_platform_imports():
+    """Avoid Windows WMI lookups during PyQGIS/GDAL imports."""
+    if os.name != "nt":
+        yield
+        return
+
+    import platform
+
+    original_system = platform.system
+    original_machine = platform.machine
+    platform.system = lambda: "Windows"
+    platform.machine = lambda: os.environ.get("PROCESSOR_ARCHITECTURE") or "AMD64"
+    try:
+        yield
+    finally:
+        platform.system = original_system
+        platform.machine = original_machine
+
+
+with _stable_windows_platform_imports():
+    from osgeo import gdal, ogr, osr
+    from qgis.PyQt.QtCore import qInstallMessageHandler
+    from qgis.core import (
+        QgsCategorizedSymbolRenderer,
+        QgsLineSymbol,
+        QgsMarkerSymbol,
+        QgsProject,
+        QgsRasterLayer,
+        QgsRendererCategory,
+        QgsSingleSymbolRenderer,
+        QgsVectorLayer,
+    )
 
 gdal.UseExceptions()
 ogr.UseExceptions()

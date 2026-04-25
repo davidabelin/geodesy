@@ -14,7 +14,28 @@ from __future__ import annotations
 import os
 import sqlite3
 import sys
+from contextlib import contextmanager
 from pathlib import Path
+
+
+@contextmanager
+def stable_windows_platform_imports():
+    """Avoid Windows WMI lookups during PyQGIS imports."""
+    if os.name != "nt":
+        yield
+        return
+
+    import platform
+
+    original_system = platform.system
+    original_machine = platform.machine
+    platform.system = lambda: "Windows"
+    platform.machine = lambda: os.environ.get("PROCESSOR_ARCHITECTURE") or "AMD64"
+    try:
+        yield
+    finally:
+        platform.system = original_system
+        platform.machine = original_machine
 
 
 def find_repo_root(start: Path | None = None) -> Path:
@@ -198,7 +219,8 @@ def init_qgis_app(gui: bool = False):
     configure_proj_env()
     add_qgis_python_paths()
 
-    from qgis.core import QgsApplication
+    with stable_windows_platform_imports():
+        from qgis.core import QgsApplication
 
     app = QgsApplication.instance()
     created = False

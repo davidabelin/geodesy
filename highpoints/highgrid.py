@@ -22,9 +22,13 @@ closest to the cell centroid, then by DEM row and column.
 from __future__ import annotations
 
 import argparse
+import html
 import math
+import os
+import re
 import sys
 import time
+import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Sequence
@@ -76,6 +80,18 @@ def default_csv_output_path(output_path: Path | str | None = None) -> Path:
     return Path(__file__).resolve().parent / "out" / "highgrid_out.csv"
 
 
+def default_project_output_path(output_path: Path | str | None = None) -> Path:
+    """Return the default QGIS project archive path for a GeoPackage output."""
+    if output_path is not None:
+        return Path(output_path).with_suffix(".qgz")
+    return Path(__file__).resolve().parent / "out" / "highgrid.qgz"
+
+
+def default_project_template_path() -> Path:
+    """Return the bundled QGIS project template for highgrid outputs."""
+    return Path(__file__).resolve().parent / "templates" / "highgrid_template.qgz"
+
+
 @dataclass(frozen=True)
 class HighgridResult:
     """Small return object for callers that invoke the workflow as Python.
@@ -87,6 +103,7 @@ class HighgridResult:
 
     output_path: Path
     csv_output_path: Path
+    project_output_path: Path | None
     cell_count: int
     hi_point_count: int
     lo_point_count: int
@@ -889,7 +906,7 @@ def _print_dem_progress(
     """Print a low-frequency DEM progress line to stderr."""
     elapsed = time.monotonic() - start_time
     percent = (completed / total * 100.0) if total else 100.0
-    eta_text = "n/a"
+    eta_text = "--"
     if completed > 0 and completed < total:
         remaining = elapsed / completed * (total - completed)
         eta_text = _format_duration(remaining)
@@ -1016,17 +1033,45 @@ def write_geopackage(
 
 
 def _check_output_paths(
-    *, output_path: Path, csv_output_path: Path, overwrite: bool
+    *,
+    output_path: Path,
+    csv_output_path: Path,
+    project_output_path: Path | None,
+    overwrite: bool,
 ) -> None:
     """Validate output collisions before any expensive raster work begins."""
-    if output_path.resolve(strict=False) == csv_output_path.resolve(strict=False):
-        raise ValueError("--output and --csv-output must be different paths")
-    if output_path.exists() and not overwrite:
-        raise ValueError(f"Output already exists; pass --overwrite: {output_path}")
-    if csv_output_path.exists() and not overwrite:
-        raise ValueError(
-            f"CSV output already exists; pass --overwrite: {csv_output_path}"
-        )
+    if output_path.suffix.casefold() != ".gpkg":
+        raise ValueError(f"--output must end in .gpkg: {output_path}")
+    if project_output_path is not None and project_output_path.suffix.casefold() != ".qgz":
+        raise ValueError(f"--project-output must end in .qgz: {project_output_path}")
+    for label, path in (
+        ("--output", output_path),
+        ("--csv-output", csv_output_path),
+        ("--project-output", project_output_path),
+    ):
+        if path is None:
+            continue
+        parent = path.parent
+        if parent == Path("."):
+            continue
+        if parent.exists() and not parent.is_dir():
+            raise ValueError(f"{label} parent exists but is not a directory: {parent}")
+    labeled_paths = [
+        ("--output", output_path),
+        ("--csv-output", csv_output_path),
+    ]
+    if project_output_path is not None:
+        labeled_paths.append(("--project-output", project_output_path))
+    resolved_paths = [
+        (label, path.resolve(strict=False)) for label, path in labeled_paths
+    ]
+    for index, (left_label, left_path) in enumerate(resolved_paths):
+        for right_label, right_path in resolved_paths[index + 1 :]:
+            if left_path == right_path:
+                raise ValueError(f"{left_label} and {right_label} must be different paths")
+    for label, path in labeled_paths:
+        if path.exists() and not overwrite:
+            raise ValueError(f"{label} already exists; pass --overwrite: {path}")
 
 
 def _point_csv_frame(
@@ -1096,11 +1141,74 @@ def write_csv_output(
     frame.to_csv(csv_output_path, index=False)
 
 
+def _relative_qgis_path(path: Path, *, base_dir: Path) -> str:
+    """Return a QGIS-friendly relative path with forward slashes."""
+    relative = os.path.relpath(path.resolve(strict=False), base_dir.resolve(strict=False))
+    return Path(relative).as_posix()
+
+
+def write_qgis_project(
+    project_output_path: Path,
+    *,
+    gpkg_path: Path,
+    overwrite: bool,
+    template_path: Path | None = None,
+) -> None:
+    """Write a QGIS project archive that opens the generated highgrid layers."""
+    if project_output_path.exists():
+        if not overwrite:
+            raise ValueError(
+                f"QGIS project output already exists; pass --overwrite: {project_output_path}"
+            )
+        project_output_path.unlink()
+
+    template = template_path if template_path is not None else default_project_template_path()
+    if not template.exists():
+        raise ValueError(f"QGIS project template does not exist: {template}")
+
+    project_output_path.parent.mkdir(parents=True, exist_ok=True)
+    gpkg_relative = _relative_qgis_path(gpkg_path, base_dir=project_output_path.parent)
+    datasource_prefix = html.escape(gpkg_relative, quote=True)
+    project_stem = project_output_path.stem
+    gpkg_stem = gpkg_path.stem
+
+    with zipfile.ZipFile(template, "r") as source_archive:
+        qgs_names = [name for name in source_archive.namelist() if name.endswith(".qgs")]
+        if len(qgs_names) != 1:
+            raise ValueError(f"QGIS project template must contain exactly one .qgs: {template}")
+        template_qgs_name = qgs_names[0]
+        qgs_text = source_archive.read(template_qgs_name).decode("utf-8")
+        for layer_name in (
+            "lo-points",
+            "hi-points",
+            "avg-points",
+            "highgrid_cells",
+            "highgrid_corners",
+            "highgrid_boundary",
+        ):
+            qgs_text = re.sub(
+                rf'source="[^"]*?\.gpkg\|layername={re.escape(layer_name)}"',
+                f'source="{datasource_prefix}|layername={layer_name}"',
+                qgs_text,
+            )
+        qgs_text = qgs_text.replace("lenfgrid —", f"{gpkg_stem} —")
+        qgs_text = qgs_text.replace("lenfgrid", gpkg_stem)
+
+        with zipfile.ZipFile(project_output_path, "w", compression=zipfile.ZIP_DEFLATED) as out_archive:
+            out_archive.writestr(f"{project_stem}.qgs", qgs_text)
+            for name in source_archive.namelist():
+                if name == template_qgs_name:
+                    continue
+                out_archive.writestr(name, source_archive.read(name))
+
+
 def run_highgrid(
     *,
     dem_path: Path | str = default_dem_path(),
     output_path: Path | str = default_output_path(),
     csv_output_path: Path | str | None = None,
+    project_output_path: Path | str | None = None,
+    write_project: bool = True,
     grid_size: int,
     boundary_path: Path | str | None = None,
     corners_text: str | None = None,
@@ -1130,8 +1238,18 @@ def run_highgrid(
         if csv_output_path is not None
         else default_csv_output_path(output)
     )
+    project_output = (
+        Path(project_output_path)
+        if project_output_path is not None
+        else default_project_output_path(output)
+    )
+    if not write_project:
+        project_output = None
     _check_output_paths(
-        output_path=output, csv_output_path=csv_output, overwrite=overwrite
+        output_path=output,
+        csv_output_path=csv_output,
+        project_output_path=project_output,
+        overwrite=overwrite,
     )
     if boundary_path is not None:
         boundary = Path(boundary_path)
@@ -1184,10 +1302,17 @@ def run_highgrid(
         avg_points=avg_points,
         overwrite=overwrite,
     )
+    if project_output is not None:
+        write_qgis_project(
+            project_output,
+            gpkg_path=output,
+            overwrite=overwrite,
+        )
 
     return HighgridResult(
         output_path=output,
         csv_output_path=csv_output,
+        project_output_path=project_output,
         cell_count=len(cells),
         hi_point_count=len(hi_points),
         lo_point_count=len(lo_points),
@@ -1206,6 +1331,8 @@ def run_from_namespace(args: argparse.Namespace) -> HighgridResult:
         dem_path=Path(args.dem),
         output_path=Path(args.output),
         csv_output_path=Path(args.csv_output) if args.csv_output else None,
+        project_output_path=Path(args.project_output) if args.project_output else None,
+        write_project=not bool(args.no_project),
         grid_size=args.grid_size,
         boundary_path=Path(args.boundary) if args.boundary else None,
         corners_text=args.corners,
@@ -1282,6 +1409,16 @@ def build_parser(prog: str | None = None) -> argparse.ArgumentParser:
         default=None,
         help="Output CSV path (default: highgrid_out.csv beside --output).",
     )
+    parser.add_argument(
+        "--project-output",
+        default=None,
+        help="Output QGIS project archive path (default: .qgz beside --output).",
+    )
+    parser.add_argument(
+        "--no-project",
+        action="store_true",
+        help="Do not write a QGIS .qgz project archive.",
+    )
     parser.add_argument("--work-crs", default="EPSG:26985", help="Projected work CRS.")
     parser.add_argument(
         "--corner-names",
@@ -1344,6 +1481,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     print(result.output_path)
     print(f"csv: {result.csv_output_path}")
+    if result.project_output_path is not None:
+        print(f"qgis: {result.project_output_path}")
     print(f"cells: {result.cell_count}")
     print(f"hi-points: {result.hi_point_count}")
     print(f"lo-points: {result.lo_point_count}")

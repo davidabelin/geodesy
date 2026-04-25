@@ -7,3 +7,6 @@ cvr.bat los-cover --input ".\coverage\alphapnts.csv" --dem ".\data\tif\dc_dem.ti
 cvr.bat los-project --input-dir ".\coverage\results\alpha_los_pairwise_m25000_t15" --output-dir ".\coverage\results\alpha_los_pairwise_m25000_t15_qgis"
 
 cvr.bat los-cover --input INPUT --dem DEM --output-dir OUTPUT_DIR --max-segment-length 30000 --unit meters --output-crs NAD83 --line-tolerance-m 10 --point-height-m 2 --sample-step-m 6 --solver hybrid --workers max
+
+highgrid.py --grid-size 3 --output output\output.gpkg --work-crs NAD83
+                   --offset-angle 0.0 --quiet --progress-interval 10 --overwrite --yes --parallelogram-tolerance-m PARALLELOGRAM_TOLERANCE_M

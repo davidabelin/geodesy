@@ -36,6 +36,11 @@ def _default_highgrid_csv_output() -> Path:
     return out_dir() / "highgrid_out.csv"
 
 
+def _default_highgrid_project_output() -> Path:
+    """Return the default QGIS project path for package CLI help text."""
+    return out_dir() / "highgrid.qgz"
+
+
 def _grid_size(value: str) -> int:
     """Parse and validate the shared ``--grid-size`` argument."""
     try:
@@ -56,6 +61,8 @@ def _cmd_high_grid(args: argparse.Namespace) -> int:
     result = run_from_namespace(args)
     print(result.output_path)
     print(f"csv: {result.csv_output_path}")
+    if result.project_output_path is not None:
+        print(f"qgis: {result.project_output_path}")
     print(f"cells: {result.cell_count}")
     print(f"hi-points: {result.hi_point_count}")
     print(f"lo-points: {result.lo_point_count}")
@@ -106,6 +113,20 @@ def build_parser() -> argparse.ArgumentParser:
             f"(default: highgrid_out.csv beside --output; standard default "
             f"{_default_highgrid_csv_output()})."
         ),
+    )
+    high_grid.add_argument(
+        "--project-output",
+        default=None,
+        help=(
+            "Output QGIS project archive path "
+            f"(default: .qgz beside --output; standard default "
+            f"{_default_highgrid_project_output()})."
+        ),
+    )
+    high_grid.add_argument(
+        "--no-project",
+        action="store_true",
+        help="Do not write a QGIS .qgz project archive.",
     )
     high_grid.add_argument(
         "--work-crs", default="EPSG:26985", help="Projected work CRS."

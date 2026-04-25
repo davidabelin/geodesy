@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 import geopandas as gpd
@@ -93,12 +94,14 @@ def test_run_highgrid_finds_expected_hi_lo_avg_points_layers_and_csv(tmp_path):
     boundary = _write_boundary(tmp_path / "boundary.gpkg")
     output = tmp_path / "highgrid.gpkg"
     csv_output = tmp_path / "highgrid_out.csv"
+    project_output = tmp_path / "highgrid.qgz"
 
     result = hg.run_highgrid(
         dem_path=dem,
         boundary_path=boundary,
         output_path=output,
         csv_output_path=csv_output,
+        project_output_path=project_output,
         grid_size=2,
         work_crs="EPSG:3857",
         parallelogram_tolerance_m=0.01,
@@ -110,8 +113,10 @@ def test_run_highgrid_finds_expected_hi_lo_avg_points_layers_and_csv(tmp_path):
     assert result.hi_point_count == 4
     assert result.lo_point_count == 4
     assert result.avg_point_count == 4
+    assert result.project_output_path == project_output
     assert output.exists()
     assert csv_output.exists()
+    assert project_output.exists()
     layers = set(pyogrio.list_layers(output)[:, 0])
     assert layers == {
         "highgrid_cells",
@@ -176,6 +181,15 @@ def test_run_highgrid_finds_expected_hi_lo_avg_points_layers_and_csv(tmp_path):
     assert len(csv_rows) == 12
     assert set(csv_rows["point_type"]) == {"hi", "lo", "avg"}
     assert set(csv_rows["offset_angle_deg"]) == {0}
+
+    with zipfile.ZipFile(project_output) as archive:
+        qgs_names = [name for name in archive.namelist() if name.endswith(".qgs")]
+        assert qgs_names == ["highgrid.qgs"]
+        project_text = archive.read(qgs_names[0]).decode("utf-8")
+    assert "./highgrid.gpkg|layername=hi-points" in project_text
+    assert "./highgrid.gpkg|layername=lo-points" in project_text
+    assert "./highgrid.gpkg|layername=avg-points" in project_text
+    assert "./highgrid.gpkg|layername=highgrid_cells" in project_text
 
 
 @pytest.mark.parametrize("value", ["0", "101", "not-an-int"])
@@ -272,6 +286,43 @@ def test_boundary_and_corners_are_mutually_exclusive(tmp_path):
     assert "not allowed with argument" in completed.stderr
 
 
+def test_output_path_requires_geopackage_extension(tmp_path):
+    """Output paths without .gpkg fail before raster work begins."""
+    dem = _write_test_dem(tmp_path / "dem.tif")
+    boundary = _write_boundary(tmp_path / "boundary.gpkg")
+
+    with pytest.raises(ValueError, match="must end in .gpkg"):
+        hg.run_highgrid(
+            dem_path=dem,
+            boundary_path=boundary,
+            output_path=tmp_path / "output",
+            grid_size=2,
+            work_crs="EPSG:3857",
+            parallelogram_tolerance_m=0.01,
+            overwrite=True,
+        )
+
+
+def test_output_parent_must_be_directory(tmp_path):
+    """A file occupying the output parent path fails before raster work begins."""
+    dem = _write_test_dem(tmp_path / "dem.tif")
+    boundary = _write_boundary(tmp_path / "boundary.gpkg")
+    parent_file = tmp_path / "output"
+    parent_file.write_text("not a directory", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="parent exists but is not a directory"):
+        hg.run_highgrid(
+            dem_path=dem,
+            boundary_path=boundary,
+            output_path=parent_file / "grid3x3.gpkg",
+            csv_output_path=parent_file / "grid3x3.csv",
+            grid_size=2,
+            work_crs="EPSG:3857",
+            parallelogram_tolerance_m=0.01,
+            overwrite=True,
+        )
+
+
 def test_parallelogram_validation_rejects_bad_fourth_corner(tmp_path):
     """Bad four-corner input fails before any output is written."""
     dem = _write_test_dem(tmp_path / "dem.tif")
@@ -326,7 +377,9 @@ def test_script_and_package_cli_invocations(tmp_path):
     assert "lo-points: 4" in script_run.stdout
     assert "avg-points: 4" in script_run.stdout
     assert "csv:" in script_run.stdout
+    assert "qgis:" in script_run.stdout
     assert script_output.exists()
+    assert script_output.with_suffix(".qgz").exists()
 
     package_run = subprocess.run(
         [
@@ -348,4 +401,6 @@ def test_script_and_package_cli_invocations(tmp_path):
     assert "lo-points: 4" in package_run.stdout
     assert "avg-points: 4" in package_run.stdout
     assert "csv:" in package_run.stdout
+    assert "qgis:" in package_run.stdout
     assert package_output.exists()
+    assert package_output.with_suffix(".qgz").exists()

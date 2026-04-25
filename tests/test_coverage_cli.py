@@ -1,4 +1,5 @@
 import csv
+import importlib.util
 import json
 import subprocess
 import sys
@@ -11,6 +12,10 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 CLI_PATH = REPO_ROOT / "coverage" / "scripts" / "coverage_cli.py"
 CVR_BAT = REPO_ROOT / "cvr.bat"
 QGIS_PYTHON = Path.home() / "AppData/Local/Programs/OSGeo4W/bin/python-qgis.bat"
+DEM_BACKEND_AVAILABLE = (
+    importlib.util.find_spec("rasterio") is not None
+    or importlib.util.find_spec("osgeo") is not None
+)
 
 
 def run_cli(*args: str) -> subprocess.CompletedProcess[str]:
@@ -331,7 +336,7 @@ def test_los_bundle_writes_qgis_ready_outputs(tmp_path: Path) -> None:
     assert (bundle_dir / "load_los_bundle_qgis.py").exists()
 
 
-@pytest.mark.skipif(not QGIS_PYTHON.exists(), reason="QGIS python runtime not installed")
+@pytest.mark.skipif(not DEM_BACKEND_AVAILABLE, reason="DEM sampling backend not installed")
 def test_los_cover_writes_solver_artifacts(tmp_path: Path) -> None:
     output_dir = run_los_cover(tmp_path)
 
@@ -363,7 +368,7 @@ def test_los_cover_writes_solver_artifacts(tmp_path: Path) -> None:
     assert all(not candidate_id.endswith("__self") for candidate_id in manifest["selected_candidate_ids"])
 
 
-@pytest.mark.skipif(not QGIS_PYTHON.exists(), reason="QGIS python runtime not installed")
+@pytest.mark.skipif(not DEM_BACKEND_AVAILABLE, reason="DEM sampling backend not installed")
 def test_los_cover_supports_nad83_and_feet_output(tmp_path: Path) -> None:
     output_dir = tmp_path / "los_cover_nad83_ft"
     result = run_cli(

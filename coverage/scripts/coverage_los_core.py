@@ -256,6 +256,56 @@ class GDALDemSampler(ElevationProvider):
         return value
 
 
+class RasterioDemSampler(ElevationProvider):
+    def __init__(self, dem_path: Path):
+        try:
+            import rasterio
+            from pyproj import CRS as LocalCRS, Transformer as LocalTransformer
+        except Exception as exc:  # pragma: no cover - exercised via factory
+            raise RuntimeError(
+                "Rasterio-backed DEM sampling is unavailable in this Python runtime."
+            ) from exc
+
+        self.path = dem_path.resolve()
+        self.dataset = rasterio.open(self.path)
+        self.nodata = self.dataset.nodata
+        raster_crs = self.dataset.crs
+        self.crs = LocalCRS.from_user_input(raster_crs) if raster_crs else LocalCRS.from_epsg(4326)
+        self.transformer = LocalTransformer.from_crs("EPSG:4326", self.crs, always_xy=True)
+
+        affine = self.dataset.transform
+        if abs(affine.b) > 1e-12 or abs(affine.d) > 1e-12:
+            raise RuntimeError(
+                "DEM has rotated geotransform; LOS segment cover expects north-up rasters."
+            )
+
+    def sample_ground_m(self, lon: float, lat: float) -> float:
+        x, y = self.transformer.transform(lon, lat)
+        row, col = self.dataset.index(x, y)
+
+        if col < 0 or row < 0 or col >= self.dataset.width or row >= self.dataset.height:
+            raise ValueError(f"Point outside DEM extent: lon={lon}, lat={lat}")
+
+        array = self.dataset.read(1, window=((row, row + 1), (col, col + 1)), masked=True)
+        value = array[0][0]
+        if np.ma.is_masked(value):
+            raise ValueError(f"DEM nodata at lon={lon}, lat={lat}")
+        numeric_value = float(value)
+        if self.nodata is not None and numeric_value == self.nodata:
+            raise ValueError(f"DEM nodata at lon={lon}, lat={lat}")
+        if math.isnan(numeric_value):
+            raise ValueError(f"DEM nodata at lon={lon}, lat={lat}")
+        return numeric_value
+
+
+def has_rasterio_backend() -> bool:
+    try:
+        import rasterio as _rasterio  # noqa: F401
+    except Exception:
+        return False
+    return True
+
+
 def has_gdal_backend() -> bool:
     try:
         from osgeo import gdal as _gdal  # noqa: F401
@@ -264,15 +314,23 @@ def has_gdal_backend() -> bool:
     return True
 
 
+def has_dem_backend() -> bool:
+    return has_rasterio_backend() or has_gdal_backend()
+
+
 def create_elevation_provider(dem_path: str | Path, repo_root: Path) -> ElevationProvider:
     path = resolve_input_path(str(dem_path), repo_root)
-    if not has_gdal_backend():
+    if has_rasterio_backend():
+        return RasterioDemSampler(path)
+    if has_gdal_backend():
+        return GDALDemSampler(path)
+    if not has_dem_backend():
         raise RuntimeError(
-            "No local GDAL-backed DEM sampler is available in this Python runtime. "
-            "Run `los-cover` through the OSGeo4W QGIS runtime (for example via `cvr.bat`) "
-            "or install GDAL into the active interpreter."
+            "No local DEM sampler is available in this Python runtime. "
+            "Install rasterio for normal Python runs, or run `los-cover` through the "
+            "OSGeo4W QGIS runtime (for example via `cvr.bat`)."
         )
-    return GDALDemSampler(path)
+    raise RuntimeError("No local DEM sampler is available in this Python runtime.")
 
 
 def geodetic_to_ecef(lon: float, lat: float, alt_m: float) -> tuple[float, float, float]:

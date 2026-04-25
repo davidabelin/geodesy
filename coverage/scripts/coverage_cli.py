@@ -18,7 +18,7 @@ from coverage_core import (
     write_rows,
     write_qgis_bundle,
 )
-from coverage_los_core import has_gdal_backend, length_to_meters, run_los_cover
+from coverage_los_core import has_dem_backend, length_to_meters, run_los_cover
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -392,7 +392,7 @@ def _qgis_bundle_command(args: argparse.Namespace) -> int:
 def _reexec_los_cover_under_qgis(argv: list[str]) -> int:
     if not QGIS_PYTHON.exists():
         raise RuntimeError(
-            "GDAL-backed DEM access is unavailable in this interpreter and "
+            "DEM access is unavailable in this interpreter and "
             f"`{QGIS_PYTHON}` was not found."
         )
 
@@ -414,7 +414,7 @@ def _reexec_los_cover_under_qgis(argv: list[str]) -> int:
 
 
 def _los_cover_command(args: argparse.Namespace, argv: list[str]) -> int:
-    if not has_gdal_backend() and os.environ.get("COVERAGE_LOS_REEXEC") != "1":
+    if not has_dem_backend() and os.environ.get("COVERAGE_LOS_REEXEC") != "1":
         return _reexec_los_cover_under_qgis(argv)
 
     line_tolerance_m = _resolve_unit_length(

@@ -62,7 +62,9 @@ The `los-project` command does not appear in `coverage_cli.py --help` because it
 coverage\scripts\coverage_los_project.py
 ```
 
-The `los-cover` command needs GDAL to sample the DEM. If the active Python does not have `osgeo`, the CLI attempts to re-run itself through:
+The `los-cover` command needs a DEM reader. Normal Python runs use `rasterio`
+when it is installed. If neither `rasterio` nor `osgeo` is available, the CLI
+attempts to re-run itself through the OSGeo4W QGIS runtime:
 
 ```text
 %LOCALAPPDATA%\Programs\OSGeo4W\bin\python-qgis.bat
@@ -222,7 +224,7 @@ The names do not imply ownership or direction in the real-world geometry. They a
 A point can be covered by more than one selected segment. The tool assigns the point to one selected segment for reporting by sorting possible selected segments by:
 
 1. lowest residual distance from the point to the segment
-2. shortest segment length
+2. longest segment length
 3. candidate ID
 
 So:
@@ -1174,15 +1176,28 @@ cvr.bat los-project --help
 
 ### `No module named osgeo`
 
-`los-cover`, `los-project`, and `los-bundle` need GDAL/QGIS runtime support for DEM or QGIS project work.
+Do not fix this with `pip install osgeo`. That package is only a stub that tells
+you to install GDAL, and pip-building GDAL on Windows needs matching GDAL headers
+and libraries.
 
-For `los-cover`, the CLI should try to re-run itself through OSGeo4W QGIS Python. If that fails, run:
+For `los-cover`, install/use `rasterio` in the normal Python environment, or run
+through `cvr.bat` so the command can use the OSGeo4W QGIS runtime when needed:
 
 ```cmd
-cvr.bat los-project --input-dir ".\coverage\results\ ".\coverage\scripts\coverage_cli.py" los-cover --help
+cvr.bat los-cover --help
 ```
 
-If that file does not exist, install QGIS Desktop via OSGeo4W or update `cvr.bat` / `coverage_cli.py` to the correct QGIS Python path.
+`los-project`, `los-bundle`, and the Hawkins 3D pipeline still need the QGIS
+runtime because they import PyQGIS and/or `osgeo.ogr` directly:
+
+```cmd
+cvr.bat los-project --help
+qgis\run_hawkins_3d_pipeline.bat --mode audit
+```
+
+If `%LOCALAPPDATA%\Programs\OSGeo4W\bin\python-qgis.bat` does not exist, install
+QGIS Desktop via OSGeo4W or update `cvr.bat` / `coverage_cli.py` to the correct
+QGIS Python path.
 
 ### Point outside DEM extent
 

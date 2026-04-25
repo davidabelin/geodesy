@@ -3,6 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
+import pytest
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_DIR = REPO_ROOT / "coverage" / "scripts"
@@ -15,6 +17,7 @@ from coverage_los_core import (
     CandidateSegment,
     build_output_settings,
     chord_waypoint,
+    create_elevation_provider,
     deduplicate_family_candidates,
     geodesic_linear_waypoint,
     length_to_meters,
@@ -142,6 +145,33 @@ def test_prepare_points_uses_dem_when_altitude_missing() -> None:
     assert prepared[1].altitude_source == "dataset"
     assert resolved[0].display_alt_m == 9.5
     assert resolved[1].display_alt_m == 44.0
+
+
+def test_create_elevation_provider_uses_rasterio_when_available(tmp_path: Path) -> None:
+    rasterio = pytest.importorskip("rasterio")
+    from rasterio.transform import from_origin
+    import numpy as np
+
+    dem_path = tmp_path / "dem.tif"
+    data = np.array([[10.0, 11.0], [20.0, 21.0]], dtype="float32")
+    with rasterio.open(
+        dem_path,
+        "w",
+        driver="GTiff",
+        height=2,
+        width=2,
+        count=1,
+        dtype=data.dtype,
+        crs="EPSG:4326",
+        transform=from_origin(-78.0, 39.0, 1.0, 1.0),
+        nodata=-9999.0,
+    ) as dataset:
+        dataset.write(data, 1)
+
+    provider = create_elevation_provider(dem_path, REPO_ROOT)
+
+    assert type(provider).__name__ == "RasterioDemSampler"
+    assert provider.sample_ground_m(-77.5, 38.5) == 10.0
 
 
 def test_deduplicate_family_candidates_keeps_best_representative_for_same_mask() -> None:

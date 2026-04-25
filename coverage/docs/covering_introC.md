@@ -141,9 +141,9 @@ The project layers are:
 - `selected_lines_z`
 - `coverage_offsets_z`
 
-## Why This Replaces The Old LOS Bundle Path
+## Why The Current Workflow Is Pairwise
 
-The old `los-bundle` path remains available for the earlier radius-first workflow, but it is now legacy for this problem.
+The older radius-first LOS workflow has been removed from the active tools.
 
 It answers a different question:
 

@@ -7,11 +7,11 @@ import geojson
 
 # --- Configuration ---
 # Absolute path to your input CSV file with point data
-CSV_FILE_PATH = r"highpoints\input\quadrant_highpnts.csv"  # r"data\map_refpnts.csv"
+CSV_FILE_PATH = r"data\crosspnts.csv"  # r"data\map_refpnts.csv"
 # Absolute path to your Digital Elevation Model (DEM) GeoTIFF file
 DEM_FILE_PATH = r"C:\Users\David\Documents\Local_Python\geodesy\data\tif\dc_dem.tif"
 # Absolute path for the output GeoJSON file
-GEOJSON_OUTPUT_PATH = r"coverage\input\quadrant_highpnts.geojson" 
+GEOJSON_OUTPUT_PATH = r"coverage\input\crosspnts.geojson" 
 
 # EPSG code for the coordinate system of your input LAT/LON points
 # NAD83 geographic coordinates (latitude/longitude)

@@ -183,46 +183,6 @@ def test_radius_cover_selects_full_and_budgeted_sites(tmp_path: Path) -> None:
     assert networkx_rows[-1]["remaining_uncovered_count"] == "0"
 
 
-@pytest.mark.skipif(not QGIS_PYTHON.exists(), reason="QGIS python runtime not installed")
-def test_los_bundle_writes_qgis_ready_outputs(tmp_path: Path) -> None:
-    bundle_dir = tmp_path / "los_bundle"
-    result = subprocess.run(
-        [
-            "cmd",
-            "/c",
-            str(CVR_BAT),
-            "los-bundle",
-            "--input",
-            "data\\refpnts.csv",
-            "--candidates",
-            "data\\map_refpnts.geojson",
-            "--dem",
-            "data\\tif\\dc_dem.tif",
-            "--radius",
-            "250",
-            "--unit",
-            "meters",
-            "--output-dir",
-            str(bundle_dir),
-        ],
-        capture_output=True,
-        text=True,
-        cwd=REPO_ROOT,
-        check=False,
-    )
-
-    assert result.returncode == 0, result.stderr
-
-    manifest = json.loads((bundle_dir / "bundle_manifest.json").read_text(encoding="utf-8"))
-    assert manifest["los_pair_count"] >= 1
-    assert manifest["visible_los_count"] >= 1
-    assert (bundle_dir / "demands_3d.geojson").exists()
-    assert (bundle_dir / "candidates_3d.geojson").exists()
-    assert (bundle_dir / "terrain_traces_3d.geojson").exists()
-    assert (bundle_dir / "los_lines_3d.geojson").exists()
-    assert (bundle_dir / "load_los_bundle_qgis.py").exists()
-
-
 @pytest.mark.skipif(not DEM_BACKEND_AVAILABLE, reason="DEM sampling backend not installed")
 def test_los_cover_writes_solver_artifacts(tmp_path: Path) -> None:
     output_dir = run_los_cover(tmp_path)
@@ -298,6 +258,32 @@ def test_los_cover_supports_nad83_and_feet_output(tmp_path: Path) -> None:
     assert pair_geojson["crs"]["properties"]["name"] == "EPSG:4269"
     assert "surface_distance_ft" in candidate_rows[0]
     assert "surface_distance_m" in candidate_rows[0]
+
+
+@pytest.mark.skipif(not DEM_BACKEND_AVAILABLE, reason="DEM sampling backend not installed")
+def test_los_cover_workers_run_cleanly_from_cli_subprocess(tmp_path: Path) -> None:
+    output_dir = tmp_path / "los_cover_workers"
+    result = run_cli(
+        "los-cover",
+        "--input",
+        "data\\refpnts.csv",
+        "--dem",
+        "data\\tif\\dc_dem.tif",
+        "--max-segment-length",
+        "100",
+        "--sample-step-m",
+        "25",
+        "--workers",
+        "2",
+        "--output-dir",
+        str(output_dir),
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert result.stderr == ""
+    manifest = json.loads((output_dir / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["config"]["workers"] == 2
+    assert manifest["pair_segment_count"] >= 1
 
 
 @pytest.mark.skipif(not QGIS_PYTHON.exists(), reason="QGIS python runtime not installed")

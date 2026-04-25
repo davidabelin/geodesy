@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import json
 import math
+import sys
 import threading
-from concurrent.futures import ThreadPoolExecutor
+import traceback
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Iterable, Optional
@@ -33,6 +35,20 @@ except Exception:
     milp = None
     MILP_AVAILABLE = False
 
+
+_PROCESS_PAIR_POINTS: list["ResolvedPoint"] | None = None
+_PROCESS_PREPARED_POINTS: list["PreparedPoint"] | None = None
+_PROCESS_PROVIDER: "ElevationProvider" | None = None
+
+
+def _print_process_worker_exception(exc_type, exc_value, exc_traceback) -> None:
+    """Keep spawned worker tracebacks readable under Windows process pools."""
+    traceback.print_exception(
+        exc_type,
+        exc_value,
+        exc_traceback,
+        file=sys.__stderr__,
+    )
 
 LOS_SOLVER_VERSION = "los-segment-cover-v2-pairwise"
 WGS84_3D = CRS.from_epsg(4979)
@@ -679,6 +695,48 @@ def _build_anchor_pair_candidates(
     return anchor_candidates, reachable_mask
 
 
+def _init_process_candidate_worker(
+    prepared_points: list[PreparedPoint],
+    pair_points: list[ResolvedPoint],
+    dem_path: str,
+    repo_root: str,
+    dem_unit: str,
+) -> None:
+    """Initialize per-process state for parallel LOS candidate generation."""
+    global _PROCESS_PAIR_POINTS
+    global _PROCESS_PREPARED_POINTS
+    global _PROCESS_PROVIDER
+
+    sys.excepthook = _print_process_worker_exception
+    _PROCESS_PREPARED_POINTS = prepared_points
+    _PROCESS_PAIR_POINTS = pair_points
+    provider = create_elevation_provider(Path(dem_path), Path(repo_root))
+    _PROCESS_PROVIDER = UnitScaledElevationProvider(provider, source_unit=dem_unit)
+
+
+def _build_anchor_pair_candidates_in_process(
+    args: tuple[int, Optional[float], float, float],
+) -> tuple[list[CandidateSegment], int]:
+    """Build one anchor partition inside a process pool worker."""
+    anchor_index, max_segment_length_m, line_tolerance_m, sample_step_m = args
+    if (
+        _PROCESS_PAIR_POINTS is None
+        or _PROCESS_PREPARED_POINTS is None
+        or _PROCESS_PROVIDER is None
+    ):
+        raise RuntimeError("LOS worker process was not initialized.")
+
+    return _build_anchor_pair_candidates(
+        anchor_index=anchor_index,
+        pair_points=_PROCESS_PAIR_POINTS,
+        prepared_points=_PROCESS_PREPARED_POINTS,
+        provider=_PROCESS_PROVIDER,
+        max_segment_length_m=max_segment_length_m,
+        line_tolerance_m=line_tolerance_m,
+        sample_step_m=sample_step_m,
+    )
+
+
 def generate_candidates(
     prepared_points: list[PreparedPoint],
     provider: ElevationProvider,
@@ -688,13 +746,16 @@ def generate_candidates(
     line_tolerance_m: float,
     sample_step_m: float,
     workers: Optional[int] = None,
+    worker_dem_path: Optional[Path] = None,
+    repo_root: Optional[Path] = None,
+    dem_unit: str = "meters",
 ) -> tuple[list[CandidateSegment], list[CandidateSegment], CandidateBuildStats]:
     """Generate LOS pair candidates, dedupe them, and report build statistics.
 
     Each unordered endpoint pair is tested once. `workers=None` keeps this
     single-threaded, which is easiest to debug. Positive worker counts split the
-    anchor-point partitions across a thread pool; DEM samplers serialize raster
-    reads internally so shared raster handles remain safe.
+    anchor-point partitions. Normal CLI runs use process workers, each with its
+    own DEM handle; direct in-memory tests fall back to threads.
     """
     pair_points = resolve_points(prepared_points, offset_m=point_height_m)
     raw_pair_candidates: list[CandidateSegment] = []
@@ -712,9 +773,26 @@ def generate_candidates(
         )
 
     worker_count = workers or 1
-    anchor_indexes = range(len(pair_points))
+    anchor_indexes = list(range(len(pair_points)))
     if worker_count == 1:
         anchor_results = [build_for_anchor(anchor_index) for anchor_index in anchor_indexes]
+    elif worker_dem_path is not None and repo_root is not None:
+        process_args = [
+            (anchor_index, max_segment_length_m, line_tolerance_m, sample_step_m)
+            for anchor_index in anchor_indexes
+        ]
+        with ProcessPoolExecutor(
+            max_workers=worker_count,
+            initializer=_init_process_candidate_worker,
+            initargs=(
+                prepared_points,
+                pair_points,
+                str(worker_dem_path),
+                str(repo_root),
+                dem_unit,
+            ),
+        ) as executor:
+            anchor_results = list(executor.map(_build_anchor_pair_candidates_in_process, process_args))
     else:
         with ThreadPoolExecutor(max_workers=worker_count) as executor:
             anchor_results = list(executor.map(build_for_anchor, anchor_indexes))
@@ -1534,6 +1612,9 @@ def run_los_cover(
         line_tolerance_m=line_tolerance_m,
         sample_step_m=sample_step_m,
         workers=workers,
+        worker_dem_path=resolved_dem_path,
+        repo_root=repo_root,
+        dem_unit=dem_unit,
     )
     selection = solve_candidate_cover(
         family_candidates,

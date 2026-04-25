@@ -7,7 +7,7 @@ The toolset currently has two main workflows:
 1. Radius coverage: choose or evaluate candidate points using a distance radius.
 2. LOS segment cover: use a DEM to find direct line-of-sight point pairs and build a QGIS project from the selected LOS segments.
 
-The pairwise LOS segment-cover workflow is the newer workflow for the "LOS Segment Cover" QGIS project. The older radius-first `los-bundle` path remains available only for legacy LOS review.
+The pairwise LOS segment-cover workflow is the current workflow for the "LOS Segment Cover" QGIS project.
 
 ## Quick Start: LOS Segment Cover For QGIS
 
@@ -51,10 +51,9 @@ Most commands are handled by:
 coverage\scripts\coverage_cli.py
 ```
 
-Two QGIS-specific commands are intercepted by `cvr.bat` and run under OSGeo4W QGIS Python:
+One QGIS-specific command is intercepted by `cvr.bat` and run under OSGeo4W QGIS Python:
 
 - `los-project`
-- `los-bundle`
 
 The `los-project` command does not appear in `coverage_cli.py --help` because it is handled by:
 
@@ -452,47 +451,6 @@ Output columns include:
 - `remaining_uncovered_count`
 - `covered_demand_ids`
 
-## Legacy LOS Bundle
-
-The `los-bundle` command is a QGIS-runtime branch handled directly by `cvr.bat`. It is an older radius-first plus LOS-checking workflow.
-
-```cmd
-cvr.bat los-bundle --input ".\coverage\alphapnts.csv" --dem ".\data\tif\dc_dem.tif" --radius 1000 --unit meters --exclude-self --solver full-cover --output-dir ".\coverage\results\alpha_los_bundle"
-```
-
-Options:
-
-```text
---input INPUT
---candidates CANDIDATES
---dem DEM
---id-field ID_FIELD
---lat-field LAT_FIELD
---lon-field LON_FIELD
---alt-field ALT_FIELD
---radius RADIUS
---unit meters|m|km|miles|mi|feet|ft
---distance-mode surface|ecef-3d
---exclude-self
---observer-height-m OBSERVER_HEIGHT_M
---target-height-m TARGET_HEIGHT_M
---sample-step-m SAMPLE_STEP_M
---solver none|full-cover|max-cover
---budget BUDGET
---output-dir OUTPUT_DIR
-```
-
-Argument details:
-
-- `--dem`: DEM raster used for terrain sampling.
-- `--observer-height-m`: height added above DEM altitude at demand points.
-- `--target-height-m`: height added above DEM altitude at candidate points.
-- `--sample-step-m`: terrain sampling interval along each LOS line, in meters.
-- `--radius`: radius-first candidate filter before LOS sampling.
-- Other field, unit, distance, solver, budget, and output arguments follow the radius workflow.
-
-Use this only when you specifically want the older radius-first LOS workflow. For the "LOS Segment Cover" QGIS project, use `los-cover` plus `los-project`.
-
 ## LOS Segment Cover
 
 The `los-cover` command is the current pairwise LOS workflow.
@@ -681,55 +639,6 @@ The CLI prints the exact refinement status after each run.
 - `total_covered_count`: cumulative demand points covered after this candidate is selected.
 - `remaining_uncovered_count`: demand points still uncovered after this candidate is selected.
 - `covered_demand_ids`: pipe-separated demand IDs newly covered at this rank.
-
-### Radius QGIS Bundle GeoJSON Properties
-
-`demands.geojson` point properties:
-
-- `point_id`: demand point ID.
-- `lat`: source latitude.
-- `lon`: source longitude.
-- `alt_m`: loaded altitude in meters.
-- `role`: `demand`.
-- `coverage_count`: number of candidate points that cover this demand point.
-- `covered`: `1` if at least one candidate covers the demand point.
-- `nearest_candidate_id`: nearest covering candidate ID, or blank if uncovered.
-- `nearest_distance_m`: distance to the nearest covering candidate, in meters.
-- `selected_coverage_count`: number of selected candidates that cover this demand point.
-
-`candidates.geojson` point properties:
-
-- `point_id`: candidate point ID.
-- `lat`: source latitude.
-- `lon`: source longitude.
-- `alt_m`: loaded altitude in meters.
-- `role`: `candidate`.
-- `cover_count`: number of demand points this candidate covers.
-- `selected`: `1` if selected by the bundle solver.
-- `selected_rank`: selection rank, or `0` if not selected.
-- `selected_newly_covered_count`: demand points newly covered when this candidate was selected.
-
-`coverage_links.geojson` line properties:
-
-- `demand_id`: demand point ID.
-- `candidate_id`: candidate point ID.
-- `distance_m`: demand-to-candidate distance in meters.
-- `radius_m`: coverage radius in meters.
-- `distance_mode`: `surface` or `ecef-3d`.
-- `selected_candidate`: `1` if the candidate endpoint was selected by the solver.
-
-`coverage_zones.geojson` polygon properties:
-
-- `point_id`: candidate point ID at the center of the zone.
-- `lat`: source latitude.
-- `lon`: source longitude.
-- `alt_m`: loaded altitude in meters.
-- `radius_m`: zone radius in meters.
-- `cover_count`: number of demand points this candidate covers.
-- `selected`: `1` if selected by the solver.
-- `selected_rank`: selection rank, or `0` if not selected.
-- `selected_newly_covered_count`: demand points newly covered when this candidate was selected.
-- `zone_is_approximate`: `1` when `distance_mode=ecef-3d`, because the visual zone is still drawn as a geodesic surface buffer.
 
 ### LOS `point_status.csv` Columns
 
@@ -1043,7 +952,7 @@ through `cvr.bat` so the command can use the OSGeo4W QGIS runtime when needed:
 cvr.bat los-cover --help
 ```
 
-`los-project`, `los-bundle`, and the Hawkins 3D pipeline still need the QGIS
+`los-project` and the Hawkins 3D pipeline still need the QGIS
 runtime because they import PyQGIS and/or `osgeo.ogr` directly:
 
 ```cmd
@@ -1111,7 +1020,6 @@ Additional `cvr.bat` commands:
 
 ```text
 los-project
-los-bundle
 ```
 
 Help commands:
@@ -1121,7 +1029,6 @@ cvr.bat matrix --help
 cvr.bat radius-cover --help
 cvr.bat los-cover --help
 cvr.bat los-project --help
-cvr.bat los-bundle --help
 ```
 
 ## Choosing The Right Workflow
@@ -1138,10 +1045,6 @@ Use `radius-cover` without `--budget` when:
 Use `radius-cover --budget N` when:
 
 - You have a fixed site budget and want the best radius coverage.
-
-Use `los-bundle` when:
-
-- You specifically need the older radius-first LOS workflow.
 
 Use `los-cover` plus `los-project` when:
 

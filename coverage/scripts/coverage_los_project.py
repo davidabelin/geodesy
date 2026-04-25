@@ -4,6 +4,7 @@ import argparse
 import csv
 import json
 import sys
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -16,7 +17,8 @@ if str(QGIS_HELPER_DIR) not in sys.path:
 
 from qgis_runtime import init_qgis_app, shutdown_qgis_app
 
-from osgeo import ogr, osr
+from osgeo import gdal, ogr, osr
+from qgis.PyQt.QtCore import qInstallMessageHandler
 from qgis.core import (
     QgsCategorizedSymbolRenderer,
     QgsLineSymbol,
@@ -28,12 +30,49 @@ from qgis.core import (
     QgsVectorLayer,
 )
 
+gdal.UseExceptions()
+ogr.UseExceptions()
+
 
 OGR_FIELD_TYPES = {
     "string": ogr.OFTString,
     "int": ogr.OFTInteger,
     "float": ogr.OFTReal,
 }
+STYLE_DIR = REPO_ROOT / "coverage"
+LAYER_STYLE_FILES = {
+    "points_z": STYLE_DIR / "los_cover_points.qml",
+    "pair_segments_z": STYLE_DIR / "los_cover_lines.qml",
+    "meaningful_lines_z": STYLE_DIR / "meaningful_lines.qml",
+    "selected_lines_z": STYLE_DIR / "selected_lines.qml",
+}
+
+
+@contextmanager
+def _suppress_known_qt_noise():
+    """Suppress a narrow Qt warning emitted while QGIS serializes the project.
+
+    QGIS 4.0.1 currently prints `QMetaEnum::keysToValue: empty keys string.`
+    during this headless export path. The warning is noisy but does not indicate
+    a failed project write, so the command filters only that exact message and
+    leaves other Qt messages visible.
+    """
+
+    previous_handler = None
+
+    def handler(mode, context, message):  # noqa: ANN001 - Qt callback signature
+        if message == "QMetaEnum::keysToValue: empty keys string.":
+            return
+        if previous_handler is not None:
+            previous_handler(mode, context, message)
+            return
+        print(message, file=sys.stderr)
+
+    previous_handler = qInstallMessageHandler(handler)
+    try:
+        yield
+    finally:
+        qInstallMessageHandler(previous_handler)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -339,6 +378,33 @@ def _style_offsets(layer: QgsVectorLayer) -> None:
     layer.setRenderer(QgsSingleSymbolRenderer(symbol))
 
 
+def _apply_style_file(layer: QgsVectorLayer, style_path: Path) -> bool:
+    """Apply a repository QML style if it exists."""
+    if not style_path.exists():
+        return False
+    layer.loadNamedStyle(str(style_path))
+    layer.triggerRepaint()
+    return True
+
+
+def _style_project_layer(layer_name: str, layer: QgsVectorLayer) -> None:
+    """Style one exported layer, preferring hand-tuned QML files."""
+    style_path = LAYER_STYLE_FILES.get(layer_name)
+    if style_path is not None and _apply_style_file(layer, style_path):
+        return
+
+    if layer_name == "points_z":
+        _style_points(layer)
+    elif layer_name == "pair_segments_z":
+        _style_pair_segments(layer)
+    elif layer_name == "meaningful_lines_z":
+        _style_meaningful_lines(layer)
+    elif layer_name == "selected_lines_z":
+        _style_segments(layer)
+    elif layer_name == "coverage_offsets_z":
+        _style_offsets(layer)
+
+
 def write_qgis_project(
     *,
     project_path: Path,
@@ -375,11 +441,8 @@ def write_qgis_project(
             ),
         }
 
-        _style_points(layers["points_z"])
-        _style_pair_segments(layers["pair_segments_z"])
-        _style_meaningful_lines(layers["meaningful_lines_z"])
-        _style_segments(layers["selected_lines_z"])
-        _style_offsets(layers["coverage_offsets_z"])
+        for layer_name, layer in layers.items():
+            _style_project_layer(layer_name, layer)
 
         root = project.layerTreeRoot()
         project.addMapLayer(dem_layer, addToLegend=False)
@@ -400,7 +463,8 @@ def write_qgis_project(
         root.findLayer(layers["coverage_offsets_z"].id()).setItemVisibilityChecked(False)
         root.findLayer(layers["pair_segments_z"].id()).setItemVisibilityChecked(False)
         project.setCrs(layers["points_z"].crs())
-        project.write(str(project_path))
+        with _suppress_known_qt_noise():
+            project.write(str(project_path))
         return project_path
     finally:
         shutdown_qgis_app(app, created)

@@ -216,10 +216,6 @@ Cleanup review summary: `highpoints` is currently a mixed legacy workbench, not 
   - Uses `qgis_runtime.init_qgis_app()`.
   - Writes a `.gpkg`, loads layers, styles them, writes a `.qgs`, and emits practical "open 3D view manually" instructions.
 
-- `coverage/scripts/coverage_los_qgis.py`
-  - Useful reference for QGIS loader-script generation and 3D vector styling.
-  - It still tells the user to open `View -> New 3D Map View` manually, which suggests fully launching a 3D map view from a standalone CLI may remain awkward or version-sensitive.
-
 ### Suggested cleanup classification
 
 - Keep near root:

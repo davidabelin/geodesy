@@ -38,10 +38,6 @@ def run_los_cover(tmp_path: Path) -> Path:
         "data\\tif\\dc_dem.tif",
         "--max-segment-length",
         "100",
-        "--azimuth-step-deg",
-        "90",
-        "--endpoint-step-m",
-        "50",
         "--sample-step-m",
         "25",
         "--output-dir",
@@ -103,7 +99,7 @@ def test_matrix_supports_csv_demands_and_geojson_candidates(tmp_path: Path) -> N
     assert covered_pairs == {("A", "S1"), ("B", "S1"), ("C", "S2")}
 
 
-def test_greedy_cover_commands_select_expected_sites(tmp_path: Path) -> None:
+def test_radius_cover_selects_full_and_budgeted_sites(tmp_path: Path) -> None:
     demand_csv = tmp_path / "demands.csv"
     demand_csv.write_text(
         "LOC,LAT,LON\nA,38.0,-77.0\nB,38.001,-77.0\nC,38.01,-77.0\n",
@@ -117,7 +113,7 @@ def test_greedy_cover_commands_select_expected_sites(tmp_path: Path) -> None:
 
     full_output = tmp_path / "full.csv"
     full_result = run_cli(
-        "full-cover",
+        "radius-cover",
         "--input",
         str(demand_csv),
         "--candidates",
@@ -139,7 +135,7 @@ def test_greedy_cover_commands_select_expected_sites(tmp_path: Path) -> None:
 
     max_output = tmp_path / "max.csv"
     max_result = run_cli(
-        "max-cover",
+        "radius-cover",
         "--input",
         str(demand_csv),
         "--candidates",
@@ -164,7 +160,7 @@ def test_greedy_cover_commands_select_expected_sites(tmp_path: Path) -> None:
 
     networkx_output = tmp_path / "networkx.csv"
     networkx_result = run_cli(
-        "full-cover",
+        "radius-cover",
         "--input",
         str(demand_csv),
         "--candidates",
@@ -185,92 +181,6 @@ def test_greedy_cover_commands_select_expected_sites(tmp_path: Path) -> None:
 
     assert {row["candidate_id"] for row in networkx_rows} == {"S1", "S2"}
     assert networkx_rows[-1]["remaining_uncovered_count"] == "0"
-
-
-def test_qgis_bundle_writes_visual_layers_and_manifest(tmp_path: Path) -> None:
-    demand_csv = tmp_path / "demands.csv"
-    demand_csv.write_text(
-        "LOC,LAT,LON\nA,38.0,-77.0\nB,38.001,-77.0\nC,38.01,-77.0\n",
-        encoding="utf-8",
-    )
-    candidate_csv = tmp_path / "candidates.csv"
-    candidate_csv.write_text(
-        "LOC,LAT,LON\nS1,38.0,-77.0\nS2,38.01,-77.0\n",
-        encoding="utf-8",
-    )
-    bundle_dir = tmp_path / "bundle"
-
-    result = run_cli(
-        "qgis-bundle",
-        "--input",
-        str(demand_csv),
-        "--candidates",
-        str(candidate_csv),
-        "--radius",
-        "200",
-        "--unit",
-        "meters",
-        "--solver",
-        "max-cover",
-        "--budget",
-        "1",
-        "--output-dir",
-        str(bundle_dir),
-    )
-
-    assert result.returncode == 0, result.stderr
-
-    manifest = json.loads((bundle_dir / "bundle_manifest.json").read_text(encoding="utf-8"))
-    assert manifest["covered_demand_count"] == 3
-    assert manifest["selected_covered_demand_count"] == 2
-    assert manifest["selected_candidate_count"] == 1
-
-    demands = json.loads((bundle_dir / "demands.geojson").read_text(encoding="utf-8"))
-    candidates = json.loads((bundle_dir / "candidates.geojson").read_text(encoding="utf-8"))
-    links = json.loads((bundle_dir / "coverage_links.geojson").read_text(encoding="utf-8"))
-    zones = json.loads((bundle_dir / "coverage_zones.geojson").read_text(encoding="utf-8"))
-    loader = (bundle_dir / "load_bundle_qgis.py").read_text(encoding="utf-8")
-
-    assert len(demands["features"]) == 3
-    assert len(candidates["features"]) == 2
-    assert len(links["features"]) == 3
-    assert len(zones["features"]) == 2
-    assert "coverage_zones" in loader
-    assert "style_demands" in loader
-
-    networkx_bundle_dir = tmp_path / "bundle_networkx"
-    networkx_result = run_cli(
-        "qgis-bundle",
-        "--input",
-        str(demand_csv),
-        "--candidates",
-        str(candidate_csv),
-        "--radius",
-        "200",
-        "--unit",
-        "meters",
-        "--solver",
-        "networkx-full-cover",
-        "--output-dir",
-        str(networkx_bundle_dir),
-    )
-
-    assert networkx_result.returncode == 0, networkx_result.stderr
-    networkx_manifest = json.loads(
-        (networkx_bundle_dir / "bundle_manifest.json").read_text(encoding="utf-8")
-    )
-    networkx_rows = list(
-        csv.DictReader(
-            (networkx_bundle_dir / "solver_rows.csv").open(
-                "r",
-                encoding="utf-8",
-                newline="",
-            )
-        )
-    )
-    assert networkx_manifest["solver"] == "networkx-full-cover"
-    assert networkx_manifest["selected_candidate_count"] == 2
-    assert {"rank", "candidate_id", "covered_demand_ids"}.issubset(networkx_rows[0].keys())
 
 
 @pytest.mark.skipif(not QGIS_PYTHON.exists(), reason="QGIS python runtime not installed")

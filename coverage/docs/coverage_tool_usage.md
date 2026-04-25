@@ -7,7 +7,7 @@ The toolset currently has two main workflows:
 1. Radius coverage: choose or evaluate candidate points using a distance radius.
 2. LOS segment cover: use a DEM to find direct line-of-sight point pairs and build a QGIS project from the selected LOS segments.
 
-The pairwise LOS segment-cover workflow is the newer workflow for the "LOS Segment Cover" QGIS project. The older radius-first QGIS bundle remains available, but it answers a different question.
+The pairwise LOS segment-cover workflow is the newer workflow for the "LOS Segment Cover" QGIS project. The older radius-first `los-bundle` path remains available only for legacy LOS review.
 
 ## Quick Start: LOS Segment Cover For QGIS
 
@@ -387,18 +387,27 @@ Output columns include:
 - `candidate_lat`
 - `candidate_lon`
 
-## Full Cover
+## Radius Cover
 
-The `full-cover` command chooses candidate points until no more reachable demand points remain uncovered.
+The `radius-cover` command chooses candidate points using a distance radius.
+Without `--budget`, it selects until no more reachable demand points remain
+uncovered. With `--budget N`, it selects up to `N` candidates to cover as many
+demand points as possible.
 
 ```cmd
-cvr.bat full-cover --input ".\coverage\alphapnts.csv" --radius 1000 --unit meters --exclude-self
+cvr.bat radius-cover --input ".\coverage\alphapnts.csv" --radius 1000 --unit meters --exclude-self
+```
+
+Budgeted version:
+
+```cmd
+cvr.bat radius-cover --input ".\coverage\alphapnts.csv" --radius 1000 --unit meters --exclude-self --budget 5
 ```
 
 With separate candidate sites:
 
 ```cmd
-cvr.bat full-cover --input ".\coverage\demand.csv" --candidates ".\coverage\candidates.csv" --radius 2 --unit miles
+cvr.bat radius-cover --input ".\coverage\demand.csv" --candidates ".\coverage\candidates.csv" --radius 2 --unit miles
 ```
 
 Options:
@@ -415,6 +424,7 @@ Options:
 --distance-mode surface|ecef-3d
 --exclude-self
 --solver greedy|networkx
+--budget BUDGET
 --output OUTPUT
 --format csv|json
 ```
@@ -427,8 +437,9 @@ Argument details:
 - `--unit`: unit for `--radius`.
 - `--distance-mode`: same meaning as in `matrix`.
 - `--exclude-self`: useful when demand and candidate files are the same and a point should not cover itself.
-- `--solver greedy`: default greedy set-cover approximation.
-- `--solver networkx`: optional NetworkX weighted dominating-set approximation over the same coverage relationships.
+- `--solver greedy`: default greedy set-cover approximation when `--budget` is omitted.
+- `--solver networkx`: optional NetworkX weighted dominating-set approximation when `--budget` is omitted.
+- `--budget`: maximum number of candidates to select. When set, the command runs greedy budgeted max cover.
 - `--output`: explicit output file path.
 - `--format`: `csv` or `json` table output.
 
@@ -440,87 +451,6 @@ Output columns include:
 - `total_covered_count`
 - `remaining_uncovered_count`
 - `covered_demand_ids`
-
-## Greedy Budgeted Max Cover
-
-The `max-cover` command chooses up to `--budget` candidates to cover as many demand points as possible.
-
-```cmd
-cvr.bat max-cover --input ".\coverage\alphapnts.csv" --radius 1000 --unit meters --exclude-self --budget 5
-```
-
-Options:
-
-```text
---input INPUT
---candidates CANDIDATES
---id-field ID_FIELD
---lat-field LAT_FIELD
---lon-field LON_FIELD
---alt-field ALT_FIELD
---radius RADIUS
---unit meters|m|km|miles|mi|feet|ft
---distance-mode surface|ecef-3d
---exclude-self
---budget BUDGET
---output OUTPUT
---format csv|json
-```
-
-Argument details:
-
-- `--budget`: maximum number of candidates the solver may select.
-- Other arguments have the same meaning as `full-cover`.
-
-Output columns are the same shape as `full-cover`.
-
-## Radius-First QGIS Bundle
-
-The `qgis-bundle` command writes a simple GeoJSON bundle for the older radius coverage workflow.
-
-```cmd
-cvr.bat qgis-bundle --input ".\coverage\alphapnts.csv" --radius 1000 --unit meters --exclude-self --solver full-cover --output-dir ".\coverage\results\alpha_radius_qgis_bundle"
-```
-
-Options:
-
-```text
---input INPUT
---candidates CANDIDATES
---id-field ID_FIELD
---lat-field LAT_FIELD
---lon-field LON_FIELD
---alt-field ALT_FIELD
---radius RADIUS
---unit meters|m|km|miles|mi|feet|ft
---distance-mode surface|ecef-3d
---exclude-self
---solver none|full-cover|networkx-full-cover|max-cover
---budget BUDGET
---output-dir OUTPUT_DIR
-```
-
-Argument details:
-
-- `--solver none`: do not select candidates; only write coverage relationships.
-- `--solver full-cover`: select enough candidates to cover all reachable demand under the radius rule.
-- `--solver networkx-full-cover`: use NetworkX's weighted dominating-set approximation for full-cover selection.
-- `--solver max-cover`: select up to `--budget` candidates.
-- `--budget`: required when `--solver max-cover`.
-- `--output-dir`: folder for GeoJSON files, manifest, solver table, and QGIS loader script.
-- Other radius, unit, field, and distance arguments have the same meaning as `matrix`.
-
-Bundle files:
-
-- `demands.geojson`
-- `candidates.geojson`
-- `coverage_links.geojson`
-- `coverage_zones.geojson`
-- `solver_rows.csv`
-- `load_bundle_qgis.py`
-- `bundle_manifest.json`
-
-This path does not do terrain LOS checking. It is useful for radius-first screening and map review.
 
 ## Legacy LOS Bundle
 
@@ -627,15 +557,6 @@ Argument details:
 - `--solver hybrid`: greedy selection plus local improvements and reduced-pool exact refinement when available.
 - `--solver networkx`: optional NetworkX weighted dominating-set approximation over the generated LOS line families.
 - `--workers`: parallel LOS candidate workers. `none` is the default single-threaded path, `max` uses the CPU count, and `N` accepts an integer from `1` through the CPU count.
-
-Accepted but legacy/unused for the pairwise model:
-
-```text
---anchor-height-m
---endpoint-height-m
---azimuth-step-deg
---endpoint-step-m
-```
 
 ### LOS Units
 
@@ -750,9 +671,9 @@ The CLI prints the exact refinement status after each run.
 - `candidate_lat`: candidate point latitude.
 - `candidate_lon`: candidate point longitude.
 
-### Full-Cover And Max-Cover Output Columns
+### Radius-Cover Output Columns
 
-`full-cover`, `max-cover`, and radius-bundle `solver_rows.csv` write:
+`radius-cover` writes:
 
 - `rank`: selection order, starting at `1`.
 - `candidate_id`: selected candidate point ID.
@@ -952,7 +873,6 @@ Important `config` fields:
 - `max_segment_length_m`: actual max segment filter in meters.
 - `sample_step_m`: actual terrain sample spacing in meters.
 - `solver`: `greedy` or `hybrid`.
-- `legacy_unused_options`: accepted compatibility options that do not control the current pairwise model.
 
 Important `selection.exact_status` values:
 
@@ -1095,7 +1015,7 @@ cvr.bat matrix --input ".\coverage\alphapnts.csv" --radius 1000 --unit meters --
 Run budgeted radius max cover:
 
 ```cmd
-cvr.bat max-cover --input ".\coverage\alphapnts.csv" --radius 1000 --unit meters --exclude-self --budget 5
+cvr.bat radius-cover --input ".\coverage\alphapnts.csv" --radius 1000 --unit meters --exclude-self --budget 5
 ```
 
 ## Troubleshooting
@@ -1183,9 +1103,7 @@ Top-level CLI commands:
 
 ```text
 matrix
-full-cover
-max-cover
-qgis-bundle
+radius-cover
 los-cover
 ```
 
@@ -1200,9 +1118,7 @@ Help commands:
 
 ```cmd
 cvr.bat matrix --help
-cvr.bat full-cover --help
-cvr.bat max-cover --help
-cvr.bat qgis-bundle --help
+cvr.bat radius-cover --help
 cvr.bat los-cover --help
 cvr.bat los-project --help
 cvr.bat los-bundle --help
@@ -1215,17 +1131,13 @@ Use `matrix` when:
 - You want all demand/candidate radius relationships.
 - You need a table for further analysis.
 
-Use `full-cover` when:
+Use `radius-cover` without `--budget` when:
 
 - You want enough candidates to cover all reachable demand points under a radius rule.
 
-Use `max-cover` when:
+Use `radius-cover --budget N` when:
 
 - You have a fixed site budget and want the best radius coverage.
-
-Use `qgis-bundle` when:
-
-- You want a simple QGIS visualization of radius coverage.
 
 Use `los-bundle` when:
 

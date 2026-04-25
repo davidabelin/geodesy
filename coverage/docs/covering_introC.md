@@ -38,8 +38,6 @@ For the current implementation, all point endpoints use the same display offset:
 
 - point height: `+2 m` by default
 
-Legacy CLI options such as `--anchor-height-m` and `--endpoint-height-m` are still accepted for compatibility, but the pairwise model uses `--point-height-m` for both ends of each point-to-point segment.
-
 ## CRS and Units
 
 Defaults remain WGS84 and meters.

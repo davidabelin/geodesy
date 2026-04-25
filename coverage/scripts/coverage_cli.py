@@ -15,7 +15,6 @@ from coverage_core import (
     load_dataset,
     networkx_full_cover,
     write_rows,
-    write_qgis_bundle,
 )
 from coverage_los_core import has_dem_backend, length_to_meters, run_los_cover
 
@@ -152,56 +151,24 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write only rows where coverage is true.",
     )
 
-    full_cover = sub.add_parser(
-        "full-cover",
-        help="Full-cover approximation: choose sites until all reachable demand is covered.",
+    radius_cover = sub.add_parser(
+        "radius-cover",
+        help="Choose radius-cover candidates, optionally constrained by --budget.",
     )
-    _add_dataset_args(full_cover)
-    _add_coverage_args(full_cover)
-    _add_output_args(full_cover)
-    full_cover.add_argument(
+    _add_dataset_args(radius_cover)
+    _add_coverage_args(radius_cover)
+    _add_output_args(radius_cover)
+    radius_cover.add_argument(
         "--solver",
         choices=["greedy", "networkx"],
         default="greedy",
-        help="Full-cover solver. Defaults to greedy.",
+        help="Solver used when --budget is omitted. Defaults to greedy.",
     )
-
-    max_cover = sub.add_parser(
-        "max-cover",
-        help="Greedy budgeted max-cover approximation.",
-    )
-    _add_dataset_args(max_cover)
-    _add_coverage_args(max_cover)
-    _add_output_args(max_cover)
-    max_cover.add_argument(
-        "--budget",
-        required=True,
-        type=int,
-        help="Maximum number of candidate sites to pick.",
-    )
-
-    qgis_bundle = sub.add_parser(
-        "qgis-bundle",
-        help="Write the legacy radius-first QGIS visual bundle with GeoJSON layers and a PyQGIS loader script.",
-    )
-    _add_dataset_args(qgis_bundle)
-    _add_coverage_args(qgis_bundle)
-    qgis_bundle.add_argument(
-        "--solver",
-        choices=["none", "full-cover", "networkx-full-cover", "max-cover"],
-        default="full-cover",
-        help="Optional solver used to flag selected candidates in the bundle.",
-    )
-    qgis_bundle.add_argument(
+    radius_cover.add_argument(
         "--budget",
         type=int,
         default=None,
-        help="Candidate budget when --solver=max-cover.",
-    )
-    qgis_bundle.add_argument(
-        "--output-dir",
-        default=None,
-        help="Bundle directory. Defaults under coverage/results/.",
+        help="Maximum candidates to pick. When omitted, selects until all reachable demand is covered.",
     )
 
     los_cover = sub.add_parser(
@@ -244,12 +211,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     los_cover.add_argument("--line-tolerance", type=float, default=None, help="Line-membership tolerance in --unit.")
     los_cover.add_argument("--line-tolerance-m", type=float, default=None, help="Line-membership tolerance in meters.")
-    los_cover.add_argument("--anchor-height-m", type=float, default=2.0)
     los_cover.add_argument("--point-height", type=float, default=None, help="Point height offset in --unit.")
     los_cover.add_argument("--point-height-m", type=float, default=None, help="Point height offset in meters.")
-    los_cover.add_argument("--endpoint-height-m", type=float, default=2.0)
-    los_cover.add_argument("--azimuth-step-deg", type=float, default=10.0)
-    los_cover.add_argument("--endpoint-step-m", type=float, default=25.0)
     los_cover.add_argument("--sample-step", type=float, default=None, help="LOS terrain sampling step in --unit.")
     los_cover.add_argument("--sample-step-m", type=float, default=None, help="LOS terrain sampling step in meters.")
     los_cover.add_argument("--solver", choices=["greedy", "hybrid", "networkx"], default="hybrid")
@@ -311,10 +274,17 @@ def _matrix_command(args: argparse.Namespace) -> int:
     return 0
 
 
-def _full_cover_command(args: argparse.Namespace) -> int:
+def _radius_cover_command(args: argparse.Namespace) -> int:
+    """Run the merged radius-cover command.
+
+    The command keeps one radius workflow in the CLI: without `--budget` it
+    selects enough candidates to cover all reachable demand, and with `--budget`
+    it selects the best candidates within that limit. The output row schema is
+    the same for both modes.
+    """
     demand, candidates = _load_datasets(args)
     radius_m = convert_distance_to_meters(args.radius, args.unit)
-    if args.solver == "greedy":
+    if args.budget is None and args.solver == "greedy":
         rows, uncovered_ids = greedy_full_cover(
             demand.points,
             candidates.points,
@@ -322,7 +292,8 @@ def _full_cover_command(args: argparse.Namespace) -> int:
             distance_mode=args.distance_mode,
             exclude_self=args.exclude_self,
         )
-    elif args.solver == "networkx":
+        output_label = "Radius-cover output"
+    elif args.budget is None and args.solver == "networkx":
         rows, uncovered_ids = networkx_full_cover(
             demand.points,
             candidates.points,
@@ -330,73 +301,33 @@ def _full_cover_command(args: argparse.Namespace) -> int:
             distance_mode=args.distance_mode,
             exclude_self=args.exclude_self,
         )
+        output_label = "Radius-cover output"
     else:
-        raise ValueError(f"Unsupported full-cover solver: {args.solver}")
+        if args.solver != "greedy":
+            raise ValueError("--solver networkx is only available when --budget is omitted.")
+        if args.budget < 1:
+            raise ValueError("--budget must be at least 1.")
+        rows, uncovered_ids = greedy_budgeted_max_cover(
+            demand.points,
+            candidates.points,
+            radius_m=radius_m,
+            distance_mode=args.distance_mode,
+            budget=args.budget,
+            exclude_self=args.exclude_self,
+        )
+        output_label = "Radius budgeted-cover output"
+
     output_path = Path(args.output) if args.output else _default_output_path(
-        "full_cover", demand, candidates, args.format
+        "radius_cover", demand, candidates, args.format
     )
     write_rows(output_path, rows, args.format)
-    _print_output("Full-cover output", output_path, len(rows))
-    print(f"Selected candidates: {len(rows)}")
-    print(f"Uncovered demand count: {len(uncovered_ids)}")
-    if uncovered_ids:
-        print("Uncovered demand IDs:", ", ".join(uncovered_ids))
-    return 0
-
-
-def _max_cover_command(args: argparse.Namespace) -> int:
-    demand, candidates = _load_datasets(args)
-    radius_m = convert_distance_to_meters(args.radius, args.unit)
-    rows, uncovered_ids = greedy_budgeted_max_cover(
-        demand.points,
-        candidates.points,
-        radius_m=radius_m,
-        distance_mode=args.distance_mode,
-        budget=args.budget,
-        exclude_self=args.exclude_self,
-    )
-    output_path = Path(args.output) if args.output else _default_output_path(
-        "max_cover", demand, candidates, args.format
-    )
-    write_rows(output_path, rows, args.format)
-    covered_total = (
-        rows[-1]["total_covered_count"] if rows else 0
-    )
-    _print_output("Max-cover output", output_path, len(rows))
+    covered_total = rows[-1]["total_covered_count"] if rows else 0
+    _print_output(output_label, output_path, len(rows))
     print(f"Selected candidates: {len(rows)}")
     print(f"Demand points covered: {covered_total}")
     print(f"Uncovered demand count: {len(uncovered_ids)}")
     if uncovered_ids:
         print("Uncovered demand IDs:", ", ".join(uncovered_ids))
-    return 0
-
-
-def _qgis_bundle_command(args: argparse.Namespace) -> int:
-    demand, candidates = _load_datasets(args)
-    radius_m = convert_distance_to_meters(args.radius, args.unit)
-    if args.output_dir:
-        bundle_dir = Path(args.output_dir)
-    else:
-        bundle_dir = (
-            RESULTS_DIR
-            / f"qgis_bundle__{demand.path.stem}__{candidates.path.stem}"
-        )
-
-    manifest = write_qgis_bundle(
-        bundle_dir,
-        demand_dataset=demand,
-        candidate_dataset=candidates,
-        radius_m=radius_m,
-        distance_mode=args.distance_mode,
-        exclude_self=args.exclude_self,
-        solver=args.solver,
-        budget=args.budget,
-    )
-    print(f"QGIS bundle output: {bundle_dir}")
-    print(f"Covered demand points: {manifest['covered_demand_count']}")
-    print(f"Demand points covered by selected candidates: {manifest['selected_covered_demand_count']}")
-    print(f"Selected candidates: {manifest['selected_candidate_count']}")
-    print(f"Loader script: {manifest['files']['loader_script']}")
     return 0
 
 
@@ -457,11 +388,7 @@ def _los_cover_command(args: argparse.Namespace, argv: list[str]) -> int:
         alt_field=args.alt_field,
         max_segment_length_m=length_to_meters(args.max_segment_length, args.unit),
         line_tolerance_m=line_tolerance_m,
-        anchor_height_m=args.anchor_height_m,
         point_height_m=point_height_m,
-        endpoint_height_m=args.endpoint_height_m,
-        azimuth_step_deg=args.azimuth_step_deg,
-        endpoint_step_m=args.endpoint_step_m,
         sample_step_m=sample_step_m,
         solver=args.solver,
         output_crs=args.output_crs,
@@ -502,12 +429,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.cmd == "matrix":
         return _matrix_command(args)
-    if args.cmd == "full-cover":
-        return _full_cover_command(args)
-    if args.cmd == "max-cover":
-        return _max_cover_command(args)
-    if args.cmd == "qgis-bundle":
-        return _qgis_bundle_command(args)
+    if args.cmd == "radius-cover":
+        return _radius_cover_command(args)
     if args.cmd == "los-cover":
         return _los_cover_command(args, argv)
 

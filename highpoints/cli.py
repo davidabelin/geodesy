@@ -129,7 +129,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Do not write a QGIS .qgz project archive.",
     )
     high_grid.add_argument(
-        "--work-crs", default="EPSG:26985", help="Projected work CRS."
+        "--input-crs",
+        default=None,
+        help=(
+            "CRS for CRS-less boundary CSV/inline coordinates. Defaults to "
+            "the DEM CRS; vector files with their own CRS keep using it."
+        ),
     )
     high_grid.add_argument(
         "--corner-names",
@@ -140,7 +145,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--parallelogram-tolerance-m",
         default=30.0,
         type=float,
-        help="Maximum parallelogram residual in work CRS units.",
+        help="Maximum parallelogram residual in DEM CRS units.",
     )
     high_grid.add_argument(
         "--offset-angle",

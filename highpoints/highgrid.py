@@ -147,8 +147,8 @@ def _parse_corner_names(value: str | None) -> dict[str, str] | None:
     return dict(zip(CORNER_LABELS, names))
 
 
-def _parse_inline_corners(corners_text: str) -> gpd.GeoDataFrame:
-    """Parse ``--corners`` text into WGS84 points in required W,N,E,S order."""
+def _parse_inline_corners(corners_text: str, crs: CRS) -> gpd.GeoDataFrame:
+    """Parse ``--corners`` text into points in required W,N,E,S order."""
     parts = [part.strip() for part in corners_text.split(";") if part.strip()]
     if len(parts) != 4:
         raise ValueError("--corners must contain four lon,lat pairs in W,N,E,S order")
@@ -165,7 +165,7 @@ def _parse_inline_corners(corners_text: str) -> gpd.GeoDataFrame:
             raise ValueError("--corners must contain numeric lon,lat pairs") from exc
         records.append({"source_name": label, "geometry": Point(lon, lat)})
 
-    return gpd.GeoDataFrame(records, geometry="geometry", crs="EPSG:4326")
+    return gpd.GeoDataFrame(records, geometry="geometry", crs=crs)
 
 
 def _candidate_name(row: pd.Series) -> str | None:
@@ -207,8 +207,10 @@ def _find_column(columns: Iterable[str], options: Sequence[str]) -> str | None:
     return None
 
 
-def _read_csv_boundary_candidates(boundary_path: Path) -> gpd.GeoDataFrame:
-    """Read the default-style corner CSV as NAD83 longitude/latitude points.
+def _read_csv_boundary_candidates(
+    boundary_path: Path, *, default_crs: CRS
+) -> gpd.GeoDataFrame:
+    """Read the default-style corner CSV as points in the caller's input CRS.
 
     The CSV contract is deliberately small: ``Name,Lat,Lon,Alt``. ``Alt`` is
     optional metadata for the corner layer; the DEM remains authoritative for
@@ -261,7 +263,7 @@ def _read_csv_boundary_candidates(boundary_path: Path) -> gpd.GeoDataFrame:
             }
         )
 
-    return gpd.GeoDataFrame(records, geometry="geometry", crs="EPSG:4269")
+    return gpd.GeoDataFrame(records, geometry="geometry", crs=default_crs)
 
 
 def _geometry_points(geometry) -> Iterable[Point]:
@@ -292,19 +294,21 @@ def _geometry_points(geometry) -> Iterable[Point]:
             yield from _geometry_points(item)
 
 
-def _read_boundary_candidates(boundary_path: Path) -> gpd.GeoDataFrame:
+def _read_boundary_candidates(
+    boundary_path: Path, *, default_crs: CRS
+) -> gpd.GeoDataFrame:
     """Read a boundary file and return all candidate corner coordinates."""
     if not boundary_path.exists():
         raise ValueError(f"Boundary file does not exist: {boundary_path}")
 
     if boundary_path.suffix.casefold() == ".csv":
-        return _read_csv_boundary_candidates(boundary_path)
+        return _read_csv_boundary_candidates(boundary_path, default_crs=default_crs)
 
     source = gpd.read_file(boundary_path)
     if source.empty:
         raise ValueError(f"Boundary file has no features: {boundary_path}")
     if source.crs is None:
-        source = source.set_crs("EPSG:4326")
+        source = source.set_crs(default_crs)
 
     records = []
     for _, row in source.iterrows():
@@ -456,13 +460,14 @@ def load_corners(
     *,
     boundary_path: Path | None,
     corners_text: str | None,
-    work_crs: CRS,
+    target_crs: CRS,
+    input_crs: CRS | None = None,
     corner_names: str | None = None,
 ) -> gpd.GeoDataFrame:
     """Load, label, and project the four grid-defining corners.
 
     Returned corners are always ordered as ``W,N,E,S`` and expressed in
-    ``work_crs`` geometry. The longitude/latitude fields are kept for easy
+    ``target_crs`` geometry. The longitude/latitude fields are kept for easy
     inspection in QGIS and CSV-like attribute views.
     """
     if boundary_path is None and corners_text is None:
@@ -470,15 +475,16 @@ def load_corners(
     if boundary_path is not None and corners_text is not None:
         raise ValueError("Provide only one of --boundary or --corners")
 
+    source_crs = input_crs if input_crs is not None else target_crs
     if corners_text is not None:
-        source = _parse_inline_corners(corners_text)
+        source = _parse_inline_corners(corners_text, source_crs)
         explicit_names = dict(zip(CORNER_LABELS, CORNER_LABELS))
     else:
-        source = _read_boundary_candidates(Path(boundary_path))
+        source = _read_boundary_candidates(Path(boundary_path), default_crs=source_crs)
         explicit_names = _parse_corner_names(corner_names)
 
     source_wgs = source.to_crs("EPSG:4326")
-    work = source.to_crs(work_crs)
+    work = source.to_crs(target_crs)
     chosen = _select_corner_indices(work, explicit_names)
 
     records = []
@@ -499,7 +505,7 @@ def load_corners(
             }
         )
 
-    return gpd.GeoDataFrame(records, geometry="geometry", crs=work_crs)
+    return gpd.GeoDataFrame(records, geometry="geometry", crs=target_crs)
 
 
 def _corner_point(corners: gpd.GeoDataFrame, label: str) -> Point:
@@ -513,7 +519,7 @@ def _corner_point(corners: gpd.GeoDataFrame, label: str) -> Point:
 def validate_parallelogram(corners: gpd.GeoDataFrame, tolerance_m: float) -> float:
     """Validate that W,N,E,S describe a parallelogram within ``tolerance_m``.
 
-    The expected opposite corner is ``N + S - W`` in the projected work CRS.
+    The expected opposite corner is ``N + S - W`` in the DEM CRS.
     The returned residual is useful output metadata because real source files
     may be close to, but not exactly, a mathematical parallelogram.
     """
@@ -704,7 +710,8 @@ def _select_candidate_pixel(
 
     ``prefix`` becomes the output field prefix, for example ``hi_elev_m`` or
     ``avg_dem_row``. All candidate masks are resolved the same way: closest to
-    the cell centroid in work CRS, then lowest DEM row, then lowest DEM column.
+    the cell centroid in the output CRS, then lowest DEM row, then lowest DEM
+    column.
     """
     candidate_rows, candidate_cols = np.where(candidate_mask)
     if len(candidate_rows) == 0:
@@ -965,9 +972,7 @@ def attach_extreme_attributes(
             if extrema.get("status") == "ok":
                 ok_count += 1
             now = time.monotonic()
-            if progress and (
-                completed == total_cells or now >= next_progress_time
-            ):
+            if progress and (completed == total_cells or now >= next_progress_time):
                 _print_dem_progress(
                     completed=completed,
                     total=total_cells,
@@ -1042,7 +1047,10 @@ def _check_output_paths(
     """Validate output collisions before any expensive raster work begins."""
     if output_path.suffix.casefold() != ".gpkg":
         raise ValueError(f"--output must end in .gpkg: {output_path}")
-    if project_output_path is not None and project_output_path.suffix.casefold() != ".qgz":
+    if (
+        project_output_path is not None
+        and project_output_path.suffix.casefold() != ".qgz"
+    ):
         raise ValueError(f"--project-output must end in .qgz: {project_output_path}")
     for label, path in (
         ("--output", output_path),
@@ -1068,7 +1076,9 @@ def _check_output_paths(
     for index, (left_label, left_path) in enumerate(resolved_paths):
         for right_label, right_path in resolved_paths[index + 1 :]:
             if left_path == right_path:
-                raise ValueError(f"{left_label} and {right_label} must be different paths")
+                raise ValueError(
+                    f"{left_label} and {right_label} must be different paths"
+                )
     for label, path in labeled_paths:
         if path.exists() and not overwrite:
             raise ValueError(f"{label} already exists; pass --overwrite: {path}")
@@ -1143,14 +1153,110 @@ def write_csv_output(
 
 def _relative_qgis_path(path: Path, *, base_dir: Path) -> str:
     """Return a QGIS-friendly relative path with forward slashes."""
-    relative = os.path.relpath(path.resolve(strict=False), base_dir.resolve(strict=False))
-    return Path(relative).as_posix()
+    relative = os.path.relpath(
+        path.resolve(strict=False), base_dir.resolve(strict=False)
+    )
+    qgis_path = Path(relative).as_posix()
+    if not qgis_path.startswith("../") and "/" not in qgis_path:
+        return f"./{qgis_path}"
+    return qgis_path
+
+
+def _read_dem_crs(dem_path: Path) -> CRS:
+    """Read and validate the DEM CRS."""
+    if not dem_path.exists():
+        raise ValueError(f"DEM file does not exist: {dem_path}")
+    with rasterio.open(dem_path) as dataset:
+        if dataset.crs is None:
+            raise ValueError(f"DEM has no CRS: {dem_path}")
+        return _coerce_crs(dataset.crs)
+
+
+def _spatialrefsys_xml(crs: CRS) -> str:
+    """Return a QGIS spatialrefsys XML fragment for a CRS."""
+    authority = crs.to_authority()
+    authid = f"{authority[0]}:{authority[1]}" if authority else crs.to_string()
+    try:
+        srid = int(authority[1]) if authority and authority[0].upper() == "EPSG" else 0
+    except (TypeError, ValueError):
+        srid = 0
+    proj4 = ""
+    projection = (
+        crs.coordinate_operation.method_name if crs.coordinate_operation else ""
+    )
+    ellipsoid = crs.ellipsoid.name if crs.ellipsoid else ""
+    return (
+        '<spatialrefsys nativeFormat="Wkt">\n'
+        f"      <wkt>{html.escape(crs.to_wkt(), quote=False)}</wkt>\n"
+        f"      <proj4>{html.escape(proj4, quote=False)}</proj4>\n"
+        f"      <srsid>{srid}</srsid>\n"
+        f"      <srid>{srid}</srid>\n"
+        f"      <authid>{html.escape(authid)}</authid>\n"
+        f"      <description>{html.escape(crs.name or authid)}</description>\n"
+        f"      <projectionacronym>{html.escape(projection)}</projectionacronym>\n"
+        f"      <ellipsoidacronym>{html.escape(ellipsoid)}</ellipsoidacronym>\n"
+        f"      <geographicflag>{str(bool(crs.is_geographic)).lower()}</geographicflag>\n"
+        "    </spatialrefsys>"
+    )
+
+
+def _project_crs_xml(crs: CRS) -> str:
+    """Return a QGIS project CRS block."""
+    return f"<projectCrs>\n    {_spatialrefsys_xml(crs)}\n  </projectCrs>"
+
+
+def _layer_srs_xml(crs: CRS) -> str:
+    """Return a QGIS layer SRS block."""
+    return f"<srs>\n    {_spatialrefsys_xml(crs)}\n  </srs>"
+
+
+def _renderer_from_qml(path: Path) -> str:
+    """Extract the renderer block from a QGIS QML style file."""
+    text = path.read_text(encoding="utf-8")
+    match = re.search(r"<renderer-v2\b.*?</renderer-v2>", text, flags=re.S)
+    if match is None:
+        raise ValueError(f"QML style has no renderer-v2 block: {path}")
+    return match.group(0)
+
+
+def _replace_layer_renderer(
+    qgs_text: str, *, layer_name: str, renderer_xml: str
+) -> str:
+    """Replace a maplayer renderer for one GeoPackage layer."""
+    pattern = re.compile(
+        rf"(<maplayer\b(?:(?!</maplayer>).)*?<datasource>[^<]*\|layername={re.escape(layer_name)}</datasource>"
+        rf"(?:(?!</maplayer>).)*?)(<renderer-v2\b.*?</renderer-v2>)",
+        flags=re.S,
+    )
+    return pattern.sub(lambda match: match.group(1) + renderer_xml, qgs_text)
+
+
+def _apply_generic_qml_renderers(qgs_text: str) -> str:
+    """Apply bundled generic layer renderers to the QGIS project XML."""
+    template_dir = default_project_template_path().parent
+    style_by_layer = {
+        "hi-points": template_dir / "hipnts.qml",
+        "lo-points": template_dir / "lopnts.qml",
+        "avg-points": template_dir / "avgpnts.qml",
+        "highgrid_cells": template_dir / "grid_cells.qml",
+    }
+    for layer_name, style_path in style_by_layer.items():
+        if not style_path.exists():
+            raise ValueError(f"QGIS layer style template does not exist: {style_path}")
+        qgs_text = _replace_layer_renderer(
+            qgs_text,
+            layer_name=layer_name,
+            renderer_xml=_renderer_from_qml(style_path),
+        )
+    return qgs_text
 
 
 def write_qgis_project(
     project_output_path: Path,
     *,
     gpkg_path: Path,
+    dem_path: Path,
+    dem_crs: CRS,
     overwrite: bool,
     template_path: Path | None = None,
 ) -> None:
@@ -1162,22 +1268,41 @@ def write_qgis_project(
             )
         project_output_path.unlink()
 
-    template = template_path if template_path is not None else default_project_template_path()
+    template = (
+        template_path if template_path is not None else default_project_template_path()
+    )
     if not template.exists():
         raise ValueError(f"QGIS project template does not exist: {template}")
 
     project_output_path.parent.mkdir(parents=True, exist_ok=True)
     gpkg_relative = _relative_qgis_path(gpkg_path, base_dir=project_output_path.parent)
     datasource_prefix = html.escape(gpkg_relative, quote=True)
+    dem_relative = html.escape(
+        _relative_qgis_path(dem_path, base_dir=project_output_path.parent),
+        quote=True,
+    )
     project_stem = project_output_path.stem
     gpkg_stem = gpkg_path.stem
 
     with zipfile.ZipFile(template, "r") as source_archive:
-        qgs_names = [name for name in source_archive.namelist() if name.endswith(".qgs")]
+        qgs_names = [
+            name for name in source_archive.namelist() if name.endswith(".qgs")
+        ]
         if len(qgs_names) != 1:
-            raise ValueError(f"QGIS project template must contain exactly one .qgs: {template}")
+            raise ValueError(
+                f"QGIS project template must contain exactly one .qgs: {template}"
+            )
         template_qgs_name = qgs_names[0]
         qgs_text = source_archive.read(template_qgs_name).decode("utf-8")
+        qgs_text = re.sub(
+            r"<projectCrs>.*?</projectCrs>",
+            _project_crs_xml(dem_crs),
+            qgs_text,
+            flags=re.S,
+        )
+        qgs_text = re.sub(
+            r"<srs>.*?</srs>", _layer_srs_xml(dem_crs), qgs_text, flags=re.S
+        )
         for layer_name in (
             "lo-points",
             "hi-points",
@@ -1191,10 +1316,28 @@ def write_qgis_project(
                 f'source="{datasource_prefix}|layername={layer_name}"',
                 qgs_text,
             )
+            qgs_text = re.sub(
+                rf"<datasource>[^<]*?\.gpkg\|layername={re.escape(layer_name)}</datasource>",
+                f"<datasource>{datasource_prefix}|layername={layer_name}</datasource>",
+                qgs_text,
+            )
+        qgs_text = re.sub(
+            r'source="[^"]*?\.(?:tif|tiff)"', f'source="{dem_relative}"', qgs_text
+        )
+        qgs_text = re.sub(
+            r"<datasource>[^<]*?\.(?:tif|tiff)</datasource>",
+            f"<datasource>{dem_relative}</datasource>",
+            qgs_text,
+        )
         qgs_text = qgs_text.replace("lenfgrid —", f"{gpkg_stem} —")
+        qgs_text = qgs_text.replace("grid3x3 —", f"{gpkg_stem} —")
         qgs_text = qgs_text.replace("lenfgrid", gpkg_stem)
+        qgs_text = qgs_text.replace("grid3x3", gpkg_stem)
+        qgs_text = _apply_generic_qml_renderers(qgs_text)
 
-        with zipfile.ZipFile(project_output_path, "w", compression=zipfile.ZIP_DEFLATED) as out_archive:
+        with zipfile.ZipFile(
+            project_output_path, "w", compression=zipfile.ZIP_DEFLATED
+        ) as out_archive:
             out_archive.writestr(f"{project_stem}.qgs", qgs_text)
             for name in source_archive.namelist():
                 if name == template_qgs_name:
@@ -1212,7 +1355,7 @@ def run_highgrid(
     grid_size: int,
     boundary_path: Path | str | None = None,
     corners_text: str | None = None,
-    work_crs: str | CRS = "EPSG:26985",
+    input_crs: str | CRS | None = None,
     corner_names: str | None = "auto",
     parallelogram_tolerance_m: float = 30.0,
     offset_angle_deg: float = 0.0,
@@ -1257,12 +1400,14 @@ def run_highgrid(
         boundary = default_corner_path()
     else:
         boundary = None
-    resolved_work_crs = _coerce_crs(work_crs)
+    dem_crs = _read_dem_crs(dem)
+    resolved_input_crs = _coerce_crs(input_crs) if input_crs is not None else None
 
     corners = load_corners(
         boundary_path=boundary,
         corners_text=corners_text,
-        work_crs=resolved_work_crs,
+        target_crs=dem_crs,
+        input_crs=resolved_input_crs,
         corner_names=corner_names,
     )
     residual = validate_parallelogram(corners, parallelogram_tolerance_m)
@@ -1306,6 +1451,8 @@ def run_highgrid(
         write_qgis_project(
             project_output,
             gpkg_path=output,
+            dem_path=dem,
+            dem_crs=dem_crs,
             overwrite=overwrite,
         )
 
@@ -1336,7 +1483,7 @@ def run_from_namespace(args: argparse.Namespace) -> HighgridResult:
         grid_size=args.grid_size,
         boundary_path=Path(args.boundary) if args.boundary else None,
         corners_text=args.corners,
-        work_crs=args.work_crs,
+        input_crs=args.input_crs,
         corner_names=args.corner_names,
         parallelogram_tolerance_m=float(args.parallelogram_tolerance_m),
         offset_angle_deg=float(args.offset_angle),
@@ -1419,7 +1566,14 @@ def build_parser(prog: str | None = None) -> argparse.ArgumentParser:
         action="store_true",
         help="Do not write a QGIS .qgz project archive.",
     )
-    parser.add_argument("--work-crs", default="EPSG:26985", help="Projected work CRS.")
+    parser.add_argument(
+        "--input-crs",
+        default=None,
+        help=(
+            "CRS for CRS-less boundary CSV/inline coordinates. Defaults to "
+            "the DEM CRS; vector files with their own CRS keep using it."
+        ),
+    )
     parser.add_argument(
         "--corner-names",
         default="auto",
@@ -1429,7 +1583,7 @@ def build_parser(prog: str | None = None) -> argparse.ArgumentParser:
         "--parallelogram-tolerance-m",
         default=30.0,
         type=float,
-        help="Maximum W+E/N+S parallelogram residual in work CRS units.",
+        help="Maximum W+E/N+S parallelogram residual in DEM CRS units.",
     )
     parser.add_argument(
         "--offset-angle",

@@ -103,7 +103,6 @@ def test_run_highgrid_finds_expected_hi_lo_avg_points_layers_and_csv(tmp_path):
         csv_output_path=csv_output,
         project_output_path=project_output,
         grid_size=2,
-        work_crs="EPSG:3857",
         parallelogram_tolerance_m=0.01,
         overwrite=True,
     )
@@ -190,6 +189,10 @@ def test_run_highgrid_finds_expected_hi_lo_avg_points_layers_and_csv(tmp_path):
     assert "./highgrid.gpkg|layername=lo-points" in project_text
     assert "./highgrid.gpkg|layername=avg-points" in project_text
     assert "./highgrid.gpkg|layername=highgrid_cells" in project_text
+    assert "EPSG:3857" in project_text
+    assert 'attr="hi_elev_m"' in project_text
+    assert 'attr="lo_elev_m"' in project_text
+    assert 'attr="mean_elev_m"' in project_text
 
 
 @pytest.mark.parametrize("value", ["0", "101", "not-an-int"])
@@ -211,7 +214,6 @@ def test_default_corner_csv_is_used_when_boundary_is_omitted(tmp_path, monkeypat
         dem_path=dem,
         output_path=output,
         grid_size=2,
-        work_crs="EPSG:4269",
         parallelogram_tolerance_m=0.01,
         overwrite=True,
     )
@@ -234,7 +236,6 @@ def test_offset_angle_rotates_working_corners(tmp_path):
         boundary_path=boundary,
         output_path=output,
         grid_size=2,
-        work_crs="EPSG:3857",
         parallelogram_tolerance_m=0.01,
         offset_angle_deg=90,
         overwrite=True,
@@ -297,7 +298,6 @@ def test_output_path_requires_geopackage_extension(tmp_path):
             boundary_path=boundary,
             output_path=tmp_path / "output",
             grid_size=2,
-            work_crs="EPSG:3857",
             parallelogram_tolerance_m=0.01,
             overwrite=True,
         )
@@ -317,7 +317,6 @@ def test_output_parent_must_be_directory(tmp_path):
             output_path=parent_file / "grid3x3.gpkg",
             csv_output_path=parent_file / "grid3x3.csv",
             grid_size=2,
-            work_crs="EPSG:3857",
             parallelogram_tolerance_m=0.01,
             overwrite=True,
         )
@@ -334,7 +333,6 @@ def test_parallelogram_validation_rejects_bad_fourth_corner(tmp_path):
             boundary_path=boundary,
             output_path=tmp_path / "bad.gpkg",
             grid_size=2,
-            work_crs="EPSG:3857",
             parallelogram_tolerance_m=0.1,
             overwrite=True,
         )
@@ -353,8 +351,6 @@ def test_script_and_package_cli_invocations(tmp_path):
         "2",
         "--dem",
         str(dem),
-        "--work-crs",
-        "EPSG:3857",
         "--overwrite",
     ]
 

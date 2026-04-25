@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import math
 import sys
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Sequence
@@ -40,6 +41,7 @@ from shapely.ops import transform as shapely_transform
 
 METERS_TO_FEET = 3.28084
 CORNER_LABELS = ("W", "N", "E", "S")
+EXPENSIVE_CELL_CONFIRMATION_THRESHOLD = 5_000
 
 
 def repo_root() -> Path:
@@ -866,11 +868,47 @@ def _point_layer(
     return points
 
 
+def _format_duration(seconds: float) -> str:
+    """Return a compact elapsed/ETA duration for progress messages."""
+    seconds = max(0, int(round(seconds)))
+    hours, remainder = divmod(seconds, 3600)
+    minutes, secs = divmod(remainder, 60)
+    if hours:
+        return f"{hours:d}:{minutes:02d}:{secs:02d}"
+    return f"{minutes:d}:{secs:02d}"
+
+
+def _print_dem_progress(
+    *,
+    completed: int,
+    total: int,
+    ok_count: int,
+    start_time: float,
+    final: bool = False,
+) -> None:
+    """Print a low-frequency DEM progress line to stderr."""
+    elapsed = time.monotonic() - start_time
+    percent = (completed / total * 100.0) if total else 100.0
+    eta_text = "n/a"
+    if completed > 0 and completed < total:
+        remaining = elapsed / completed * (total - completed)
+        eta_text = _format_duration(remaining)
+    label = "DEM complete" if final else "DEM progress"
+    print(
+        f"{label}: {completed}/{total} cells ({percent:.1f}%), "
+        f"ok={ok_count}, elapsed={_format_duration(elapsed)}, eta={eta_text}",
+        file=sys.stderr,
+        flush=True,
+    )
+
+
 def attach_extreme_attributes(
     cells: gpd.GeoDataFrame,
     *,
     dem_path: Path,
     all_touched: bool,
+    progress: bool = False,
+    progress_interval_s: float = 10.0,
 ) -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame, gpd.GeoDataFrame, gpd.GeoDataFrame]:
     """Join DEM-derived attributes to cells and build point layers.
 
@@ -883,11 +921,22 @@ def attach_extreme_attributes(
 
     cell_crs = _coerce_crs(cells.crs)
     records = []
+    total_cells = len(cells)
+    ok_count = 0
+    start_time = time.monotonic()
+    next_progress_time = start_time
+    if progress:
+        _print_dem_progress(
+            completed=0,
+            total=total_cells,
+            ok_count=0,
+            start_time=start_time,
+        )
     with rasterio.open(dem_path) as dataset:
         if dataset.crs is None:
             raise ValueError(f"DEM has no CRS: {dem_path}")
         dem_crs = _coerce_crs(dataset.crs)
-        for _, row in cells.iterrows():
+        for completed, row in enumerate(cells.itertuples(), start=1):
             extrema = _extrema_for_cell(
                 dataset=dataset,
                 cell_geometry=row.geometry,
@@ -896,6 +945,20 @@ def attach_extreme_attributes(
                 all_touched=all_touched,
             )
             records.append(extrema)
+            if extrema.get("status") == "ok":
+                ok_count += 1
+            now = time.monotonic()
+            if progress and (
+                completed == total_cells or now >= next_progress_time
+            ):
+                _print_dem_progress(
+                    completed=completed,
+                    total=total_cells,
+                    ok_count=ok_count,
+                    start_time=start_time,
+                    final=completed == total_cells,
+                )
+                next_progress_time = now + max(1.0, progress_interval_s)
 
     extrema_frame = pd.DataFrame(records)
     output_cells = cells.reset_index(drop=True).join(extrema_frame)
@@ -1047,6 +1110,8 @@ def run_highgrid(
     offset_angle_deg: float = 0.0,
     all_touched: bool = False,
     overwrite: bool = False,
+    progress: bool = False,
+    progress_interval_s: float = 10.0,
 ) -> HighgridResult:
     """Run the complete highgrid workflow.
 
@@ -1088,7 +1153,11 @@ def run_highgrid(
         corners, grid_size, offset_angle_deg=float(offset_angle_deg)
     )
     cells, hi_points, lo_points, avg_points = attach_extreme_attributes(
-        cells, dem_path=dem, all_touched=all_touched
+        cells,
+        dem_path=dem,
+        all_touched=all_touched,
+        progress=progress,
+        progress_interval_s=progress_interval_s,
     )
     boundary_layer = build_boundary_layer(
         corners,
@@ -1129,6 +1198,10 @@ def run_highgrid(
 
 def run_from_namespace(args: argparse.Namespace) -> HighgridResult:
     """Adapter from argparse namespaces to the importable core function."""
+    _confirm_expensive_run(
+        grid_size=args.grid_size,
+        assume_yes=bool(getattr(args, "yes", False)),
+    )
     return run_highgrid(
         dem_path=Path(args.dem),
         output_path=Path(args.output),
@@ -1142,7 +1215,36 @@ def run_from_namespace(args: argparse.Namespace) -> HighgridResult:
         offset_angle_deg=float(args.offset_angle),
         all_touched=bool(args.all_touched),
         overwrite=bool(args.overwrite),
+        progress=not bool(getattr(args, "quiet", False)),
+        progress_interval_s=float(getattr(args, "progress_interval", 10.0)),
     )
+
+
+def _confirm_expensive_run(*, grid_size: int, assume_yes: bool) -> None:
+    """Ask for confirmation before a very large CLI raster pass."""
+    cell_count = grid_size * grid_size
+    if assume_yes or cell_count < EXPENSIVE_CELL_CONFIRMATION_THRESHOLD:
+        return
+
+    message = (
+        f"This run will process {cell_count:,} DEM cells. On this system that "
+        "can take more than 5 minutes for large grids.\n"
+        "Continue? Type 'yes' to start: "
+    )
+    if not sys.stdin.isatty():
+        raise ValueError(
+            f"Refusing expensive non-interactive run for {cell_count:,} cells; "
+            "pass --yes to confirm."
+        )
+    try:
+        answer = input(message)
+    except EOFError as exc:
+        raise ValueError(
+            f"Refusing expensive run for {cell_count:,} cells without confirmation; "
+            "pass --yes to confirm."
+        ) from exc
+    if answer.strip().casefold() != "yes":
+        raise ValueError("Cancelled expensive highgrid run")
 
 
 def build_parser(prog: str | None = None) -> argparse.ArgumentParser:
@@ -1210,6 +1312,22 @@ def build_parser(prog: str | None = None) -> argparse.ArgumentParser:
         "--overwrite",
         action="store_true",
         help="Replace an existing output GeoPackage.",
+    )
+    parser.add_argument(
+        "--yes",
+        action="store_true",
+        help="Confirm very expensive grid runs without an interactive prompt.",
+    )
+    parser.add_argument(
+        "--quiet",
+        action="store_true",
+        help="Suppress DEM progress messages.",
+    )
+    parser.add_argument(
+        "--progress-interval",
+        default=10.0,
+        type=float,
+        help="Seconds between DEM progress messages (default: 10).",
     )
     return parser
 

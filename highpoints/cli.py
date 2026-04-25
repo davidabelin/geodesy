@@ -140,6 +140,22 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Replace an existing output GeoPackage.",
     )
+    high_grid.add_argument(
+        "--yes",
+        action="store_true",
+        help="Confirm very expensive grid runs without an interactive prompt.",
+    )
+    high_grid.add_argument(
+        "--quiet",
+        action="store_true",
+        help="Suppress DEM progress messages.",
+    )
+    high_grid.add_argument(
+        "--progress-interval",
+        default=10.0,
+        type=float,
+        help="Seconds between DEM progress messages (default: 10).",
+    )
     high_grid.set_defaults(func=_cmd_high_grid)
 
     return p

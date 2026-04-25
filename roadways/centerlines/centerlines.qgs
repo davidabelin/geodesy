@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="" saveDateTime="2026-04-22T14:01:33" saveUser="David" saveUserFull="David Abelin" version="4.0.1-Norrköping">
+<qgis projectname="" saveDateTime="2026-04-25T05:19:49" saveUser="David" saveUserFull="David Abelin" version="4.0.1-Norrköping">
   <homePath path=""/>
   <title></title>
   <transaction mode="Disabled"/>
@@ -45,7 +45,7 @@
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Unchecked" expanded="0" id="ns_segments_33735d01_1747_47ac_ac41_99f8b82f102e" legend_exp="" legend_split_behavior="0" name="cl — ns_segments" patch_size="-1,-1" providerKey="ogr" source="./cl.gpkg|layername=ns_segments">
+    <layer-tree-layer checked="Qt::Checked" expanded="0" id="ns_segments_33735d01_1747_47ac_ac41_99f8b82f102e" legend_exp="" legend_split_behavior="0" name="cl — ns_segments" patch_size="-1,-1" providerKey="ogr" source="./cl.gpkg|layername=ns_segments">
       <customproperties>
         <Option/>
       </customproperties>
@@ -80,7 +80,7 @@
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Unchecked" expanded="1" id="dc_dem_0b3b67f8_7106_4ef4_ade9_d0d52e74d06d" legend_exp="" legend_split_behavior="0" name="dc_dem copy" patch_size="-1,-1" providerKey="gdal" source="../../data/tif/dc_dem.tif">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="dc_dem_0b3b67f8_7106_4ef4_ade9_d0d52e74d06d" legend_exp="" legend_split_behavior="0" name="dc_dem copy" patch_size="-1,-1" providerKey="gdal" source="../../data/tif/dc_dem.tif">
       <customproperties>
         <Option/>
       </customproperties>
@@ -100,14 +100,14 @@
   </layer-tree-group>
   <snapping-settings enabled="0" intersection-snapping="0" maxScale="0" minScale="0" mode="2" scaleDependencyMode="0" self-snapping="0" tolerance="12" type="1" unit="1">
     <individual-layer-settings>
-      <layer-setting enabled="0" id="ew_segments_142bce98_1acc_47af_8bbb_90becd17a440" maxScale="0" minScale="0" tolerance="12" type="1" units="1"/>
-      <layer-setting enabled="0" id="ns_extensions_728e3cf1_c679_462f_9c11_4c84b653385b" maxScale="0" minScale="0" tolerance="12" type="1" units="1"/>
-      <layer-setting enabled="0" id="ns_midpoints_228562ab_ae60_454b_8d7a_e7295e788d3c" maxScale="0" minScale="0" tolerance="12" type="1" units="1"/>
-      <layer-setting enabled="0" id="cl___ns_segments_d791b758_bc9f_47ff_9a91_005ee47ef68b" maxScale="0" minScale="0" tolerance="12" type="1" units="1"/>
-      <layer-setting enabled="0" id="ew_extensions_a4ef5741_ee14_42a2_9b1d_63126622c278" maxScale="0" minScale="0" tolerance="12" type="1" units="1"/>
       <layer-setting enabled="0" id="ew_midpoints_faad525c_b280_44e0_ab74_0b2bbb145ae8" maxScale="0" minScale="0" tolerance="12" type="1" units="1"/>
+      <layer-setting enabled="0" id="ew_extensions_a4ef5741_ee14_42a2_9b1d_63126622c278" maxScale="0" minScale="0" tolerance="12" type="1" units="1"/>
       <layer-setting enabled="0" id="cl___ew_segments_c1c481cd_98cd_4db8_b7ee_205897916f8e" maxScale="0" minScale="0" tolerance="12" type="1" units="1"/>
+      <layer-setting enabled="0" id="ns_extensions_728e3cf1_c679_462f_9c11_4c84b653385b" maxScale="0" minScale="0" tolerance="12" type="1" units="1"/>
+      <layer-setting enabled="0" id="cl___ns_segments_d791b758_bc9f_47ff_9a91_005ee47ef68b" maxScale="0" minScale="0" tolerance="12" type="1" units="1"/>
+      <layer-setting enabled="0" id="ew_segments_142bce98_1acc_47af_8bbb_90becd17a440" maxScale="0" minScale="0" tolerance="12" type="1" units="1"/>
       <layer-setting enabled="0" id="ns_segments_33735d01_1747_47ac_ac41_99f8b82f102e" maxScale="0" minScale="0" tolerance="12" type="1" units="1"/>
+      <layer-setting enabled="0" id="ns_midpoints_228562ab_ae60_454b_8d7a_e7295e788d3c" maxScale="0" minScale="0" tolerance="12" type="1" units="1"/>
     </individual-layer-settings>
   </snapping-settings>
   <relations/>
@@ -115,10 +115,10 @@
   <mapcanvas annotationsVisible="1" name="theMapCanvas">
     <units>meters</units>
     <extent>
-      <xmin>387557.27111056266585365</xmin>
-      <ymin>128348.10975350515218452</ymin>
-      <xmax>413208.1346494015888311</xmax>
-      <ymax>147768.52642016933532432</ymax>
+      <xmin>394922.39500255545135587</xmin>
+      <ymin>135454.81808683765120804</ymin>
+      <xmax>398128.75294491031672806</xmax>
+      <ymax>137882.37017017067410052</ymax>
     </extent>
     <rotation>0</rotation>
     <destinationsrs>
@@ -149,9 +149,9 @@
         <legendlayerfile isInOverview="0" layerid="cl___ew_segments_c1c481cd_98cd_4db8_b7ee_205897916f8e" visible="1"/>
       </filegroup>
     </legendlayer>
-    <legendlayer checked="Qt::Unchecked" drawingOrder="-1" name="cl — ns_segments" open="false" showFeatureCount="0">
+    <legendlayer checked="Qt::Checked" drawingOrder="-1" name="cl — ns_segments" open="false" showFeatureCount="0">
       <filegroup hidden="false" open="false">
-        <legendlayerfile isInOverview="0" layerid="ns_segments_33735d01_1747_47ac_ac41_99f8b82f102e" visible="0"/>
+        <legendlayerfile isInOverview="0" layerid="ns_segments_33735d01_1747_47ac_ac41_99f8b82f102e" visible="1"/>
       </filegroup>
     </legendlayer>
     <legendlayer checked="Qt::Checked" drawingOrder="-1" name="cl — ns_segments copy" open="false" showFeatureCount="0">
@@ -184,38 +184,13 @@
         <legendlayerfile isInOverview="0" layerid="dc_dem_0ae540c2_5426_4d5b_9ad5_ca4bbd259ea9" visible="1"/>
       </filegroup>
     </legendlayer>
-    <legendlayer checked="Qt::Unchecked" drawingOrder="-1" name="dc_dem copy" open="true" showFeatureCount="0">
+    <legendlayer checked="Qt::Checked" drawingOrder="-1" name="dc_dem copy" open="true" showFeatureCount="0">
       <filegroup hidden="false" open="true">
-        <legendlayerfile isInOverview="0" layerid="dc_dem_0b3b67f8_7106_4ef4_ade9_d0d52e74d06d" visible="0"/>
+        <legendlayerfile isInOverview="0" layerid="dc_dem_0b3b67f8_7106_4ef4_ade9_d0d52e74d06d" visible="1"/>
       </filegroup>
     </legendlayer>
   </legend>
   <mapViewDocks/>
-  <mapcanvas annotationsVisible="1" name="mAreaCanvas">
-    <units>degrees</units>
-    <extent>
-      <xmin>179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368</xmin>
-      <ymin>179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368</ymin>
-      <xmax>-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368</xmax>
-      <ymax>-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368</ymax>
-    </extent>
-    <rotation>0</rotation>
-    <destinationsrs>
-      <spatialrefsys nativeFormat="Wkt">
-        <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],MEMBER["World Geodetic System 1984 (G2296)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
-        <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
-        <srsid>3452</srsid>
-        <srid>4326</srid>
-        <authid>EPSG:4326</authid>
-        <description>WGS 84</description>
-        <projectionacronym>longlat</projectionacronym>
-        <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
-        <geographicflag>true</geographicflag>
-      </spatialrefsys>
-    </destinationsrs>
-    <rendermaptile>0</rendermaptile>
-    <expressionContextScope/>
-  </mapcanvas>
   <main-annotation-layer autoRefreshMode="Disabled" autoRefreshTime="0" hasScaleBasedVisibilityFlag="0" layerType="Annotation" legendPlaceholderImage="" maxScale="0" minScale="1e+08" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="annotation">
     <id>Annotations_fb42ea44_7fc4_409c_975e_5bf6e81fb2ac</id>
     <datasource></datasource>
@@ -1157,8 +1132,8 @@
       <customproperties>
         <Option type="Map">
           <Option name="embeddedWidgets/count" type="int" value="0"/>
-          <Option name="variableNames"/>
-          <Option name="variableValues"/>
+          <Option name="variableNames" type="invalid"/>
+          <Option name="variableValues" type="invalid"/>
         </Option>
       </customproperties>
       <blendMode>0</blendMode>
@@ -2604,8 +2579,8 @@ def my_form_open(dialog, layer, feature):
       <customproperties>
         <Option type="Map">
           <Option name="embeddedWidgets/count" type="int" value="0"/>
-          <Option name="variableNames"/>
-          <Option name="variableValues"/>
+          <Option name="variableNames" type="invalid"/>
+          <Option name="variableValues" type="invalid"/>
         </Option>
       </customproperties>
       <blendMode>0</blendMode>
@@ -9247,8 +9222,8 @@ def my_form_open(dialog, layer, feature):
       <customproperties>
         <Option type="Map">
           <Option name="embeddedWidgets/count" type="int" value="0"/>
-          <Option name="variableNames"/>
-          <Option name="variableValues"/>
+          <Option name="variableNames" type="invalid"/>
+          <Option name="variableValues" type="invalid"/>
         </Option>
       </customproperties>
       <blendMode>0</blendMode>
@@ -17432,7 +17407,7 @@ def my_form_open(dialog, layer, feature):
   <Sensors/>
   <ProjectViewSettings UseProjectScales="0" rotation="0">
     <Scales/>
-    <DefaultViewExtent xmax="416786.8695466467179358" xmin="383978.53621331753674895" ymax="147768.52642016933532432" ymin="128348.10975350515218452">
+    <DefaultViewExtent xmax="398576.0948070659651421" xmin="394475.05314039980294183" ymax="137882.37017017067410052" ymin="135454.81808683765120804">
       <spatialrefsys nativeFormat="Wkt">
         <wkt>PROJCRS["NAD83 / Maryland",BASEGEOGCRS["NAD83",DATUM["North American Datum 1983",ELLIPSOID["GRS 1980",6378137,298.257222101,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4269]],CONVERSION["SPCS83 Maryland zone (meter)",METHOD["Lambert Conic Conformal (2SP)",ID["EPSG",9802]],PARAMETER["Latitude of false origin",37.6666666666667,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8821]],PARAMETER["Longitude of false origin",-77,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8822]],PARAMETER["Latitude of 1st standard parallel",39.45,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8823]],PARAMETER["Latitude of 2nd standard parallel",38.3,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8824]],PARAMETER["Easting at false origin",400000,LENGTHUNIT["metre",1],ID["EPSG",8826]],PARAMETER["Northing at false origin",0,LENGTHUNIT["metre",1],ID["EPSG",8827]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Engineering survey, topographic mapping."],AREA["United States (USA) - Maryland - counties of Allegany; Anne Arundel; Baltimore; Calvert; Caroline; Carroll; Cecil; Charles; Dorchester; Frederick; Garrett; Harford; Howard; Kent; Montgomery; Prince Georges; Queen Annes; Somerset; St Marys; Talbot; Washington; Wicomico; Worcester."],BBOX[37.97,-79.49,39.73,-74.97]],ID["EPSG",26985]]</wkt>
         <proj4>+proj=lcc +lat_0=37.6666666666667 +lon_0=-77 +lat_1=39.45 +lat_2=38.3 +x_0=400000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>

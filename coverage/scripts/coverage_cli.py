@@ -10,7 +10,6 @@ from coverage_core import (
     Dataset,
     build_matrix_rows,
     convert_distance_to_meters,
-    dataset_summary,
     greedy_budgeted_max_cover,
     greedy_full_cover,
     load_dataset,
@@ -24,6 +23,36 @@ from coverage_los_core import has_dem_backend, length_to_meters, run_los_cover
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RESULTS_DIR = REPO_ROOT / "coverage" / "results"
 QGIS_PYTHON = Path.home() / "AppData/Local/Programs/OSGeo4W/bin/python-qgis.bat"
+
+
+def _parse_workers(value: str) -> int | None:
+    """Normalize CLI worker settings before the solver receives them.
+
+    `none` keeps the LOS candidate loop single-threaded, `max` uses the local
+    CPU count, and positive integers request an explicit worker count. Keeping
+    this validation at the CLI boundary prevents the lower-level solver from
+    needing to know about user-facing spellings.
+    """
+    normalized = value.strip().lower()
+    if normalized == "none":
+        return None
+
+    cpu_count = os.cpu_count() or 1
+    if normalized == "max":
+        return cpu_count
+
+    try:
+        worker_count = int(normalized)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(
+            "--workers must be 'none', 'max', or an integer from 1 to CPU count."
+        ) from exc
+
+    if worker_count < 1 or worker_count > cpu_count:
+        raise argparse.ArgumentTypeError(
+            f"--workers must be between 1 and {cpu_count}, or use 'none'/'max'."
+        )
+    return worker_count
 
 
 def _default_output_path(
@@ -101,20 +130,14 @@ def _add_output_args(parser: argparse.ArgumentParser) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Build the coverage command tree used by `cvr.bat`.
+
+    `cvr.bat` handles QGIS-only commands before this parser runs. Commands kept
+    here are pure-Python workflows or workflows that can re-enter OSGeo4W only
+    when a DEM backend is unavailable.
+    """
     parser = argparse.ArgumentParser(description="Coverage CLI")
     sub = parser.add_subparsers(dest="cmd", required=True)
-
-    inspect = sub.add_parser("inspect", help="Inspect an input point dataset.")
-    inspect.add_argument(
-        "--input",
-        required=True,
-        help="Dataset path. If relative, also tries repo root and repo data/.",
-    )
-    inspect.add_argument("--id-field", default=None, help="Override point ID field.")
-    inspect.add_argument("--lat-field", default=None, help="Override CSV latitude field.")
-    inspect.add_argument("--lon-field", default=None, help="Override CSV longitude field.")
-    inspect.add_argument("--alt-field", default=None, help="Override altitude field.")
-    _add_output_args(inspect)
 
     matrix = sub.add_parser(
         "matrix",
@@ -230,6 +253,13 @@ def build_parser() -> argparse.ArgumentParser:
     los_cover.add_argument("--sample-step", type=float, default=None, help="LOS terrain sampling step in --unit.")
     los_cover.add_argument("--sample-step-m", type=float, default=None, help="LOS terrain sampling step in meters.")
     los_cover.add_argument("--solver", choices=["greedy", "hybrid", "networkx"], default="hybrid")
+    los_cover.add_argument(
+        "--workers",
+        type=_parse_workers,
+        default=None,
+        metavar="none|max|N",
+        help="Parallel LOS candidate workers: none, max, or an integer from 1 to CPU count. Defaults to none.",
+    )
 
     return parser
 
@@ -258,25 +288,6 @@ def _load_datasets(args: argparse.Namespace) -> tuple[Dataset, Dataset]:
 def _print_output(label: str, path: Path, row_count: int) -> None:
     print(f"{label}: {path}")
     print(f"Rows written: {row_count}")
-
-
-def _inspect_command(args: argparse.Namespace) -> int:
-    dataset = load_dataset(
-        args.input,
-        REPO_ROOT,
-        id_field=args.id_field,
-        lat_field=args.lat_field,
-        lon_field=args.lon_field,
-        alt_field=args.alt_field,
-    )
-    rows = [dataset_summary(dataset)]
-    output_path = Path(args.output) if args.output else _default_output_path(
-        "inspect", dataset, None, args.format
-    )
-    write_rows(output_path, rows, args.format)
-    _print_output("Inspect output", output_path, len(rows))
-    print(f"Input records: {len(dataset.points)}")
-    return 0
 
 
 def _matrix_command(args: argparse.Namespace) -> int:
@@ -456,6 +467,7 @@ def _los_cover_command(args: argparse.Namespace, argv: list[str]) -> int:
         output_crs=args.output_crs,
         output_unit=args.unit,
         dem_unit=args.dem_unit,
+        workers=args.workers,
     )
     print(f"LOS cover output: {manifest['output_dir']}")
     print(f"Output CRS: {manifest['output_crs']}")
@@ -488,8 +500,6 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
-    if args.cmd == "inspect":
-        return _inspect_command(args)
     if args.cmd == "matrix":
         return _matrix_command(args)
     if args.cmd == "full-cover":

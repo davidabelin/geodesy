@@ -134,7 +134,7 @@ Altitude in feet candidates:
 If the fields are not detected correctly, pass overrides:
 
 ```cmd
-cvr.bat inspect --input ".\coverage\alphapnts.csv" --id-field LOC --lat-field LAT --lon-field LON
+cvr.bat los-cover --input ".\coverage\alphapnts.csv" --dem ".\data\tif\dc_dem.tif" --id-field LOC --lat-field LAT --lon-field LON --alt-field ALT_M --output-dir ".\coverage\results\alpha_los_pairwise_m25000_t15" --max-segment-length 25000
 ```
 
 For LOS work, if a point has an explicit altitude, that altitude is used. If it does not, ground elevation is sampled from the DEM.
@@ -317,48 +317,6 @@ In LOS output:
 - `covered=1` means the point is covered by one of the selected candidates.
 
 The solver tries to cover all reachable points. A point can be unreachable because no valid LOS pair connects it under the current DEM, point height, max segment length, and sampling settings.
-
-## Inspect A Dataset
-
-Use `inspect` first when a dataset is new or fields are uncertain.
-
-```cmd
-cvr.bat inspect --input ".\coverage\alphapnts.csv"
-```
-
-Useful explicit version:
-
-```cmd
-cvr.bat inspect --input ".\coverage\alphapnts.csv" --id-field LOC --lat-field LAT --lon-field LON --output ".\coverage\results\inspect__alphapnts.csv"
-```
-
-Options:
-
-```text
---input INPUT
---id-field ID_FIELD
---lat-field LAT_FIELD
---lon-field LON_FIELD
---alt-field ALT_FIELD
---output OUTPUT
---format csv|json
-```
-
-Output columns include:
-
-- `input_path`
-- `format`
-- `record_count`
-- `id_field`
-- `lat_field`
-- `lon_field`
-- `alt_field`
-- `min_lat`
-- `max_lat`
-- `min_lon`
-- `max_lon`
-- `min_alt_m`
-- `max_alt_m`
 
 ## Radius Coverage Matrix
 
@@ -646,6 +604,7 @@ Options:
 --sample-step SAMPLE_STEP
 --sample-step-m SAMPLE_STEP_M
 --solver greedy|hybrid|networkx
+--workers none|max|N
 ```
 
 Argument details:
@@ -667,6 +626,7 @@ Argument details:
 - `--solver greedy`: greedy set-cover selection.
 - `--solver hybrid`: greedy selection plus local improvements and reduced-pool exact refinement when available.
 - `--solver networkx`: optional NetworkX weighted dominating-set approximation over the generated LOS line families.
+- `--workers`: parallel LOS candidate workers. `none` is the default single-threaded path, `max` uses the CPU count, and `N` accepts an integer from `1` through the CPU count.
 
 Accepted but legacy/unused for the pairwise model:
 
@@ -774,24 +734,6 @@ The CLI prints the exact refinement status after each run.
 - `candidate_summary.csv`: one row per deduped line-family candidate.
 - `selected_rows.csv`: selected segment ranking summary.
 - `coverage_offsets.geojson`: residual point-to-selected-segment offset lines.
-
-### Inspect Output Columns
-
-`inspect` writes one row with:
-
-- `input_path`: resolved input file path.
-- `format`: `csv` or `geojson`.
-- `record_count`: number of loaded point records.
-- `id_field`: detected or explicit ID field.
-- `lat_field`: detected or explicit latitude field.
-- `lon_field`: detected or explicit longitude field.
-- `alt_field`: detected or explicit altitude field, or `__default_zero__` when no altitude exists.
-- `min_lat`: minimum input latitude.
-- `max_lat`: maximum input latitude.
-- `min_lon`: minimum input longitude.
-- `max_lon`: maximum input longitude.
-- `min_alt_m`: minimum loaded altitude in meters. This is `0.0` for files without altitude.
-- `max_alt_m`: maximum loaded altitude in meters.
 
 ### Matrix Output Columns
 
@@ -1132,12 +1074,6 @@ After opening `los_segment_cover.qgs`:
 
 ## Common Recipes
 
-Inspect `alphapnts.csv`:
-
-```cmd
-cvr.bat inspect --input ".\coverage\alphapnts.csv"
-```
-
 Run current LOS segment cover and QGIS export:
 
 ```cmd
@@ -1238,6 +1174,7 @@ To reduce runtime:
 - Lower `--max-segment-length`.
 - Increase `--sample-step`.
 - Split a large point set into regions.
+- Use `--workers max` or a specific `--workers N` value for candidate generation.
 - Use `--solver greedy` if exact refinement is unnecessary.
 
 ## Command Reference
@@ -1245,7 +1182,6 @@ To reduce runtime:
 Top-level CLI commands:
 
 ```text
-inspect
 matrix
 full-cover
 max-cover
@@ -1263,7 +1199,6 @@ los-bundle
 Help commands:
 
 ```cmd
-cvr.bat inspect --help
 cvr.bat matrix --help
 cvr.bat full-cover --help
 cvr.bat max-cover --help

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import math
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Iterable, Optional
@@ -212,6 +214,8 @@ class UnitScaledElevationProvider(ElevationProvider):
 
 
 class GDALDemSampler(ElevationProvider):
+    """DEM sampler backed by OSGeo/GDAL for QGIS-runtime execution."""
+
     def __init__(self, dem_path: Path):
         try:
             from osgeo import gdal
@@ -227,6 +231,7 @@ class GDALDemSampler(ElevationProvider):
         if self.dataset is None:
             raise RuntimeError(f"Could not open DEM: {self.path}")
 
+        self._sample_lock = threading.Lock()
         self.band = self.dataset.GetRasterBand(1)
         self.nodata = self.band.GetNoDataValue()
         self.geotransform = self.dataset.GetGeoTransform()
@@ -241,22 +246,25 @@ class GDALDemSampler(ElevationProvider):
             )
 
     def sample_ground_m(self, lon: float, lat: float) -> float:
-        x, y = self.transformer.transform(lon, lat)
-        gt = self.geotransform
-        px = int(math.floor((x - gt[0]) / gt[1]))
-        py = int(math.floor((y - gt[3]) / gt[5]))
+        with self._sample_lock:
+            x, y = self.transformer.transform(lon, lat)
+            gt = self.geotransform
+            px = int(math.floor((x - gt[0]) / gt[1]))
+            py = int(math.floor((y - gt[3]) / gt[5]))
 
-        if px < 0 or py < 0 or px >= self.dataset.RasterXSize or py >= self.dataset.RasterYSize:
-            raise ValueError(f"Point outside DEM extent: lon={lon}, lat={lat}")
+            if px < 0 or py < 0 or px >= self.dataset.RasterXSize or py >= self.dataset.RasterYSize:
+                raise ValueError(f"Point outside DEM extent: lon={lon}, lat={lat}")
 
-        array = self.band.ReadAsArray(px, py, 1, 1)
-        value = float(array[0][0])
-        if self.nodata is not None and value == self.nodata:
-            raise ValueError(f"DEM nodata at lon={lon}, lat={lat}")
-        return value
+            array = self.band.ReadAsArray(px, py, 1, 1)
+            value = float(array[0][0])
+            if self.nodata is not None and value == self.nodata:
+                raise ValueError(f"DEM nodata at lon={lon}, lat={lat}")
+            return value
 
 
 class RasterioDemSampler(ElevationProvider):
+    """DEM sampler used by normal Python runs without importing OSGeo bindings."""
+
     def __init__(self, dem_path: Path):
         try:
             import rasterio
@@ -268,6 +276,7 @@ class RasterioDemSampler(ElevationProvider):
 
         self.path = dem_path.resolve()
         self.dataset = rasterio.open(self.path)
+        self._sample_lock = threading.Lock()
         self.nodata = self.dataset.nodata
         raster_crs = self.dataset.crs
         self.crs = LocalCRS.from_user_input(raster_crs) if raster_crs else LocalCRS.from_epsg(4326)
@@ -280,22 +289,23 @@ class RasterioDemSampler(ElevationProvider):
             )
 
     def sample_ground_m(self, lon: float, lat: float) -> float:
-        x, y = self.transformer.transform(lon, lat)
-        row, col = self.dataset.index(x, y)
+        with self._sample_lock:
+            x, y = self.transformer.transform(lon, lat)
+            row, col = self.dataset.index(x, y)
 
-        if col < 0 or row < 0 or col >= self.dataset.width or row >= self.dataset.height:
-            raise ValueError(f"Point outside DEM extent: lon={lon}, lat={lat}")
+            if col < 0 or row < 0 or col >= self.dataset.width or row >= self.dataset.height:
+                raise ValueError(f"Point outside DEM extent: lon={lon}, lat={lat}")
 
-        array = self.dataset.read(1, window=((row, row + 1), (col, col + 1)), masked=True)
-        value = array[0][0]
-        if np.ma.is_masked(value):
-            raise ValueError(f"DEM nodata at lon={lon}, lat={lat}")
-        numeric_value = float(value)
-        if self.nodata is not None and numeric_value == self.nodata:
-            raise ValueError(f"DEM nodata at lon={lon}, lat={lat}")
-        if math.isnan(numeric_value):
-            raise ValueError(f"DEM nodata at lon={lon}, lat={lat}")
-        return numeric_value
+            array = self.dataset.read(1, window=((row, row + 1), (col, col + 1)), masked=True)
+            value = array[0][0]
+            if np.ma.is_masked(value):
+                raise ValueError(f"DEM nodata at lon={lon}, lat={lat}")
+            numeric_value = float(value)
+            if self.nodata is not None and numeric_value == self.nodata:
+                raise ValueError(f"DEM nodata at lon={lon}, lat={lat}")
+            if math.isnan(numeric_value):
+                raise ValueError(f"DEM nodata at lon={lon}, lat={lat}")
+            return numeric_value
 
 
 def has_rasterio_backend() -> bool:
@@ -606,6 +616,69 @@ def deduplicate_anchor_candidates(
     )
 
 
+def _build_anchor_pair_candidates(
+    *,
+    anchor_index: int,
+    pair_points: list[ResolvedPoint],
+    prepared_points: list[PreparedPoint],
+    provider: ElevationProvider,
+    max_segment_length_m: Optional[float],
+    line_tolerance_m: float,
+    sample_step_m: float,
+) -> tuple[list[CandidateSegment], int]:
+    """Build all LOS-valid pair candidates that start at one anchor point.
+
+    The pairwise LOS model is naturally partitioned by anchor point. This helper
+    keeps each partition independent so `generate_candidates` can run the same
+    logic serially or with a worker pool while preserving deterministic output
+    order.
+    """
+    anchor = pair_points[anchor_index]
+    anchor_candidates: list[CandidateSegment] = []
+    reachable_mask = 0
+
+    for endpoint_index in range(anchor_index + 1, len(pair_points)):
+        endpoint = pair_points[endpoint_index]
+        _, _, surface_distance_m = WGS84.inv(anchor.lon, anchor.lat, endpoint.lon, endpoint.lat)
+        if max_segment_length_m is not None and surface_distance_m > max_segment_length_m:
+            continue
+
+        los_check = chord_los_clear(
+            anchor.ecef,
+            endpoint.ecef,
+            provider,
+            sample_step_m=sample_step_m,
+            start_ground_m=prepared_points[anchor_index].ground_alt_m,
+            end_ground_m=prepared_points[endpoint_index].ground_alt_m,
+        )
+
+        if not los_check.visible:
+            continue
+
+        candidate = _build_candidate(
+            candidate_id=f"{anchor.point_id}__{endpoint.point_id}",
+            anchor_index=anchor_index,
+            anchor=anchor,
+            cover_points=pair_points,
+            endpoint_index=endpoint_index,
+            endpoint=endpoint,
+            endpoint_lon=endpoint.lon,
+            endpoint_lat=endpoint.lat,
+            endpoint_ground_alt_m=prepared_points[endpoint_index].ground_alt_m,
+            endpoint_display_alt_m=endpoint.display_alt_m,
+            surface_distance_m=float(surface_distance_m),
+            generation_kind="pair",
+            min_clearance_m=los_check.min_clearance_m,
+            line_tolerance_m=line_tolerance_m,
+        )
+        if candidate.coverage_count < 2:
+            continue
+        anchor_candidates.append(candidate)
+        reachable_mask |= candidate.coverage_mask
+
+    return anchor_candidates, reachable_mask
+
+
 def generate_candidates(
     prepared_points: list[PreparedPoint],
     provider: ElevationProvider,
@@ -614,50 +687,41 @@ def generate_candidates(
     max_segment_length_m: Optional[float],
     line_tolerance_m: float,
     sample_step_m: float,
+    workers: Optional[int] = None,
 ) -> tuple[list[CandidateSegment], list[CandidateSegment], CandidateBuildStats]:
+    """Generate LOS pair candidates, dedupe them, and report build statistics.
+
+    Each unordered endpoint pair is tested once. `workers=None` keeps this
+    single-threaded, which is easiest to debug. Positive worker counts split the
+    anchor-point partitions across a thread pool; DEM samplers serialize raster
+    reads internally so shared raster handles remain safe.
+    """
     pair_points = resolve_points(prepared_points, offset_m=point_height_m)
     raw_pair_candidates: list[CandidateSegment] = []
     reachable_mask = 0
 
-    for anchor_index, anchor in enumerate(pair_points):
-        for endpoint_index in range(anchor_index + 1, len(pair_points)):
-            endpoint = pair_points[endpoint_index]
-            _, _, surface_distance_m = WGS84.inv(anchor.lon, anchor.lat, endpoint.lon, endpoint.lat)
-            if max_segment_length_m is not None and surface_distance_m > max_segment_length_m:
-                continue
+    def build_for_anchor(anchor_index: int) -> tuple[list[CandidateSegment], int]:
+        return _build_anchor_pair_candidates(
+            anchor_index=anchor_index,
+            pair_points=pair_points,
+            prepared_points=prepared_points,
+            provider=provider,
+            max_segment_length_m=max_segment_length_m,
+            line_tolerance_m=line_tolerance_m,
+            sample_step_m=sample_step_m,
+        )
 
-            los_check = chord_los_clear(
-                anchor.ecef,
-                endpoint.ecef,
-                provider,
-                sample_step_m=sample_step_m,
-                start_ground_m=prepared_points[anchor_index].ground_alt_m,
-                end_ground_m=prepared_points[endpoint_index].ground_alt_m,
-            )
+    worker_count = workers or 1
+    anchor_indexes = range(len(pair_points))
+    if worker_count == 1:
+        anchor_results = [build_for_anchor(anchor_index) for anchor_index in anchor_indexes]
+    else:
+        with ThreadPoolExecutor(max_workers=worker_count) as executor:
+            anchor_results = list(executor.map(build_for_anchor, anchor_indexes))
 
-            if not los_check.visible:
-                continue
-
-            candidate = _build_candidate(
-                candidate_id=f"{anchor.point_id}__{endpoint.point_id}",
-                anchor_index=anchor_index,
-                anchor=anchor,
-                cover_points=pair_points,
-                endpoint_index=endpoint_index,
-                endpoint=endpoint,
-                endpoint_lon=endpoint.lon,
-                endpoint_lat=endpoint.lat,
-                endpoint_ground_alt_m=prepared_points[endpoint_index].ground_alt_m,
-                endpoint_display_alt_m=endpoint.display_alt_m,
-                surface_distance_m=float(surface_distance_m),
-                generation_kind="pair",
-                min_clearance_m=los_check.min_clearance_m,
-                line_tolerance_m=line_tolerance_m,
-            )
-            if candidate.coverage_count < 2:
-                continue
-            raw_pair_candidates.append(candidate)
-            reachable_mask |= candidate.coverage_mask
+    for anchor_candidates, anchor_reachable_mask in anchor_results:
+        raw_pair_candidates.extend(anchor_candidates)
+        reachable_mask |= anchor_reachable_mask
 
     family_candidates = deduplicate_family_candidates(raw_pair_candidates)
     meaningful_family_count = sum(1 for candidate in family_candidates if candidate.is_meaningful)
@@ -1443,7 +1507,15 @@ def run_los_cover(
     output_crs: str = "WGS84",
     output_unit: str = "meters",
     dem_unit: str = "meters",
+    workers: Optional[int] = None,
 ) -> dict[str, Any]:
+    """Run the full LOS segment-cover workflow and write durable artifacts.
+
+    The workflow intentionally keeps three stages separate: load/normalize input
+    points, generate LOS candidate families, then solve and export results. That
+    separation lets the CLI add execution policy such as `workers` without
+    changing the solver or output schema.
+    """
     output_settings = build_output_settings(output_crs, output_unit)
     dataset = load_dataset(
         input_path,
@@ -1465,6 +1537,7 @@ def run_los_cover(
         max_segment_length_m=max_segment_length_m,
         line_tolerance_m=line_tolerance_m,
         sample_step_m=sample_step_m,
+        workers=workers,
     )
     selection = solve_candidate_cover(
         family_candidates,
@@ -1586,6 +1659,7 @@ def run_los_cover(
             "sample_step_m": sample_step_m,
             **_length_fields("sample_step", sample_step_m, output_settings),
             "solver": solver,
+            "workers": workers,
             "output_crs": output_settings.crs_authid,
             "output_unit": output_settings.unit,
             "dem_unit": normalize_length_unit(dem_unit)[0],
@@ -1631,6 +1705,7 @@ def run_los_cover(
                 f"- Output CRS: `{output_settings.crs_authid}`",
                 f"- Report unit: `{output_settings.unit}`",
                 f"- DEM elevation unit interpreted as: `{normalize_length_unit(dem_unit)[0]}`",
+                f"- Worker setting: `{'none' if workers is None else workers}`",
                 f"- LOS-valid point pairs: `{len(raw_pair_candidates)}`",
                 f"- Deduped line families: `{len(family_candidates)}`",
                 f"- Meaningful 3+ point lines: `{len(meaningful_candidates)}`",

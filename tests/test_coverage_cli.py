@@ -51,29 +51,6 @@ def run_los_cover(tmp_path: Path) -> Path:
     return output_dir
 
 
-def test_inspect_csv_writes_summary(tmp_path: Path) -> None:
-    input_csv = tmp_path / "points.csv"
-    input_csv.write_text(
-        "LOC,LAT,LON\nA,38.0,-77.0\nB,38.001,-77.0\n",
-        encoding="utf-8",
-    )
-    output_csv = tmp_path / "inspect.csv"
-
-    result = run_cli("inspect", "--input", str(input_csv), "--output", str(output_csv))
-
-    assert result.returncode == 0, result.stderr
-    assert output_csv.exists()
-
-    with output_csv.open("r", encoding="utf-8", newline="") as fh:
-        rows = list(csv.DictReader(fh))
-
-    assert len(rows) == 1
-    assert rows[0]["record_count"] == "2"
-    assert rows[0]["id_field"] == "LOC"
-    assert rows[0]["lat_field"] == "LAT"
-    assert rows[0]["lon_field"] == "LON"
-
-
 def test_matrix_supports_csv_demands_and_geojson_candidates(tmp_path: Path) -> None:
     demand_csv = tmp_path / "demands.csv"
     demand_csv.write_text(
@@ -356,6 +333,7 @@ def test_los_cover_writes_solver_artifacts(tmp_path: Path) -> None:
     assert manifest["line_family_count"] >= 1
     assert manifest["meaningful_line_count"] >= 0
     assert manifest["selected_meaningful_line_count"] >= 0
+    assert manifest["config"]["workers"] is None
     assert (output_dir / "pair_segments.geojson").exists()
     assert (output_dir / "meaningful_lines.geojson").exists()
     assert (output_dir / "selected_segments.geojson").exists()
@@ -389,6 +367,8 @@ def test_los_cover_supports_nad83_and_feet_output(tmp_path: Path) -> None:
         "75",
         "--output-crs",
         "NAD83",
+        "--workers",
+        "1",
         "--output-dir",
         str(output_dir),
     )
@@ -404,6 +384,7 @@ def test_los_cover_supports_nad83_and_feet_output(tmp_path: Path) -> None:
     assert manifest["output_unit"] == "feet"
     assert manifest["config"]["max_segment_length_ft"] == 300.0
     assert manifest["config"]["line_tolerance_ft"] == 15.0
+    assert manifest["config"]["workers"] == 1
     assert pair_geojson["crs"]["properties"]["name"] == "EPSG:4269"
     assert "surface_distance_ft" in candidate_rows[0]
     assert "surface_distance_m" in candidate_rows[0]

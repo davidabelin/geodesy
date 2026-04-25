@@ -1,3 +1,7 @@
-cvr.bat los-cover --input coverage\starterpnts.csv --dem data\tif\dc_dem.tif --max-segment-length 25000 --line-tolerance-m 15 --sample-step-m 10 --output-dir coverage\results\starter_los_pairwise_m25000_t15
+cvr.bat los-cover --input highpoints\input\highpnts_alpha.csv --max-segment-length 25000 --line-tolerance-m 15 --sample-step-m 20 --output-dir coverage\results\highpnts_alpha
 
 cvr.bat los-project --input-dir coverage\results\starter_los_pairwise_m25000_t15 --output-dir coverage\results\starter_los_pairwise_m25000_t15_qgis
+
+cvr.bat los-cover --input ".\coverage\alphapnts.csv" --dem ".\data\tif\dc_dem.tif" --output-dir ".\coverage\results\alpha_los_pairwise_m25000_t15" --max-segment-length 25000 --line-tolerance 15 --sample-step 25 --solver hybrid 
+&& 
+cvr.bat los-project --input-dir ".\coverage\results\alpha_los_pairwise_m25000_t15" --output-dir ".\coverage\results\alpha_los_pairwise_m25000_t15_qgis"

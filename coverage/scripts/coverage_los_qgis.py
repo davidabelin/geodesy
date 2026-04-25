@@ -408,7 +408,7 @@ style_demands(demands)
 
 print("Loaded LOS bundle:", BUNDLE["bundle_dir"])
 print("Next in QGIS: View -> New 3D Map View")
-print("Then set terrain to dc_dem and inspect los_lines over terrain_traces.")
+print("Then set terrain to dc_dem and review los_lines over terrain_traces.")
 """
 
 
@@ -742,7 +742,7 @@ def run_los_bundle(args: argparse.Namespace) -> int:
                 "1. Open the Python Console.",
                 f"2. Run: exec(open(r\"{loader_path.resolve()}\", encoding=\"utf-8\").read())",
                 "3. Open View -> New 3D Map View.",
-                "4. Use dc_dem as terrain and inspect los_lines over terrain_traces.",
+                "4. Use dc_dem as terrain and review los_lines over terrain_traces.",
                 "",
                 "What to look at:",
                 "- bright cyan lines: visible selected LOS lines",

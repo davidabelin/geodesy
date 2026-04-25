@@ -15,10 +15,12 @@ if str(SCRIPT_DIR) not in sys.path:
 from coverage_core import Dataset, PointRecord
 from coverage_los_core import (
     CandidateSegment,
+    PreparedPoint,
     build_output_settings,
     chord_waypoint,
     create_elevation_provider,
     deduplicate_family_candidates,
+    generate_candidates,
     geodesic_linear_waypoint,
     length_to_meters,
     normalize_output_crs,
@@ -172,6 +174,68 @@ def test_create_elevation_provider_uses_rasterio_when_available(tmp_path: Path) 
 
     assert type(provider).__name__ == "RasterioDemSampler"
     assert provider.sample_ground_m(-77.5, 38.5) == 10.0
+
+
+def test_generate_candidates_workers_match_serial_results() -> None:
+    prepared = [
+        PreparedPoint(
+            point_id="A",
+            lat=38.0,
+            lon=-77.0,
+            source_index=1,
+            ground_alt_m=0.0,
+            absolute_alt_m=20.0,
+            has_altitude=True,
+            altitude_source="dataset",
+        ),
+        PreparedPoint(
+            point_id="B",
+            lat=38.0001,
+            lon=-77.0,
+            source_index=2,
+            ground_alt_m=0.0,
+            absolute_alt_m=20.0,
+            has_altitude=True,
+            altitude_source="dataset",
+        ),
+        PreparedPoint(
+            point_id="C",
+            lat=38.0002,
+            lon=-77.0,
+            source_index=3,
+            ground_alt_m=0.0,
+            absolute_alt_m=20.0,
+            has_altitude=True,
+            altitude_source="dataset",
+        ),
+    ]
+
+    serial_pairs, serial_families, serial_stats = generate_candidates(
+        prepared,
+        FlatElevationProvider(0.0),
+        point_height_m=2.0,
+        max_segment_length_m=100.0,
+        line_tolerance_m=2.0,
+        sample_step_m=10.0,
+        workers=None,
+    )
+    worker_pairs, worker_families, worker_stats = generate_candidates(
+        prepared,
+        FlatElevationProvider(0.0),
+        point_height_m=2.0,
+        max_segment_length_m=100.0,
+        line_tolerance_m=2.0,
+        sample_step_m=10.0,
+        workers=2,
+    )
+
+    assert [candidate.candidate_id for candidate in worker_pairs] == [
+        candidate.candidate_id for candidate in serial_pairs
+    ]
+    assert [candidate.coverage_mask for candidate in worker_families] == [
+        candidate.coverage_mask for candidate in serial_families
+    ]
+    assert worker_stats == serial_stats
 
 
 def test_deduplicate_family_candidates_keeps_best_representative_for_same_mask() -> None:

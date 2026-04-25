@@ -57,6 +57,17 @@ ALT_FT_FIELD_CANDIDATES = (
     "elev_ft",
     "z_ft",
 )
+MISSING_VALUE_STRINGS = {
+    "",
+    "#n/a",
+    "n/a",
+    "na",
+    "nan",
+    "none",
+    "null",
+    "nodata",
+    "no data",
+}
 
 
 @dataclass
@@ -114,13 +125,24 @@ def _first_present(header: Iterable[str], candidates: Iterable[str]) -> Optional
 
 
 def _to_float(value: Any, default: float = 0.0) -> float:
-    if value in (None, ""):
+    if _is_missing_value(value):
         return default
     return float(value)
 
 
+def _is_missing_value(value: Any) -> bool:
+    """Return whether an input cell should behave like a blank field."""
+    if value is None:
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() in MISSING_VALUE_STRINGS
+    if isinstance(value, float):
+        return math.isnan(value)
+    return False
+
+
 def _has_value(value: Any) -> bool:
-    return value not in (None, "")
+    return not _is_missing_value(value)
 
 
 def _normalize_id(value: Any, fallback_index: int) -> str:
@@ -139,6 +161,11 @@ def load_dataset(
     lon_field: Optional[str] = None,
     alt_field: Optional[str] = None,
 ) -> Dataset:
+    """Load point data from CSV or GeoJSON using shared field-detection rules.
+
+    All coverage commands use this function, so missing-value handling and field
+    override behavior stay consistent across radius, LOS, and QGIS-bundle paths.
+    """
     path = resolve_input_path(str(input_path), repo_root)
     suffix = path.suffix.lower()
     if suffix == ".csv":
@@ -298,44 +325,6 @@ def _load_geojson_dataset(
     )
 
 
-def dataset_summary(dataset: Dataset) -> dict[str, Any]:
-    if not dataset.points:
-        return {
-            "input_path": str(dataset.path),
-            "format": dataset.fmt,
-            "record_count": 0,
-            "id_field": dataset.id_field,
-            "lat_field": dataset.lat_field,
-            "lon_field": dataset.lon_field,
-            "alt_field": dataset.alt_field,
-            "min_lat": None,
-            "max_lat": None,
-            "min_lon": None,
-            "max_lon": None,
-            "min_alt_m": None,
-            "max_alt_m": None,
-        }
-
-    lats = [point.lat for point in dataset.points]
-    lons = [point.lon for point in dataset.points]
-    alts = [point.alt_m for point in dataset.points]
-    return {
-        "input_path": str(dataset.path),
-        "format": dataset.fmt,
-        "record_count": len(dataset.points),
-        "id_field": dataset.id_field,
-        "lat_field": dataset.lat_field,
-        "lon_field": dataset.lon_field,
-        "alt_field": dataset.alt_field,
-        "min_lat": min(lats),
-        "max_lat": max(lats),
-        "min_lon": min(lons),
-        "max_lon": max(lons),
-        "min_alt_m": min(alts),
-        "max_alt_m": max(alts),
-    }
-
-
 def convert_distance_to_meters(distance: float, unit: str) -> float:
     normalized = unit.strip().lower()
     if normalized in ("meter", "meters", "m"):
@@ -389,6 +378,12 @@ def build_matrix_rows(
     covered_only: bool = False,
     exclude_self: bool = False,
 ) -> list[dict[str, Any]]:
+    """Return explicit demand/candidate radius relationships.
+
+    Solver commands use the lower-level lookup builder to avoid writing this
+    table, while the `matrix` command exposes it directly for audit or external
+    analysis.
+    """
     rows: list[dict[str, Any]] = []
     for demand in demand_points:
         for candidate in candidate_points:

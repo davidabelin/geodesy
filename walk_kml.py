@@ -5,7 +5,7 @@ import os
 
 # --- Configuration ---
 # Use a raw string (r'...') for Windows paths to handle backslashes correctly
-kml_file_path = r"highpoints\Hilltops.kml"    #or data\centerpnts.kml etc.
+kml_file_path = r"data\dc_xfer\crosspnts.kml"    #or data\centerpnts.kml etc.
 # --- End Configuration ---
 
 # Define the KML namespace - KML files use namespaces, which we need for searching

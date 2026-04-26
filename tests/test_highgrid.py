@@ -170,9 +170,16 @@ def test_run_highgrid_finds_expected_hi_lo_avg_points_layers_and_csv(tmp_path):
     assert len(hi_points) == 4
     assert len(lo_points) == 4
     assert len(avg_points) == 4
+    assert cells.crs.to_epsg() == 3857
+    assert hi_points.crs.to_epsg() == 3857
+    assert lo_points.crs.to_epsg() == 3857
+    assert avg_points.crs.to_epsg() == 3857
+    assert boundary_layer.crs.to_epsg() == 3857
+    assert corners.crs.to_epsg() == 3857
     assert set(hi_points["point_type"]) == {"hi"}
     assert set(lo_points["point_type"]) == {"lo"}
     assert set(avg_points["point_type"]) == {"avg"}
+    assert set(hi_points["crs_authid"]) == {"EPSG:3857"}
     assert len(boundary_layer) == 1
     assert list(corners["corner"]) == ["W", "N", "E", "S"]
 
@@ -180,6 +187,7 @@ def test_run_highgrid_finds_expected_hi_lo_avg_points_layers_and_csv(tmp_path):
     assert len(csv_rows) == 12
     assert set(csv_rows["point_type"]) == {"hi", "lo", "avg"}
     assert set(csv_rows["offset_angle_deg"]) == {0}
+    assert set(csv_rows["crs_authid"]) == {"EPSG:3857"}
 
     with zipfile.ZipFile(project_output) as archive:
         qgs_names = [name for name in archive.namelist() if name.endswith(".qgs")]
@@ -222,6 +230,11 @@ def test_default_corner_csv_is_used_when_boundary_is_omitted(tmp_path, monkeypat
     assert result.lo_point_count == 4
     assert result.avg_point_count == 4
     corners = gpd.read_file(output, layer="highgrid_corners")
+    hi_points = gpd.read_file(output, layer="hi-points")
+    csv_rows = pd.read_csv(output.with_name("highgrid_out.csv"))
+    assert corners.crs.to_epsg() == 4269
+    assert hi_points.crs.to_epsg() == 4269
+    assert set(csv_rows["crs_authid"]) == {"EPSG:4269"}
     assert list(corners["alt_m"]) == [1, 2, 3, 4]
 
 

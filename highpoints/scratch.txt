@@ -1,0 +1,6 @@
+python -m highpoints cluster --input-csv highpoints/output/cluster_out/highgrid_out.csv --point-types hi --method kmeans --n-clusters 20 --gpkg-output highpoints/output/cluster_out/clusters.gpkg --plot-2d highpoints/output/cluster_out/clusters.png --plot-profile highpoints/output/cluster_out/elevation_profile.png --csv-output highpoints/output/cluster_out/cluster_out.csv --overwrite
+
+
+python -m highpoints high-grid --grid-size 10 --dem data\tif\dc_dem.tif --output highpoints\output\clusters10x10.gpkg --csv-output CSV_OUTPUT --project-output PROJECT_OUTPUT --no-project --input-crs INPUT_CRS --corner-names CORNER_NAMES --parallelogram-tolerance-m PARALLELOGRAM_TOLERANCE_M --offset-angle OFFSET_ANGLE --all-touched --overwrite --yes --quiet --progress-interval PROGRESS_INTERVAL
+
+python -m highpoints high-grid --grid-size 10 --dem data\tif\dc_dem.tif --output highpoints\output\10x10.gpkg  --csv-output highpoints\output\10x10.csv --project-output highpoints\output\10x10.qgz --overwrite

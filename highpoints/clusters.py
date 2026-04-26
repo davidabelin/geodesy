@@ -16,7 +16,14 @@ from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 
 
-def load_highgrid_csv(csv_path: Path, point_types: Optional[List[str]] = None) -> gpd.GeoDataFrame:
+HIGHGRID_OUTPUT_CRS = "EPSG:4269"
+
+
+def load_highgrid_csv(
+    csv_path: Path,
+    point_types: Optional[List[str]] = None,
+    crs: Optional[str] = None,
+) -> gpd.GeoDataFrame:
     """Load highgrid CSV output and optionally filter by point types.
 
     Parameters
@@ -25,6 +32,10 @@ def load_highgrid_csv(csv_path: Path, point_types: Optional[List[str]] = None) -
         Path to the highgrid_out.csv file.
     point_types : list of str, optional
         List of point types to include ('hi', 'lo', 'avg'). If None, include all.
+    crs : str, optional
+        CRS override for the highgrid x/y coordinates. By default, this is
+        read from the CSV crs_authid column and falls back to EPSG:4269 for
+        older NAD83 highgrid CSVs.
 
     Returns
     -------
@@ -33,16 +44,31 @@ def load_highgrid_csv(csv_path: Path, point_types: Optional[List[str]] = None) -
     """
     df = pd.read_csv(csv_path)
     if point_types:
-        df = df[df['point_type'].isin(point_types)]
-    
-    # Create geometry from lon, lat
-    geometry = gpd.points_from_xy(df.lon, df.lat)
-    gdf = gpd.GeoDataFrame(df, geometry=geometry)
-    gdf.crs = "EPSG:4326"
-    return gdf
+        df = df[df["point_type"].isin(point_types)]
+
+    missing_columns = {"x", "y"} - set(df.columns)
+    if missing_columns:
+        names = ", ".join(sorted(missing_columns))
+        raise ValueError(f"Highgrid CSV is missing required DEM CRS column(s): {names}")
+
+    if crs is None and "crs_authid" in df.columns:
+        crs_values = {
+            str(value).strip()
+            for value in df["crs_authid"].dropna().unique()
+            if str(value).strip()
+        }
+        if len(crs_values) > 1:
+            raise ValueError("Highgrid CSV contains multiple CRS values")
+        if crs_values:
+            crs = crs_values.pop()
+
+    geometry = gpd.points_from_xy(df.x, df.y)
+    return gpd.GeoDataFrame(df, geometry=geometry, crs=crs or HIGHGRID_OUTPUT_CRS)
 
 
-def prepare_features(gdf: gpd.GeoDataFrame, dims: str = '3d', scale: bool = False) -> np.ndarray:
+def prepare_features(
+    gdf: gpd.GeoDataFrame, dims: str = "3d", scale: bool = False
+) -> np.ndarray:
     """Prepare feature matrix for clustering.
 
     Parameters
@@ -59,23 +85,23 @@ def prepare_features(gdf: gpd.GeoDataFrame, dims: str = '3d', scale: bool = Fals
     np.ndarray
         Feature matrix.
     """
-    if dims == '3d':
+    if dims == "3d":
         X = np.array([[row.x, row.y, row.elev_m] for row in gdf.itertuples()])
-    elif dims == '2d':
+    elif dims == "2d":
         X = np.array([[row.x, row.y] for row in gdf.itertuples()])
-    elif dims == '1d':
+    elif dims == "1d":
         X = np.array([[row.elev_m] for row in gdf.itertuples()])
     else:
         raise ValueError(f"Invalid dims: {dims}")
-    
+
     if scale:
         scaler = StandardScaler()
         X = scaler.fit_transform(X)
-    
+
     return X
 
 
-def cluster_points(X: np.ndarray, method: str = 'dbscan', **kwargs) -> np.ndarray:
+def cluster_points(X: np.ndarray, method: str = "dbscan", **kwargs) -> np.ndarray:
     """Perform clustering on feature matrix.
 
     Parameters
@@ -92,20 +118,22 @@ def cluster_points(X: np.ndarray, method: str = 'dbscan', **kwargs) -> np.ndarra
     np.ndarray
         Cluster labels.
     """
-    if method == 'dbscan':
+    if method == "dbscan":
         clusterer = DBSCAN(**kwargs)
-    elif method == 'kmeans':
+    elif method == "kmeans":
         clusterer = KMeans(**kwargs)
-    elif method == 'agglomerative':
+    elif method == "agglomerative":
         clusterer = AgglomerativeClustering(**kwargs)
     else:
         raise ValueError(f"Unknown method: {method}")
-    
+
     labels = clusterer.fit_predict(X)
     return labels
 
 
-def find_local_maxima(gdf: gpd.GeoDataFrame, labels: np.ndarray, dims: str = '3d') -> gpd.GeoDataFrame:
+def find_local_maxima(
+    gdf: gpd.GeoDataFrame, labels: np.ndarray, dims: str = "3d"
+) -> gpd.GeoDataFrame:
     """Find local maxima for each cluster.
 
     For each cluster, identifies the point with the highest elevation.
@@ -129,13 +157,15 @@ def find_local_maxima(gdf: gpd.GeoDataFrame, labels: np.ndarray, dims: str = '3d
         if label == -1:  # Skip noise
             continue
         cluster = gdf[labels == label]
-        max_idx = cluster['elev_m'].idxmax()
+        max_idx = cluster["elev_m"].idxmax()
         maxima.append(cluster.loc[max_idx])
-    
+
     return gpd.GeoDataFrame(maxima, crs=gdf.crs)
 
 
-def write_clustered_csv(gdf: gpd.GeoDataFrame, labels: np.ndarray, output_path: Path) -> None:
+def write_clustered_csv(
+    gdf: gpd.GeoDataFrame, labels: np.ndarray, output_path: Path
+) -> None:
     """Write clustered data to CSV.
 
     Parameters
@@ -148,16 +178,16 @@ def write_clustered_csv(gdf: gpd.GeoDataFrame, labels: np.ndarray, output_path: 
         Output CSV path.
     """
     gdf = gdf.copy()
-    gdf['cluster_label'] = labels
+    gdf["cluster_label"] = labels
     gdf.to_csv(output_path, index=False)
 
 
 def write_geopackage(
-    gdf: gpd.GeoDataFrame, 
-    labels: np.ndarray, 
-    maxima_gdf: gpd.GeoDataFrame, 
-    output_path: Path, 
-    overwrite: bool = True
+    gdf: gpd.GeoDataFrame,
+    labels: np.ndarray,
+    maxima_gdf: gpd.GeoDataFrame,
+    output_path: Path,
+    overwrite: bool = True,
 ) -> None:
     """Write clustered data and maxima to GeoPackage.
 
@@ -175,17 +205,19 @@ def write_geopackage(
         Whether to overwrite existing file.
     """
     gdf = gdf.copy()
-    gdf['cluster_label'] = labels
-    
+    gdf["cluster_label"] = labels
+
     # Write points layer
-    gdf.to_file(output_path, layer='clustered_points', driver='GPKG')
-    
+    gdf.to_file(output_path, layer="clustered_points", driver="GPKG")
+
     # Write maxima layer if any
     if not maxima_gdf.empty:
-        maxima_gdf.to_file(output_path, layer='local_maxima', driver='GPKG')
+        maxima_gdf.to_file(output_path, layer="local_maxima", driver="GPKG")
 
 
-def plot_clusters_2d(gdf: gpd.GeoDataFrame, labels: np.ndarray, output_path: Path) -> None:
+def plot_clusters_2d(
+    gdf: gpd.GeoDataFrame, labels: np.ndarray, output_path: Path
+) -> None:
     """Create 2D scatter plot of clusters.
 
     Parameters
@@ -199,28 +231,30 @@ def plot_clusters_2d(gdf: gpd.GeoDataFrame, labels: np.ndarray, output_path: Pat
     """
     fig, ax = plt.subplots(figsize=(10, 8))
     unique_labels = np.unique(labels)
-    
+
     for label in unique_labels:
         if label == -1:
-            color = 'black'
-            label_name = 'Noise'
+            color = "black"
+            label_name = "Noise"
         else:
             color = plt.cm.viridis(label / max(1, len(unique_labels) - 1))
-            label_name = f'Cluster {label}'
-        
+            label_name = f"Cluster {label}"
+
         cluster = gdf[labels == label]
         ax.scatter(cluster.x, cluster.y, c=[color], label=label_name, alpha=0.7)
-    
-    ax.set_xlabel('X (meters)')
-    ax.set_ylabel('Y (meters)')
-    ax.set_title('Cluster Analysis Results')
+
+    ax.set_xlabel("X (DEM CRS units)")
+    ax.set_ylabel("Y (DEM CRS units)")
+    ax.set_title("Cluster Analysis Results")
     ax.legend()
     plt.tight_layout()
     plt.savefig(output_path, dpi=150)
     plt.close()
 
 
-def plot_elevation_profile(gdf: gpd.GeoDataFrame, labels: np.ndarray, output_path: Path) -> None:
+def plot_elevation_profile(
+    gdf: gpd.GeoDataFrame, labels: np.ndarray, output_path: Path
+) -> None:
     """Create elevation profile plot colored by cluster.
 
     Parameters
@@ -234,18 +268,20 @@ def plot_elevation_profile(gdf: gpd.GeoDataFrame, labels: np.ndarray, output_pat
     """
     fig, ax = plt.subplots(figsize=(12, 6))
     unique_labels = np.unique(labels)
-    
+
     for label in unique_labels:
         if label == -1:
             continue  # Skip noise for profile
-        
+
         cluster = gdf[labels == label]
         color = plt.cm.viridis(label / max(1, len(unique_labels) - 1))
-        ax.scatter(cluster.x, cluster.elev_m, c=[color], label=f'Cluster {label}', alpha=0.7)
-    
-    ax.set_xlabel('X (meters)')
-    ax.set_ylabel('Elevation (m)')
-    ax.set_title('Elevation Profile by Cluster')
+        ax.scatter(
+            cluster.x, cluster.elev_m, c=[color], label=f"Cluster {label}", alpha=0.7
+        )
+
+    ax.set_xlabel("X (DEM CRS units)")
+    ax.set_ylabel("Elevation (m)")
+    ax.set_title("Elevation Profile by Cluster")
     ax.legend()
     plt.tight_layout()
     plt.savefig(output_path, dpi=150)

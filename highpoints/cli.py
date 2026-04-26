@@ -74,29 +74,29 @@ def _cmd_cluster(args: argparse.Namespace) -> int:
     """Run cluster analysis on highgrid output."""
     import numpy as np
     from .clusters import (
-        load_highgrid_csv, 
-        prepare_features, 
-        cluster_points, 
-        find_local_maxima, 
-        write_clustered_csv, 
-        write_geopackage, 
-        plot_clusters_2d, 
-        plot_elevation_profile
+        load_highgrid_csv,
+        prepare_features,
+        cluster_points,
+        find_local_maxima,
+        write_clustered_csv,
+        write_geopackage,
+        plot_clusters_2d,
+        plot_elevation_profile,
     )
 
     # Load data
-    gdf = load_highgrid_csv(Path(args.input_csv), args.point_types)
+    gdf = load_highgrid_csv(Path(args.input_csv), args.point_types, crs=args.input_crs)
 
     # Prepare features
     X = prepare_features(gdf, dims=args.dims, scale=args.scale)
 
     # Set clustering parameters
-    if args.method == 'dbscan':
-        kwargs = {'eps': args.eps, 'min_samples': args.min_samples}
-    elif args.method == 'kmeans':
-        kwargs = {'n_clusters': args.n_clusters}
-    elif args.method == 'agglomerative':
-        kwargs = {'n_clusters': args.n_clusters_agg}
+    if args.method == "dbscan":
+        kwargs = {"eps": args.eps, "min_samples": args.min_samples}
+    elif args.method == "kmeans":
+        kwargs = {"n_clusters": args.n_clusters}
+    elif args.method == "agglomerative":
+        kwargs = {"n_clusters": args.n_clusters_agg}
     else:
         kwargs = {}
 
@@ -111,7 +111,9 @@ def _cmd_cluster(args: argparse.Namespace) -> int:
         write_clustered_csv(gdf, labels, Path(args.csv_output))
 
     if args.gpkg_output:
-        write_geopackage(gdf, labels, maxima_gdf, Path(args.gpkg_output), overwrite=args.overwrite)
+        write_geopackage(
+            gdf, labels, maxima_gdf, Path(args.gpkg_output), overwrite=args.overwrite
+        )
 
     if args.plot_2d:
         plot_clusters_2d(gdf, labels, Path(args.plot_2d))
@@ -119,7 +121,9 @@ def _cmd_cluster(args: argparse.Namespace) -> int:
     if args.plot_profile:
         plot_elevation_profile(gdf, labels, Path(args.plot_profile))
 
-    print(f"Clustered {len(gdf)} points into {len(np.unique(labels[labels != -1]))} clusters")
+    print(
+        f"Clustered {len(gdf)} points into {len(np.unique(labels[labels != -1]))} clusters"
+    )
     print(f"Found {len(maxima_gdf)} local maxima")
     return 0
 
@@ -148,7 +152,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     boundary.add_argument(
         "--corners",
-        help="Inline W,N,E,S corners as 'lon,lat;lon,lat;lon,lat;lon,lat'.",
+        help="Inline W,N,E,S corners as 'x,y;x,y;x,y;x,y' in --input-crs.",
     )
     high_grid.add_argument("--grid-size", required=True, type=_grid_size)
     high_grid.add_argument(
@@ -157,7 +161,7 @@ def build_parser() -> argparse.ArgumentParser:
     high_grid.add_argument(
         "--output",
         default=str(_default_highgrid_output()),
-        help="Output GeoPackage path.",
+        help="Output GeoPackage path. Layers are written in the DEM CRS.",
     )
     high_grid.add_argument(
         "--csv-output",
@@ -249,26 +253,34 @@ def build_parser() -> argparse.ArgumentParser:
     )
     cluster.add_argument(
         "--point-types",
-        nargs='*',
-        choices=['hi', 'lo', 'avg'],
-        default=['hi', 'lo', 'avg'],
+        nargs="*",
+        choices=["hi", "lo", "avg"],
+        default=["hi", "lo", "avg"],
         help="Point types to include (default: all).",
     )
     cluster.add_argument(
+        "--input-crs",
+        default=None,
+        help=(
+            "CRS for highgrid CSV x/y coordinates. Defaults to the CSV "
+            "crs_authid column, then NAD83 (EPSG:4269) for older CSVs."
+        ),
+    )
+    cluster.add_argument(
         "--dims",
-        choices=['1d', '2d', '3d'],
-        default='3d',
+        choices=["1d", "2d", "3d"],
+        default="3d",
         help="Dimensionality for clustering (default: 3d).",
     )
     cluster.add_argument(
         "--method",
-        choices=['dbscan', 'kmeans', 'agglomerative'],
-        default='dbscan',
+        choices=["dbscan", "kmeans", "agglomerative"],
+        default="dbscan",
         help="Clustering method (default: dbscan).",
     )
     cluster.add_argument(
         "--scale",
-        action='store_true',
+        action="store_true",
         help="Standardize features before clustering.",
     )
     cluster.add_argument(
@@ -313,7 +325,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     cluster.add_argument(
         "--overwrite",
-        action='store_true',
+        action="store_true",
         help="Overwrite existing output files.",
     )
     cluster.set_defaults(func=_cmd_cluster)

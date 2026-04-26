@@ -137,6 +137,15 @@ def _coerce_crs(value: str | CRS) -> CRS:
     return crs
 
 
+def _crs_authid(value: str | CRS) -> str:
+    """Return a compact authority id for output metadata."""
+    crs = _coerce_crs(value)
+    authority = crs.to_authority()
+    if authority:
+        return f"{authority[0]}:{authority[1]}"
+    return crs.to_string()
+
+
 def _parse_corner_names(value: str | None) -> dict[str, str] | None:
     """Parse an explicit ``W,N,E,S`` name mapping or return auto-detect mode."""
     if value is None or value.strip().lower() in {"", "auto"}:
@@ -151,18 +160,18 @@ def _parse_inline_corners(corners_text: str, crs: CRS) -> gpd.GeoDataFrame:
     """Parse ``--corners`` text into points in required W,N,E,S order."""
     parts = [part.strip() for part in corners_text.split(";") if part.strip()]
     if len(parts) != 4:
-        raise ValueError("--corners must contain four lon,lat pairs in W,N,E,S order")
+        raise ValueError("--corners must contain four x,y pairs in W,N,E,S order")
 
     records = []
     for label, part in zip(CORNER_LABELS, parts):
         values = [piece.strip() for piece in part.split(",")]
         if len(values) < 2:
-            raise ValueError("--corners must contain lon,lat pairs")
+            raise ValueError("--corners must contain x,y pairs")
         try:
             lon = float(values[0])
             lat = float(values[1])
         except ValueError as exc:
-            raise ValueError("--corners must contain numeric lon,lat pairs") from exc
+            raise ValueError("--corners must contain numeric x,y pairs") from exc
         records.append({"source_name": label, "geometry": Point(lon, lat)})
 
     return gpd.GeoDataFrame(records, geometry="geometry", crs=crs)
@@ -889,6 +898,7 @@ def _point_layer(
     points["y"] = points[f"{prefix}_y"]
     points["dem_row"] = points[f"{prefix}_dem_row"]
     points["dem_col"] = points[f"{prefix}_dem_col"]
+    points["crs_authid"] = _crs_authid(output_cells.crs)
     return points
 
 
@@ -1115,6 +1125,7 @@ def _point_csv_frame(
         "lat",
         "x",
         "y",
+        "crs_authid",
         "dem_row",
         "dem_col",
     ]
@@ -1540,7 +1551,7 @@ def build_parser(prog: str | None = None) -> argparse.ArgumentParser:
     )
     boundary.add_argument(
         "--corners",
-        help="Inline W,N,E,S corners as 'lon,lat;lon,lat;lon,lat;lon,lat'.",
+        help="Inline W,N,E,S corners as 'x,y;x,y;x,y;x,y' in --input-crs.",
     )
     parser.add_argument("--grid-size", required=True, type=parse_grid_size)
     parser.add_argument(
@@ -1549,7 +1560,7 @@ def build_parser(prog: str | None = None) -> argparse.ArgumentParser:
     parser.add_argument(
         "--output",
         default=str(default_output_path()),
-        help="Output GeoPackage path.",
+        help="Output GeoPackage path. Layers are written in the DEM CRS.",
     )
     parser.add_argument(
         "--csv-output",

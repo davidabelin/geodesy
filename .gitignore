@@ -226,6 +226,7 @@ data/River.kml
 data/RiverPnts_critlines.kml
 data/SelectPnts.kml
 qgis/*.*
+!qgis/README.md
 geodesy/*.*
 qgis/DC_City_Substreet_attachments.zip
 qgis/DC_City_Substreet.qgs

@@ -186,6 +186,93 @@ modern DEM correlation or elevation error metric is relevant to acceptance.
 .\geodenv\Scripts\python.exe -m pytest tests/test_altex.py -q
 .\geodenv\Scripts\python.exe -m pytest tests -q
 ```
+## TO DO RIGHT NOW
+
+**Your next useful task is to correct a small set of real Hawkins training examples.** The pipeline runs, but the model still needs help distinguishing contours from streams, lettering, and dense ink.
+
+The approximately `0.99` F1 in your open `training.json` measures **synthetic drawings**. `"reviewed_hawkins": null` means that training run had no reviewed Hawkins validation data.
+
+1. **Inspect the existing extraction.**
+
+   Open the [pilot overlay](/C:/Users/David/Documents/Local_Python/geodesy/altex/out/hawkins_pilot/trace/qa_overlay.png). In QGIS, compare these layers by toggling the overlay:
+
+   - Original crop: `altex/out/hawkins_pilot/source.tif`
+   - Overlay: `altex/out/hawkins_pilot/trace/qa_overlay.tif`
+
+   Cyan marks extracted lines; magenta marks areas needing review. Look for missed contours, neighboring contours joined together, and streams or lettering incorrectly traced as contours.
+
+2. **Correct a few training tiles and a few validation tiles.**
+
+   The prepared files are already in:
+
+   ```text
+   altex/train_data/real/images/
+   altex/train_data/real/labels/
+   ```
+
+   Each source image has a matching label image. Start with perhaps **four `train_...` tiles and two `validation_...` tiles**, covering both clear contours and difficult features. That is a manageable first batch, not final validation.
+
+   For example, `train_1024_1024.png` contains contours and a stream.
+
+   In your image editor, compare the source with its label image and edit **the labels**:
+
+   | Label | Meaning |
+   |---|---|
+   | Tan, index 0 | Paper |
+   | Red, index 1 | Visible contour ink |
+   | Blue, index 2 | Water appearance |
+   | Dark grey, index 3 | Streams, lettering, vegetation, other ink |
+   | Magenta, index 255 | Uncertain—ignore during training |
+
+   Paint the **visible stroke width**, not just its centerline. Leave genuine gaps; don’t invent connections. Use magenta wherever you cannot confidently identify the mark.
+
+   **Preserve the PNG’s palette indices and dimensions.** Use existing palette entries and a hard-edged drawing tool; avoid exporting RGB labels or rearranging the palette.
+
+3. **Mark the corrected tiles as reviewed.**
+
+   Open [manifest.json](/C:/Users/David/Documents/Local_Python/geodesy/altex/train_data/real/manifest.json). For each corrected tile, change:
+
+   ```json
+   "reviewed": false
+   ```
+
+   to:
+
+   ```json
+   "reviewed": true
+   ```
+
+   Leave `split`, filenames, and window coordinates unchanged. Training tiles teach the model; validation tiles independently measure it.
+
+   One validation tile already contains a small reviewed patch. Expand the validation coverage beyond that easy example before trusting the scores.
+
+4. **Retrain, then repeat the same pilot.**
+
+   Run these commands in PowerShell from the repository root. The new output directories preserve the existing results.
+
+   ```powershell
+   .\cdem.bat train --real altex/train_data/real --out altex/out/hawkins_model_v2 --epochs 20 --tiles-per-epoch 128 --size 256 --batch 4 --width 16 --device cuda
+   ```
+
+   This trains a fresh model. In its `training.json`, `reviewed_hawkins` should now contain measurements. Precision measures how often predicted contour pixels are correct; recall measures how much reviewed contour ink was found.
+
+   Then extract the same area:
+
+   ```powershell
+   .\cdem.bat segment --checkpoint altex/out/hawkins_model_v2/best.pt --out altex/out/hawkins_pilot_v2 --aoi 3800,2600,1200,1200 --tile 512 --overlap 128 --device cuda
+   .\cdem.bat trace --run-dir altex/out/hawkins_pilot_v2
+   ```
+
+   Compare the new overlay with the original. Check whether individual contours remain separate and countable—not merely whether the picture looks cleaner.
+
+5. **Review repairs once the extraction improves.**
+
+   Avoid spending time repairing thousands of poor fragments now. Once the model is reasonably reliable, inspect the `repair_proposals` layer in `lines.gpkg`.
+
+   Copy `repair_review.template.json` to a separate review file, add only proposal IDs whose connections the image supports, and pass that file through `--accept-repairs`. Repairs remain explicitly distinguished from observed ink.
+
+**For now, stop after reviewing your first few label tiles.** That is the most important—and most delicate—step. Full-map extraction, contour spacing, and the two altitude views come after representative contours can be counted reliably.
+
 
 ## Later stages
 

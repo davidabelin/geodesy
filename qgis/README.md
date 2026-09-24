@@ -21,6 +21,11 @@ need this runtime and should stay that way.
 
 ## Hawkins 3D topography pipeline
 
+For the standalone contour-first ML workflow, see [altex](../altex/README.md).
+It treats Hawkins as a modern reconstruction of historical terrain and excludes
+modern elevation rasters from training, guidance, calibration, and validation.
+The older PyQGIS workflow below remains a separate legacy experiment.
+
 A CLI pipeline that turns the scanned 1892 Hawkins topographic map into
 QGIS terrain-review assets, without treating the scan itself as a real DEM.
 Full design/status notes: [Hawkins/HAWKINS_3D_HANDOFF.md](Hawkins/HAWKINS_3D_HANDOFF.md).

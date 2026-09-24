@@ -20,6 +20,10 @@ scipy>=1.17.0
 scikit-learn>=1.3.0
 numpy>=2.4.0
 networkx>=3.0.0
+Pillow>=10.1
+scikit-image>=0.25
+# altex training/inference; for NVIDIA install torch first from https://download.pytorch.org/whl/cu128
+torch>=2.6
 geojson>=2.5.0
 # QGIS Desktop Python work in this repo uses the OSGeo4W runtime on Windows,
 # not a pip-installed qgis/osgeo/gdal stack. Normal Python raster/vector work

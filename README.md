@@ -15,6 +15,7 @@ GeoPackage/QGIS project files so results can be inspected in QGIS Desktop.
 | [sailpath.py](sailpath.py) | Batch/single-run CLI that walks great-circle paths between points at a fixed step distance and emits CSV + KML. |
 | [point_jiggler.py](point_jiggler.py) | Iteratively nudges a set of KML points to satisfy geometric, triangle, and DEM-altitude constraints simultaneously. |
 | [highpoints/](highpoints/highdeas.md) | `python -m highpoints` package: lays a parallelogram grid over a boundary and finds the highest/lowest/average-elevation cell in each, plus clustering analysis on the results. `legacy/` holds earlier quadrant/octant peak-finding scripts. |
+| [altex/](altex/README.md) | `python -m altex` / `cdem.bat`: ML extraction of visible historical Hawkins contours, editable labels, traced fragments, and explicit gap-repair review. Uses map imagery and procedural drawings; no modern elevation inputs. |
 | [coverage/](coverage/docs/coverage_tool_usage.md) | `cvr.bat` toolset for point-to-point visibility: radius-based coverage selection and DEM-based line-of-sight (LOS) segment cover, with QGIS project generation. |
 | [roadways/](roadways/roadway_analysis.py) | Street-centerline extraction/analysis (`centerlines.py`, `cl.bat`) and general roadway geometry scripts. |
 | [border/](border) | Reference data and QGIS projects for the DC boundary stones. |
